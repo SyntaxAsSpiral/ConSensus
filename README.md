@@ -13,7 +13,7 @@ Consensus provides a structured approach to managing AI agent context:
 
 The system uses Obsidian as the authoring environment and Python scripts for assembly and deployment.
 
-## 🚧 Current Status
+## 🪜 Current Status
 
 **Template repository.** This is a clean starting point for building your own context vault. For a working example with real content, see [zk-context-vault](https://github.com/SyntaxAsSpiral/zk-context-vault).
 
