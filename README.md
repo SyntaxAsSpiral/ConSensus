@@ -5,7 +5,6 @@
 **Shared context interface for AI agents** - a recipe-based assembly system for deploying agent configurations, skills, and prompts across heterogeneous AI platforms.
 
 > *ConSensus: "conjoined sensing" - a system for shared perception without requiring unified consciousness.*  
-> Named after the Blindsight concept: overlaying disparate data streams into unified perception across radically different sensory capabilities.
 
 *[Template Repository]* The reference implementation with real content is [zk-context-vault](https://github.com/SyntaxAsSpiral/zk-context-vault).
 
