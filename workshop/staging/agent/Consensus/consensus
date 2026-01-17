@@ -2,7 +2,7 @@
 
 This AGENTS.md serves as a self-documenting example of project-level steering within the context vault. This template is rendered as AGENTS.md at the root of this repo so all instructions here are actually applied to agents working within the repo. It also serves as a template for generating project-scope AGENTS.md or CLAUDE.md docs for any project.
 
-> **Note for Agents!** To update `./AGENTS.md`, make changes on THIS document `agents/steering-project-context-vault.md`. Then rerun the assembly and sync processes to sync changes.
+> **Note for Agents!** To update `./AGENTS.md`, make changes on THIS document `agents/steering-project-consensus.md`. Then rerun the assembly and sync processes to sync changes.
 
 > **Reference Implementation**: See [zk-context-vault](https://github.com/SyntaxAsSpiral/zk-context-vault) for a working example with real content.
 
@@ -50,9 +50,6 @@ Example prompt templates for different cognitive modes.
 
 ### `/artifacts/` - Visual Models
 Obsidian Canvas files for visual modeling.
-
-**Subdirectories:**
-- `golden/` - Reference implementations and examples
 
 ### `/workshop/` - Assembly System
 Recipe-based system for assembling and deploying context.
