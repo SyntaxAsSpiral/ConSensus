@@ -28,6 +28,9 @@ output_format: skill  # Creates Agent Skills standard structure
 target_locations:
   - path: ~/.claude/skills/mcp-builder/
   - path: ~/.codex/skills/mcp-builder/
+  - path: ~/.cursor/skills/mcp-builder/
+  - path: ~/.gemini/skills/mcp-builder/
+  - path: ~/.gemini/antigravity/skills/mcp-builder/
 
 # Source mapping to skill structure
 sources:
