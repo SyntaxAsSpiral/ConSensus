@@ -1,3 +1,5 @@
+
+![consensus](context-vault.png)
 # 🧩 Consensus
 
 **Context vault assembly workshop** for building AI agent context systems.<br>
