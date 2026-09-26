@@ -48,13 +48,15 @@ Every config change follows this sequence — no shortcuts:
 On validation failure: extract the first `error:` line, surface it, stop. Don't retry blind.
 
 **System config vs Home Manager:**
-- System modules (`/mnt/repository/nix-os/hosts/`, `modules/`) → `zcli deploy <host>`
+- System modules (`/mnt/echo/nix-os/hosts/`, `modules/`) → `zcli deploy <host>`
 - Home Manager config → `home-manager build` then `home-manager switch` (no sudo)
 
 ### 1. Understand Repository Context
 
+Run canonical flake commands on adeck in `/mnt/echo/nix-os`. Host-local checkouts use `/etc/nixos`; check the current host before choosing a path.
+
 Check current Nix setup:
-- **Flake location**: `/mnt/repository/nix-os/`
+- **Flake location**: `/mnt/echo/nix-os/`
 - **Package management**: Declarative NixOS configuration via flakes.
 - **Update mechanism**: `zcli deploy <host>`
 
@@ -70,7 +72,7 @@ Read current `flake.nix` to understand:
 
 **Process:**
 1. Query `mcp-nixos` for correct package attribute name
-2. Add package to appropriate module in `/mnt/repository/nix-os/`
+2. Add package to appropriate module in `/mnt/echo/nix-os/`
 3. Validate (§3)
 4. Run `zcli deploy <host>` to apply
 5. Verify package availability
@@ -80,7 +82,7 @@ Read current `flake.nix` to understand:
 **Process:**
 ```bash
 # Update flake inputs
-nix flake update -C /mnt/repository/nix-os
+nix flake update -C /mnt/echo/nix-os
 
 # Apply updates to mesh host
 zcli deploy <host>
@@ -154,19 +156,19 @@ Choose the right tool for the scope of change:
 zcli deploy <host> --dry
 
 # Evaluate a specific attribute without building
-nix eval /mnt/repository/nix-os#nixosConfigurations.<host>.config.<attr.path>
+nix eval /mnt/echo/nix-os#nixosConfigurations.<host>.config.<attr.path>
 
 # Check a specific package is resolvable
-nix eval /mnt/repository/nix-os#nixosConfigurations.<host>.config.environment.systemPackages --json
+nix eval /mnt/echo/nix-os#nixosConfigurations.<host>.config.environment.systemPackages --json
 
 # Build only the system closure, no switch
-nix build /mnt/repository/nix-os#nixosConfigurations.<host>.config.system.build.toplevel --dry-run
+nix build /mnt/echo/nix-os#nixosConfigurations.<host>.config.system.build.toplevel --dry-run
 
 # Fast syntax+eval check without building anything
-nix flake check /mnt/repository/nix-os --no-build
+nix flake check /mnt/echo/nix-os --no-build
 
 # Quick metadata check (no eval)
-nix flake metadata /mnt/repository/nix-os
+nix flake metadata /mnt/echo/nix-os
 ```
 
 On error: extract the first `error:` line and surface it. Stop. Don't retry blind.
@@ -527,7 +529,7 @@ Instead of cascading `lib.mkIf` checks, shared modules declare a `perHost` attrs
 ```nix
 let
   perHost = {
-    nxiz  = { flake = "/mnt/repository/nix-os"; resolvedDns = true; };
+    nxiz  = { flake = "/etc/nixos"; resolvedDns = true; };
     adeck = { flake = "/etc/nixos"; resolvedDns = false; };
     zrrh  = { flake = "/etc/nixos"; resolvedDns = true; };
   };
@@ -630,7 +632,7 @@ For dotfiles that point at mutable paths outside `/nix/store` (edited live, not 
 
 ```nix
 home.file.".pi".source = config.lib.file.mkOutOfStoreSymlink
-  "/mnt/repository/daemonturgy/pi/.pi";
+  "/absolute/path/to/live/config";
 ```
 
 Use for editable config dirs, large data caches, or anything that shouldn't trigger a rebuild on change.
@@ -662,17 +664,17 @@ zcli deploy <host> --dry             # Dry-run eval, no switch
 zcli deploy all                      # Deploy all mesh hosts
 
 # Targeted evaluation (prefer over full deploy for validation)
-nix eval /mnt/repository/nix-os#nixosConfigurations.<host>.config.<attr>
-nix build /mnt/repository/nix-os#nixosConfigurations.<host>.config.system.build.toplevel --dry-run
-nix flake check /mnt/repository/nix-os --no-build
+nix eval /mnt/echo/nix-os#nixosConfigurations.<host>.config.<attr>
+nix build /mnt/echo/nix-os#nixosConfigurations.<host>.config.system.build.toplevel --dry-run
+nix flake check /mnt/echo/nix-os --no-build
 
 # Package discovery (use mcp-nixos first)
 nix search nixpkgs <package>         # Fallback search
 
 # Flake management
-nix flake update /mnt/repository/nix-os   # Update all inputs
-nix flake show /mnt/repository/nix-os     # Display outputs
-nix flake metadata /mnt/repository/nix-os # Show metadata
+nix flake update /mnt/echo/nix-os   # Update all inputs
+nix flake show /mnt/echo/nix-os     # Display outputs
+nix flake metadata /mnt/echo/nix-os # Show metadata
 
 # Garbage collection
 nh clean all                         # Clean old generations

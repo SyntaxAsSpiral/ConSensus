@@ -21,18 +21,9 @@ output_format: skill  # Creates Agent Skills standard structure
 
 target_locations:
   - path: ~/.claude/skills/local-inference/
-  - path: ~/.codex/skills/local-inference/
-  - path: zk@quita:~/.codex/skills/local-inference/
-  - path: ~/.pi/agent/skills/local-inference/
-  - path: zk@adeck:~/.claude/skills/local-inference/
-  - path: zk@adeck:~/.codex/skills/local-inference/
-  - path: zk@adeck:~/.hermes/skills/user/local-inference/
+  - path: ~/.agents/skills/local-inference/
+  - path: zk@100.82.51.63:~/.agents/skills/local-inference/
   - path: ~/.gemini/antigravity/skills/local-inference/
-  - path: ~/.gemini/skills/local-inference/
-  - path: ~/.grok/skills/local-inference/           # Grok user-scoped
-  - path: zk@adeck:~/.grok/skills/local-inference/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/local-inference/  # Mesh (quita)
-  - path: /mnt/repository/context-vault/.grok/skills/local-inference/  # Project-scoped in this vault
 
 # Source mapping to skill structure
 sources:

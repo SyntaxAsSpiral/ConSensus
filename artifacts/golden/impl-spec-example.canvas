@@ -1,19 +1,19 @@
 {
   "nodes": [
     {
-      "id": "kiro-spec-template-group",
+      "id": "spec-template-group",
       "type": "group",
       "x": -3080,
       "y": -1800,
       "width": 4600,
       "height": 3880,
       "color": "#120236",
-      "label": "kiro-spec-template"
+      "label": "spec-template"
     },
     {
       "id": "legend-and-overview",
       "type": "text",
-      "text": "# START HERE:\n---\n## Legend (edge labels)\n\nmodel: SPEC → DIAGRAM refinement\nsequence: DIAGRAM → TASKS derivation\ncompile: SPEC → TASKS shortcut\nblocks: hard dependency/order\nrelates: soft association (no order)\n\n## Kiro 3-Phase Process\n\n1. **Design**: Architecture and approach\n2. **Requirements**: Concrete specifications  \n3. **Tasks**: Implementation breakdown",
+      "text": "# START HERE:\n---\n## Legend (edge labels)\n\nmodel: SPEC → DIAGRAM refinement\nsequence: DIAGRAM → TASKS derivation\ncompile: SPEC → TASKS shortcut\nblocks: hard dependency/order\nrelates: soft association (no order)\n\n## Three-Phase Specification Process\n\n1. **Design**: Architecture and approach\n2. **Requirements**: Concrete specifications  \n3. **Tasks**: Implementation breakdown",
       "x": -2560,
       "y": -1720,
       "width": 250,
@@ -23,7 +23,7 @@
     {
       "id": "phase-1-design-guide",
       "type": "text",
-      "text": "## Phase 1 — DESIGN (architecture)\n\nFill the DESIGN template following Kiro patterns.\n\nRules:\n- Keep valid YAML in frontmatter\n- Use templater syntax {{variable}}\n- Include mermaid diagrams for system model\n- Reference lanes by phase (DESIGN/REQUIREMENTS/TASKS)\n- JSON integrity: node IDs must be unique within `nodes[]`",
+      "text": "## Phase 1 — DESIGN (architecture)\n\nFill the DESIGN template following structured specification guidance.\n\nRules:\n- Keep valid YAML in frontmatter\n- Use templater syntax {{variable}}\n- Include mermaid diagrams for system model\n- Reference lanes by phase (DESIGN/REQUIREMENTS/TASKS)\n- JSON integrity: node IDs must be unique within `nodes[]`",
       "x": -2205,
       "y": -1720,
       "width": 250,
@@ -43,7 +43,7 @@
     {
       "id": "phase-3-tasks-guide",
       "type": "text",
-      "text": "## Phase 3 — TASKS (implementation)\n\nCompile into ≤12 TASK nodes following Kiro patterns.\n\nEach task MUST include:\n- title, order, status, type\n- pointers (real repo paths)\n- acceptance_checks (verifiable end states)\n- depends_on (task IDs; keep consistent)\n- slice_markers for workshop integration\n\nScheduling rules:\n- Use `blocks` edges for hard order\n- Use `relates` edges for soft association",
+      "text": "## Phase 3 — TASKS (implementation)\n\nCompile into ≤12 TASK nodes following structured specification guidance.\n\nEach task MUST include:\n- title, order, status, type\n- pointers (real repo paths)\n- acceptance_checks (verifiable end states)\n- depends_on (task IDs; keep consistent)\n- slice_markers for workshop integration\n\nScheduling rules:\n- Use `blocks` edges for hard order\n- Use `relates` edges for soft association",
       "x": -1520,
       "y": -1780,
       "width": 250,
@@ -63,7 +63,7 @@
     {
       "id": "design-template-content",
       "type": "text",
-      "text": "---\nid: impl-{{name}}\ntitle: \"{{title}}\"\ntype:\n  - \"implementation\"\n  - \"spec\"\ncategory: \"design\"\ntags:\n  - \"kiro\"\n  - \"3-phase\"\n  - \"{{domain}}\"\ncreated: {{date}}\nmodified: {{date}}\nstatus: \"draft\"\nglyph: \"📋\"\nlens: \"structured-development\"\n---\n\n# {{title}}\n\n## Overview\n\n{{description}}\n\n## Architecture\n\n```mermaid\ngraph TB\n    subgraph \"{{system_name}}\"\n        A[{{component_a}}] --> B[{{component_b}}]\n        B --> C[{{component_c}}]\n    end\n    \n    subgraph \"External Systems\"\n        D[{{external_system}}]\n    end\n    \n    A --> D\n```\n\n## Goals\n\n- {{goal_1}}\n- {{goal_2}}\n- {{goal_3}}\n\n## Constraints\n\n### Architectural\n- {{constraint_1}}\n- {{constraint_2}}\n\n### Non-Goals\n- {{non_goal_1}}\n- {{non_goal_2}}\n\n## Context\n\n**Background**: {{background}}\n\n**Terminology**:\n- **{{term_1}}**: {{definition_1}}\n- **{{term_2}}**: {{definition_2}}\n\n**Related Components**:\n- {{component_path_1}}\n- {{component_path_2}}\n\n## Invariants\n\n- {{invariant_1}}\n- {{invariant_2}}\n\n## Acceptance Criteria\n\n- {{acceptance_1}}\n- {{acceptance_2}}\n\n## Pointers\n\n- {{file_path_1}}\n- {{file_path_2}}",
+      "text": "---\nid: impl-{{name}}\ntitle: \"{{title}}\"\ntype:\n  - \"implementation\"\n  - \"spec\"\ncategory: \"design\"\ntags:\n  - \"implementation-spec\"\n  - \"3-phase\"\n  - \"{{domain}}\"\ncreated: {{date}}\nmodified: {{date}}\nstatus: \"draft\"\nglyph: \"📋\"\nlens: \"structured-development\"\n---\n\n# {{title}}\n\n## Overview\n\n{{description}}\n\n## Architecture\n\n```mermaid\ngraph TB\n    subgraph \"{{system_name}}\"\n        A[{{component_a}}] --> B[{{component_b}}]\n        B --> C[{{component_c}}]\n    end\n    \n    subgraph \"External Systems\"\n        D[{{external_system}}]\n    end\n    \n    A --> D\n```\n\n## Goals\n\n- {{goal_1}}\n- {{goal_2}}\n- {{goal_3}}\n\n## Constraints\n\n### Architectural\n- {{constraint_1}}\n- {{constraint_2}}\n\n### Non-Goals\n- {{non_goal_1}}\n- {{non_goal_2}}\n\n## Context\n\n**Background**: {{background}}\n\n**Terminology**:\n- **{{term_1}}**: {{definition_1}}\n- **{{term_2}}**: {{definition_2}}\n\n**Related Components**:\n- {{component_path_1}}\n- {{component_path_2}}\n\n## Invariants\n\n- {{invariant_1}}\n- {{invariant_2}}\n\n## Acceptance Criteria\n\n- {{acceptance_1}}\n- {{acceptance_2}}\n\n## Pointers\n\n- {{file_path_1}}\n- {{file_path_2}}",
       "x": -2640,
       "y": -1222,
       "width": 1120,
@@ -113,7 +113,7 @@
     {
       "id": "non-functional-requirements",
       "type": "text",
-      "text": "## Non-Functional Requirements\n\n### NFR1: Kiro Integration\n- Follow 3-phase spec process\n- Use templater syntax {{variable}}\n- Support slice architecture\n- Enable workshop compilation\n\n### NFR2: Edge Preservation\n- Maintain edge semantics\n- Support dependency relationships\n- Enable mermaid visualization",
+      "text": "## Non-Functional Requirements\n\n### NFR1: Specification Workflow\n- Follow 3-phase spec process\n- Use templater syntax {{variable}}\n- Support slice architecture\n- Enable workshop compilation\n\n### NFR2: Edge Preservation\n- Maintain edge semantics\n- Support dependency relationships\n- Enable mermaid visualization",
       "x": -1217,
       "y": -800,
       "width": 280,

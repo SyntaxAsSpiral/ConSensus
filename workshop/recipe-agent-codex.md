@@ -14,8 +14,8 @@ output_name: AGENTS.md
 
 target_locations:
   - path: ~/.codex/AGENTS.md
-  - path: zk@zrrh:~/.codex/AGENTS.md
-  - path: zk@quita:~/.codex/AGENTS.md
+  - path: zk@100.77.90.79:~/.codex/AGENTS.md
+  - path: zk@100.82.51.63:~/.codex/AGENTS.md
 
 sources:
   - slice: agent=gpt-codex

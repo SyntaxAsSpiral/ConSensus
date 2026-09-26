@@ -4,13 +4,13 @@
 
 ## Repository Overview
 
-**zk-context-vault** is ZK's personal context library and agent configuration vault—an Obsidian-based system for AI agent configuration, context management, and cognitive workflow design. This vault is part of the broader Amexsomnemon exocortex project.
+**ConSensus** is ZK's personal context vault and agent configuration library—an Obsidian-based system for AI agent configuration, context management, and cognitive workflow design. It is part of the broader Amexsomnemon exocortex project.
 
 **Note**: While this vault contains ZK's specific content and configurations, the **workshop system** (`workshop/src/`, templates, and recipe patterns) is designed to be reusable. The recipes demonstrate assembly and deployment patterns that can be adapted to any content library.
 
 ## Project Sigils
 
-These sigils are project-local overlays for this repository. They tune the agent's posture inside `zk-context-vault` without replacing the global identity stack in `agents/agent-roles.md`.
+These sigils are project-local overlays for ConSensus. They tune the agent's posture without replacing the global identity stack in `agents/agent-roles.md`.
 
 Global sigils especially resonant with this project:
 
@@ -24,9 +24,9 @@ Global sigils especially resonant with this project:
 
 This vault contains:
 
-- **Agent configurations** for multiple AI coding platforms (Kiro, Claude, Codex, Gemini, Grok, Pi)
+- **Agent configurations** for multiple AI coding platforms (Claude, Codex, Gemini, Grok, Pi)
 - **Steering rules** that guide agent behavior following Covenant Principles
-- **Skills and Powers** packaged for distribution across platforms
+- **Skills** packaged for distribution across platforms
 - **Context workshop** for recipe-based assembly of documentation
 - **Specs** for structured development workflows
 - **Prompts and artifacts** for specialized cognitive tasks
@@ -41,14 +41,14 @@ This vault contains:
 - `steering-global-operator.md` - Operator (ZK) profile and preferences
 - `steering-global-principles.md` - Covenant Principles (anti-assumption framework)
 - `steering-global-mesh.md` - Tailnet device topology and SSH configuration
-- `steering-project-*.md` - Project-specific steering (e.g., zk-context-vault, deck)
+- `steering-project-consensus.md` - ConSensus project steering example; other projects keep their own steering locally
 
 **When to reference**: Understanding agent identity, behavior constraints, or platform-specific features
 
 ### `/skills/` - Agent Skills Library
 **Purpose**: Reusable capabilities packaged in Agent Skills standard format
 
-**Structure**: Each skill follows [agentskills.io specification](../skills/spec-agent-skill.md)
+**Structure**: Each skill follows the Agent Skills specification in `skills/spec-agent-skill.md`.
 ```
 skill-name/
 ├── SKILL.md          # Required: frontmatter + instructions
@@ -69,20 +69,19 @@ skill-name/
 **Purpose**: Recipe-based system for assembling and deploying context documentation
 
 **Reusability**: The workshop system (scripts, templates, recipe patterns) is designed to be reusable with any content. Clone and adapt to your own context library by:
-- Updating absolute paths in scripts (`/mnt/repository/context-vault` → your path)
+- Replacing vault-specific absolute paths in scripts and recipes with your vault path
 - Creating your own content in `agents/`, `skills/`, etc.
 - Using the recipe templates to define your own assembly patterns
 
 **Key components:**
-- `templates/` - Recipe scaffolding for agents, skills, powers (reusable)
+- `templates/` - Recipe scaffolding for agents and skills (reusable)
 - `recipe-*.md` - Active recipes for content assembly (ZK-specific examples)
 - `src/assemble.py` - Assembly script (reusable, update paths)
 - `src/sync.py` - Deployment script (reusable, update paths)
 - `manifest-recipes.md` - Deployment tracking log
 
 **Output formats:**
-- **Agent Skills** (agentskills.io standard)
-- **Kiro Powers** (POWER.md + steering/)
+- **Agent Skills** (`SKILL.md` + optional references/)
 - **Simple agents** (concatenated markdown)
 
 **When to reference**: Understanding how context is assembled or deployed, or adapting the system for your own content
@@ -107,9 +106,6 @@ skill-name/
 - `reflect.md` - Metacognitive reflection
 - `murder.md` - Adversarial red-teaming
 
-**Hook prompts:**
-- `hook-prompts/` - Markdown sources for Kiro hook creation via UI
-
 **When to reference**: Need specific cognitive approach or prompt engineering examples
 
 ### `/artifacts/` - Visual Models and Examples
@@ -120,20 +116,6 @@ skill-name/
 - `*.canvas` - Obsidian Canvas visual models
 
 **When to reference**: Visual system design or example implementations
-
-### `/.kiro/` - Kiro Canonical Sources
-**Purpose**: Canonical hooks and specs that deploy to project-specific `.kiro/` directories
-
-**Structure:**
-- `.kiro/hooks/*.kiro.hook` - Hook JSON configurations (canonical source)
-- `.kiro/specs/*/` - Spec templates (requirements.md, design.md, tasks.md)
-
-**Archived specs:**
-- `.archive/context-management/` - Context workshop system specification (archived)
-
-**Deployment pattern:** This vault's `.kiro/` serves as the canonical source. Workshop recipes deploy hooks and specs from here to project-specific `.kiro/` directories.
-
-**When to reference**: Understanding spec-driven development workflow or hook configurations
 
 ## Covenant Principles (Anti-Assumption Framework)
 
@@ -193,7 +175,7 @@ See `agents/steering-global-operator.md` for complete profile.
 - **Obsidian integration**: This is an Obsidian vault with Canvas files and templates
 
 ### Path Conventions
-- **Context library**: `/mnt/repository/context-vault` (absolute path for workshop scripts)
+- **Context library**: `/mnt/echo/consensus` (absolute path for workshop scripts)
 - **Scripts**: `workshop/src/` (in-repo scripts)
 - **Workspace**: Relative paths from repo root
 - **Home directory**: `~/` expands to user home in recipes
@@ -226,13 +208,11 @@ When working with workshop recipes:
 ## Common Tasks
 
 ### Finding Agent Configurations
-- **Kiro**: `agents/agent-roles.md` (slice:agent=kiro)
 - **Claude**: `agents/agent-roles.md` (slice:agent=claudi-claude-code)
 - **Codex**: `agents/agent-roles.md` (slice:agent=gpt-codex)
 - **Gemini**: `agents/agent-roles.md` (slice:agent=gemini-cli)
 - **Grok**: `agents/agent-roles.md` (slice:agent=grok)
 - **Pi**: `agents/agent-roles.md` (slice:agent=pi)
-- **Deck agents**: codeck, claudeck, deckini (slice:agent=codeck, claudeck, deckini)
 
 ### Understanding Steering Rules
 - **Global principles**: `agents/steering-global-principles.md`
@@ -244,11 +224,6 @@ When working with workshop recipes:
 - **Examples**: Browse `skills/` directory
 - **Templates**: `workshop/templates/recipe-skill-{{name}}.md`
 
-### Working with Powers
-- **Spec**: `skills/spec-kiro-power.md` (Kiro Power format)
-- **Examples**: `skills/*-power/` directories
-- **Templates**: `workshop/templates/recipe-power-{{name}}.md`
-
 ### Creating Recipes
 1. Use Obsidian template from `workshop/templates/`
 2. Configure sources, targets, output_format
@@ -259,11 +234,9 @@ When working with workshop recipes:
 
 ### Grok Harness Integration
 - **Project rules**: Root `AGENTS.md` (this file after assembly) + any subdir `AGENTS.md` are auto-loaded by Grok for every session in the vault. Deeper = higher precedence.
-- **Agent profiles**: See `.grok/agents/grok-vault.md` (after recipe deployment) and `workshop/recipe-agent-grok.md`. Invoke with `grok --agent-profile .grok/agents/grok-vault.md` or set `GROK_AGENT`.
-- **Skills & hooks**: `.grok/skills/` and `.grok/hooks/` provide highest-priority local extensions. Many vault `skills/*/` are immediately usable (description-driven auto-invocation + `/<name>` shorthand).
-- **MCP**: `.grok/config.toml` for project overrides (sideriod and future vault services). Live mesh MCPs (e.g. sideriod) appear via system announcements.
+- **Global steering**: `workshop/recipe-agent-grok.md` deploys `~/.grok/AGENTS.md` on adeck and quita.
+- **Skills**: Workshop recipes deploy selected skills to `~/.agents/skills/`.
 - **Inspection**: `grok inspect` shows exactly which rules, skills, and agents are active in the current session.
-- **Full file locations table + architecture**: [agents/README.md](agents/README.md) and [.grok/README.md](.grok/README.md).
 
 ## Important Constraints
 
@@ -280,68 +253,6 @@ When working with workshop recipes:
 ### Literal Exactness
 - No paraphrasing at interfaces (commands, paths, IDs, tool names)
 - Copy verbatim or fail loudly
-
-## Questions?
-
-- **Architecture questions**: See `agents/README.md`
-- **Workshop questions**: See `workshop/README.md`
-- **Skill questions**: See `skills/README.md`
-- **Exocortex questions**: See `exocortex/README.md`
-- **Spec questions**: See `.kiro/specs/*/requirements.md`
-- **Hook questions**: See `.kiro/hooks/` for canonical configs, `prompts/hook-prompts/` for markdown sources
-
-## Code Quality & Architecture Notes
-
-### Operational Substance
-
-The codebase demonstrates solid engineering underneath the aesthetic:
-
-**Workshop Assembly System** (`workshop/src/assemble.py`):
-- Multi-document YAML support with section inheritance
-- Smart slice extraction with fallback logic (handles missing end markers, overlaps with next slice)
-- Cross-platform path handling (Windows/posix normalization, `~/` expansion)
-- Manifest persistence with entry replacement and timestamp tracking
-- Proper dataclass structures for configuration
-- Clean separation of concerns (parsing → assembly → output → manifest)
-- No security holes; validates input before operations
-
-**Error Handling & Type Safety**:
-- Type hints throughout
-- Encoding handled explicitly (UTF-8 everywhere, including Windows stdio reconfiguration)
-- Path operations use `pathlib` safely (no string concatenation)
-- File I/O has existence checks and error recovery
-- No invented data; missing info triggers errors or queries
-
-**Aesthetic as Proof-of-Concept**:
-The grimdark (Warhammer 40K) error messages aren't just decoration—they demonstrate how the prompt system (`prompts/murder.md` and similar) can propagate thematic consistency through operational code. This shows that a system's aesthetic can be embedded at every layer without sacrificing functionality or clarity.
-
-### Code Quality Summary
-
-No structural weaknesses found. The code is:
-- Minimal and focused (no premature abstraction)
-- Functionally correct (handles real edge cases)
-- Maintainable (clear intent, good error boundaries)
-- Reusable (workshop system is genuinely portable)
-
-This is bespoke, intentional engineering.
-
-## Adapting This Vault
-
-**Want to use the workshop system with your own content?**
-
-The workshop system (assembly scripts, templates, recipe patterns) is designed to be reusable:
-
-1. **Clone the repo** as a starting point
-2. **Update paths** in `workshop/src/assemble.py` and `sync.py`:
-   - Change `/mnt/repository/context-vault` to your vault path
-3. **Replace content** with your own:
-   - Your agent configurations in `agents/`
-   - Your skills in `skills/`
-   - Your prompts in `prompts/`
-4. **Reuse recipes** as examples for your own assembly patterns
-5. **Keep the workshop system** - it's content-agnostic
-
-A template repo (workshop system without ZK-specific content) may be created in the future for easier bootstrapping.
 
 ---
 

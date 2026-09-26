@@ -375,15 +375,20 @@ prompts/
 
 ### With Workshop
 
-Lens templates can be extracted via slice architecture:
+Pseudo-skill recipes package individual prompt sources as Agent Skills:
 
 ```yaml
-# Recipe for lens deployment
-sources:
-  - slice: lens=murder
-    file: prompts/murder.md
+name: murder
+output_format: skill
 target_locations:
-  - path: ~/.kiro/powers/murder/
+  - path: ~/.codex/skills/murder/
+sources:
+  skill_md:
+    frontmatter:
+      name: murder
+      description: Use a gothic machine voice when requested.
+    body:
+      - file: prompts/murder.md
 ```
 
 ## Related Skills

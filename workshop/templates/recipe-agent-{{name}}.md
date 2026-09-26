@@ -31,7 +31,7 @@ template: |
   # {{name}} Agent
   {content}
 # Agent-specific fields
-agent_format: # claude | kiro | openai | custom
+agent_format: # claude | openai | custom
 output_type: # system_prompt | config_file | both
 persona_elements:
   - role_sigils: true    # Include role sigils from slices

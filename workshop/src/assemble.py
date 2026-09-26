@@ -7,7 +7,7 @@ Supports:
 - slice extraction via `slice` + `slice-file`
 - whole-file inclusion via `file` only
 - multi-section recipes via YAML document separators (`---`) inside the YAML block
-- structured output formats: `agent`, `skill`, `power`
+- structured output formats: `agent`, `skill`
 
 Outputs assembled artifacts to `.context/workshop/staging/` and updates
 `.context/workshop/manifest-recipes.md` with run logs.
@@ -22,7 +22,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from datetime import datetime
 import sys
-import json
 import os
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
@@ -121,11 +120,6 @@ def _is_dir_target_string(p: str) -> bool:
 def _default_agent_filename_for_target(target_path: str) -> str:
     # Claude consumes CLAUDE.md; everyone else consumes AGENTS.md.
     return "CLAUDE.md" if _is_claude_target(target_path) else "AGENTS.md"
-
-
-def _is_kiro_hook_target(p: str) -> bool:
-    np = _norm_path_str(p)
-    return np.endswith(".kiro.hook") or "/.kiro/hooks/" in np or np.endswith("/.kiro/hooks")
 
 
 def _resolve_context_path(base_path: Path, p: str) -> Path:
@@ -553,67 +547,27 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
         raw_targets = _targets_from_section(section)
         targets = [_expand_target_path(t) for t in raw_targets]
 
-        hook_targets = [t for t in targets if _is_kiro_hook_target(t)]
-        md_targets = [t for t in targets if t not in hook_targets]
-
         out_root = staging_dir / "command" / recipe_name
         artifacts: List[OutputArtifact] = []
 
-        # Markdown output for non-Kiro targets.
-        if md_targets:
-            md_sources = sources_cfg.get("command_md") or sources_cfg.get("prompt_md") or []
-            if not isinstance(md_sources, list):
-                md_sources = []
-            md_template = cfg.get("template")
-            md_content = assemble_content(md_sources, base_path, template=md_template)
-            if md_content is None:
-                md_content = ""
-            md_filename = f"{recipe_name}.md"
-            md_path = out_root / md_filename
-            _write_text(md_path, md_content.strip() + "\n", dry_run)
-            artifacts.append(
-                OutputArtifact(
-                    relpath=(Path("command") / recipe_name / md_filename).as_posix(),
-                    abspath=md_path,
-                    targets=md_targets,
-                    is_dir=False,
-                )
+        md_sources = sources_cfg.get("command_md") or sources_cfg.get("prompt_md") or []
+        if not isinstance(md_sources, list):
+            md_sources = []
+        md_template = cfg.get("template")
+        md_content = assemble_content(md_sources, base_path, template=md_template)
+        if md_content is None:
+            md_content = ""
+        md_filename = f"{recipe_name}.md"
+        md_path = out_root / md_filename
+        _write_text(md_path, md_content.strip() + "\n", dry_run)
+        artifacts.append(
+            OutputArtifact(
+                relpath=(Path("command") / recipe_name / md_filename).as_posix(),
+                abspath=md_path,
+                targets=targets,
+                is_dir=False,
             )
-
-        # Kiro hook output (JSON wrapper around a prompt).
-        if hook_targets:
-            hook_sources = sources_cfg.get("kiro_hook") or []
-            if not isinstance(hook_sources, list):
-                hook_sources = []
-            prompt_text = assemble_content(hook_sources, base_path, template=None) or ""
-
-            hook_cfg = cfg.get("kiro_hook_config") or {}
-            if not isinstance(hook_cfg, dict):
-                hook_cfg = {}
-
-            hook_obj: Dict[str, Any] = json.loads(json.dumps(hook_cfg))
-            then = hook_obj.get("then")
-            if not isinstance(then, dict):
-                then = {"type": "askAgent"}
-                hook_obj["then"] = then
-
-            if str(then.get("type") or "askAgent") == "askAgent":
-                then.setdefault("prompt", prompt_text)
-                if then.get("prompt") != prompt_text:
-                    then["prompt"] = prompt_text
-
-            hook_json = json.dumps(hook_obj, indent=2, ensure_ascii=False) + "\n"
-            hook_filename = f"{recipe_name}.kiro.hook"
-            hook_path = out_root / hook_filename
-            _write_text(hook_path, hook_json, dry_run)
-            artifacts.append(
-                OutputArtifact(
-                    relpath=(Path("command") / recipe_name / hook_filename).as_posix(),
-                    abspath=hook_path,
-                    targets=hook_targets,
-                    is_dir=False,
-                )
-            )
+        )
 
         return artifacts
 
@@ -734,7 +688,7 @@ def main():
     args = parser.parse_args()
     
     # Set up absolute paths
-    base_path = Path("/mnt/repository/context-vault")  # Context workspace root
+    base_path = Path("/mnt/echo/consensus")  # Context workspace root
     workshop_dir = base_path / "workshop"      # Workshop directory
     staging_dir = workshop_dir / "staging"     # Staging directory
     manifest_path = workshop_dir / "manifest-recipes.md"  # Manifest file

@@ -13,7 +13,7 @@ tags:
   - hardware
   - global
 created: 2026-03-02
-modified: 2026-09-18
+modified: 2026-09-26
 status: active
 glyph: "🕸️"
 lens: infrastructure
@@ -25,9 +25,9 @@ lens: infrastructure
 
 | Host | IP | Role | OS | GPU |
 |------|----|------|----|-----|
-| nxiz | 100.115.135.104 | Primary Workstation | NixOS 26.05 | RTX 3070 |
-| zrrh | 100.77.90.79 | Inference Node | NixOS 26.05 | RTX 4090 |
-| adeck | 100.89.32.9 | Agentic Server / Relay (always on) | NixOS 26.05 | AMD Vangogh (Vulkan, 5.5 GiB) |
+| adeck | 100.89.32.9 | Central project and service host / relay (always on) | NixOS 26.05 | AMD Vangogh (Vulkan, 5.5 GiB) |
+| nxiz | 100.115.135.104 | Workstation | NixOS 26.05 | RTX 3070 |
+| zrrh | 100.77.90.79 | Compute Node | NixOS 26.05 | RTX 4090 |
 | zdeck | 100.64.136.57 | Gaming | SteamOS | AMD Vangogh (Vulkan) |
 | quita | 100.82.51.63 | Family laptop | Linux Mint | — |
 | tm20 | 100.123.184.5 | Mesh print host (Pi 3B+) | NixOS 26.11 aarch64 | — |
@@ -35,56 +35,46 @@ lens: infrastructure
 | zk-pixel | 100.96.213.111 | Android phone | Android | — |
 | zk-note | 100.105.239.55 | Android phone | Android | — |
 
-**Host faces** ([esotericons](https://github.com/SyntaxAsSpiral/esotericons)): `lotus` → nxiz · `meso` → zrrh · `sufi` → adeck. Fetch that stem when a slip is for a host.
+## Host check
+
+Always check `hostname -s` and state: “You are on `<host>`.” at the start of work. If unsure, compare the target with the detected local host before using SSH. From adeck, connect to other hosts by Tailscale IP.
 
 ## Key Mounts
 
+**Access:** Shared trees are accessed remotely through Taildrive WebDAV or SSH; filesystem mounts are available only on their respective local hosts.
+
 | Host | Path | Purpose |
 |------|------|---------|
-| nxiz | `/mnt/repository` | Context vault + dev repos |
+| nxiz | `/mnt/repository` | Shared sandbox |
 | nxiz | `/mnt/archive` | Archive storage |
 | zrrh | `/mnt/media` | Media library |
 | zrrh | `/mnt/games` | Game storage |
-| adeck | `/mnt/vault` | Data lake (msgvault, memory substrate) |
-| adeck | `/mnt/echo` | Hot storage: processed knowledge + live mesh service trees |
+| adeck | `/mnt/vault` | Data lake |
+| adeck | `/mnt/echo` | Active projects and mesh services |
 
-`/mnt/echo` is the live tree for active mesh services on adeck (already:
-`family-cookbook`, `esocortex`). New service trees go here. `~/` on adeck
-is leftover / in-migration — do not add projects there; do not move trees
-until asked. Taildrive share `adeck/echo` is how other hosts see this.
+`/mnt/echo` on adeck is the active project area for running services, on-demand operational work, and projects intended to become active services. The `adeck/echo` Taildrive share exposes this tree to other hosts.
+
+## Mesh control plane
+
+- `/mnt/echo/nix-os` is the canonical NixOS flake on adeck. Adeck, nxiz, and zrrh use `/etc/nixos` checkouts; tm20 receives secrets only.
+- `/mnt/echo/consensus` is **ConSensus**, the canonical context vault. Its `workshop/` assembles agent instructions and skills; `workshop/src/sync.py` currently deploys them separately from zcli and also commits and pushes.
+- `zcli` comes from `nix-os`. Today `zcli sync` distributes the canonical committed-and-staged flake snapshot, local Git history, and secrets; `build`, `deploy`, and `image` use zrrh for evaluation and builds. Direct `nh os` remains local to the invoking host.
+
+## Project and service trees on adeck
+
+`/mnt/echo` also contains `family-cookbook` (Babette's Table and OCR), `holliday-estate` (estate catalog), `esocortex` (knowledge processing), `sideriod` (Gnomon), `bitburner` (game sync/MCP server), `inf-bench` (inference benchmarking, including ad hoc FLE eval runs), `stack-chan` (device and house-AI work), and `web/` (`whisperbell` and the dormant `lexemancy-site`, awaiting a revamp). Directory presence identifies a project tree, not service health; check the relevant service or worker before acting on it.
 
 ## Services
 
 **Inference Gateway (`adeck:1234`):** All inference requests target `adeck:1234`. Adeck routes via `lmlink` — large models to `zrrh`, small models/embeddings local or to `nxiz`. OpenAI-compatible API (`/v1/chat/completions`, `/v1/embeddings`).
 
-**Holliday Table (`adeck`):** Kitchen app at `https://adeck.tail293e98.ts.net`. Authoritative tree `/mnt/echo/family-cookbook`. Kitchen / family client is `galaxy-tab-a7`. Print host is `tm20` (Pi), not quita.
+**Babette's Table (`adeck`):** Heirloom recipe curation agent at `https://adeck.tail293e98.ts.net`. Authoritative tree `/mnt/echo/family-cookbook`. Kitchen / family client is `galaxy-tab-a7`. Print host is `tm20` (Pi).
 
-**tm20 thermal (`tm20` Pi 3B+):** Official mesh print host. NixOS aarch64 appliance in `/mnt/repository/nix-os` (`nixosConfigurations.tm20`, no Home-Manager). First boot is `zcli image tm20` — sdImage built on zrrh (`boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`). Live on tailnet at 100.123.184.5 (NixOS 26.11). Epson TM-T20III USB (`04b8:0e28`, 24V brick, USB-B). USB execution is **tm20 only**. udev (plugdev, unbind `usblp`) is already in `hosts/tm20/configuration.nix`. `tm20` / `tm20-set` and print-receiver are a later layer on that host. No CUPS. CLIs open USB only (library TCP :9100 is unused). Paper: generic 80 mm / 3-1/8" thermal. Do not share via router USB. Linux faces: Liberation Sans/Mono. How to compose and when to use USB vs the receiver: skill **tm20**. Quita is not the print host.
-
-**Mesh print receiver (`tm20:8766`):** Shared USB gate for Holliday Table, holliday-estate, and sideriod — lives on the `tm20` appliance (later layer; not in the first sdImage). Token `PRINT_TOKEN` (alias `HOLIDAY_PRINT_TOKEN`). POST `http://tm20:8766/print` a unique `job_id` plus a 576px PNG (`image`) or markdown (`markdown`). Duplicate ids are not reprinted. One USB lock. Prefer this from other hosts and from long-running services. Direct `tm20` / `tm20-set` is for sitting at the print host: design, preview, hello, status, recovering a jammed job.
+**tm20 thermal mesh print receiver (`tm20` Pi 3B+, `tm20:8766`):** Official mesh print host. NixOS aarch64 appliance configured in adeck's canonical `/mnt/echo/nix-os` flake (`nixosConfigurations.tm20`, no Home-Manager). First boot is `zcli image tm20` — sdImage built on zrrh (`boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`). Live on tailnet at 100.123.184.5 (NixOS 26.11). Epson TM-T20III USB (`04b8:0e28`, 24V brick, USB-B); USB execution is **tm20 only**. udev (plugdev, unbind `usblp`) is configured in `hosts/tm20/configuration.nix`. No CUPS. CLIs open USB only (library TCP :9100 is unused). Paper: generic 80 mm / 3-1/8" thermal. Linux faces: Liberation Sans/Mono. The shared print receiver gates USB access for Holliday Table, holliday-estate, and sideriod. It accepts `POST http://tm20:8766/print` with a unique `job_id` plus a 576px PNG (`image`) or markdown (`markdown`); duplicate ids are not reprinted, and it uses one USB lock. Token `PRINT_TOKEN` (alias `HOLIDAY_PRINT_TOKEN`). Prefer the receiver from other hosts and long-running services. Use `tm20` / `tm20-set` while sitting at the print host for design, preview, hello, status, and recovering a jammed job. How to compose and when to use USB versus the receiver: skill **tm20**.
 
 **SSH / Mullvad (`adeck`):** adeck runs Mullvad. From adeck, SSH by Tailscale IP only (adeck = `100.89.32.9`; other hosts from the table). MagicDNS / hostnames (`adeck`, `adeck.tail293e98.ts.net`, other mesh names) do not work from that box.
 
-**Other services on adeck:** Docker, qBittorrent, SSH, Tailscale, msgvault, Hermes agent, sideriod gnomon, pulse-generator (daily site rotation at 02:24 PST), Bitburner (MCP + sync server).
-
-## Development Mandates
-
-- **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.
-- **Root Flakes:** Use per-project `flake.nix` for reproducible envs (`nix develop` / `direnv`).
-- **Transient Tooling:** Agents should use `nix shell` / `nix run` for ad-hoc tools.
-- **Declarative:** Minimize non-declarative state. Reproducibility over convenience.
-
-## Taildrive Mesh
-
-**Shares:**
-- `nxiz/repository` → `/mnt/repository`
-- `nxiz/archive` → `/mnt/archive`
-- `zrrh/media` → `/mnt/media`
-- `zrrh/games` → `/mnt/games`
-- `adeck/vault` → `/mnt/vault`
-- `adeck/echo` → `/mnt/echo`
-
-**Consumers:** `adeck` mounts `nxiz/repository` and `zrrh/media`.
+**Other services on adeck:** Docker, qBittorrent, SSH, Tailscale, msgvault, and Hermes agent. The `sideriod` and `bitburner` trees above host their respective Gnomon and sync/MCP services.
 
 ## Taildrop File Transfer
 

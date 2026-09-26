@@ -18,9 +18,6 @@ glyph: "🜂"
 lens: covenant-principles
 ---
 
-- Do not cap tokens. Let the job time out.
-- Do not watch a long job. The operator will ping.
-- Do not deploy a nix host build without express permission.
 
 ## 1. Think Before Coding
 
@@ -77,5 +74,3 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
-- A project has at most 20 distinct test cases. Prefer a focused check over a new case.

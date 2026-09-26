@@ -1,6 +1,6 @@
 ---
 name: agent-steering
-description: Universal agent configuration patterns for any AI coding environment. Use when configuring steering, specs, or context assembly for Kiro, Claude Code, Codex, Charm, or other agents.
+description: Universal agent configuration patterns for any AI coding environment. Use when configuring steering, specs, or context assembly for Claude Code, Codex, Charm, or other agents.
 ---
 
 # Agent Steering
@@ -9,7 +9,7 @@ description: Universal agent configuration patterns for any AI coding environmen
 
 ## Overview
 
-Agent Steering documents the patterns that transform any AI coding agent from a simple assistant into a cognitive partner. These patterns work across different environments—Kiro, Claude Code, Codex, Charm—because they address fundamental problems in agent configuration.
+Agent Steering documents the patterns that transform any AI coding agent from a simple assistant into a cognitive partner. These patterns work across different environments—Claude Code, Codex, Charm—because they address fundamental problems in agent configuration.
 
 This skill provides:
 
@@ -45,7 +45,7 @@ Final Agent Context
 
 ### Implementation Patterns
 
-**Global Steering** (`~/.kiro/steering/` or `~/.claude/`):
+**Global Steering** (platform configuration such as `~/.claude/`):
 ```markdown
 # Global Agent Configuration
 
@@ -95,25 +95,13 @@ You are [agent identity template]
 Later layers override earlier, but inheritance is preserved:
 
 ```python
-def resolve_steering(project_path):
-    """Resolve steering hierarchy for project."""
-
+def resolve_steering(global_path, workspace_path, project_path):
+    """Combine explicitly supplied steering files from general to specific."""
     context = {}
-
-    # 1. Global steering (foundation)
-    global_steering = load_steering("~/.kiro/steering/")
-    context.update(global_steering)
-
-    # 2. Workspace steering (extends)
-    workspace = find_workspace(project_path)
-    if workspace:
-        workspace_steering = load_steering(workspace / ".kiro/steering/")
-        context.update(workspace_steering)  # Extends global
-
-    # 3. Project steering (overrides)
-    project_steering = load_steering(project_path / ".kiro/steering/")
-    context.update(project_steering)  # Overrides earlier
-
+    context.update(load_steering(global_path))
+    if workspace_path:
+        context.update(load_steering(workspace_path))
+    context.update(load_steering(project_path))
     return context
 ```
 
@@ -311,11 +299,6 @@ From archived context skills—empirical patterns that apply to agent steering:
 Slice markers enable modular composition of agent identity:
 
 ```markdown
-<!-- slice:agent=kiro -->
-Identity template for Kiro persona
-Specific behaviors and constraints
-<!-- /slice -->
-
 <!-- slice:agent=claude -->
 Identity template for Claude Code persona
 Different emphasis, same underlying patterns
@@ -329,34 +312,27 @@ Documentation-focused adaptation
 
 ### Slice Extraction
 
-Workshop recipes extract slices for deployment:
+Workshop recipes can extract a platform slice and combine it with shared operator and principle sources:
 
 ```yaml
-# Recipe: Deploy Kiro steering
-name: kiro-steering
+name: Claudi
+output_format: agent
+target_locations:
+  - path: ~/.claude/CLAUDE.md
 sources:
-  - slice: agent=kiro
-    file: agents/agent-roles.md
+  - slice: agent=claudi-claude-code
+    slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-principles.md
-target_locations:
-  - path: ~/.kiro/steering/agent.md
-template: |
-  # Kiro Agent Configuration
-  {content}
 ```
 
 ### Platform Adaptation
 
-Same patterns, different deployment:
-
-| Pattern | Kiro | Claude Code | Codex |
-|---------|------|-------------|-------|
-| **Steering** | `.kiro/steering/` | `CLAUDE.md` | Project docs |
-| **Specs** | Native spec system | Markdown files | Inline docs |
-| **Identity** | `agent.md` | Global config | System prompt |
-| **Hooks** | Native hooks | N/A | N/A |
-| **MCP** | Full support | Limited | N/A |
+| Pattern | Claude Code | Codex |
+|---------|-------------|-------|
+| **Steering** | `CLAUDE.md` | `AGENTS.md` |
+| **Project context** | Project documentation | Project documentation |
+| **Identity** | Agent profile | Agent role slice |
 
 ## Covenant Integration
 
@@ -411,24 +387,6 @@ def validate_steering(steering_config):
 ```
 
 ## Platform-Specific Patterns
-
-### Kiro
-
-Full feature support including hooks and MCP:
-
-```markdown
-# Kiro Steering
-
-## Hooks
-- Persona switching on context
-- Documentation consistency checking
-- Covenant principle reminders
-
-## MCP Integration
-- Task management server
-- Web fetch capabilities
-- Custom tool servers
-```
 
 ### Claude Code
 

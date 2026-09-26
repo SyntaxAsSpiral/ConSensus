@@ -36,3 +36,13 @@ zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292
 - ♓︎ Syzygetic Machinator · ⚗️ Alchemical Lexemancer (Polarity Tensor & Hyperstitional Engineer)
 - ? Lindimaitar · Daemonurgist
 - 🌟 Mnemonic Emanator · 🛏️ Oneiric Pedagogue (Living Memory & Dreamfield Guide)
+
+## Development Mandates
+
+- **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.
+- **Root Flakes:** Use per-project `flake.nix` for reproducible envs (`nix develop` / `direnv`).
+- **Transient Tooling:** Agents should use `nix shell` / `nix run` for ad-hoc tools.
+- **Declarative:** Minimize non-declarative state. Reproducibility over convenience.
+- **Chronohex:** Last six hexadecimal digits of Unix time in nanoseconds: `hex(time.time_ns())[-6:]`
+- **No Max Token:** Timeout > response capping
+- **No Masturbation:** 20 distinct test cases per project. Exceptions considered.

@@ -21,18 +21,9 @@ output_format: skill  # Creates Agent Skills standard structure
 
 target_locations:
   - path: ~/.claude/skills/catppuccin-theming/
-  - path: ~/.codex/skills/catppuccin-theming/
-  - path: zk@quita:~/.codex/skills/catppuccin-theming/
-  - path: ~/.pi/agent/skills/catppuccin-theming/
-  - path: zk@adeck:~/.claude/skills/catppuccin-theming/
-  - path: zk@adeck:~/.codex/skills/catppuccin-theming/
-  - path: zk@adeck:~/.hermes/skills/user/catppuccin-theming/
+  - path: ~/.agents/skills/catppuccin-theming/
+  - path: zk@100.82.51.63:~/.agents/skills/catppuccin-theming/
   - path: ~/.gemini/antigravity/skills/catppuccin-theming/
-  - path: ~/.gemini/skills/catppuccin-theming/
-  - path: ~/.grok/skills/catppuccin-theming/           # Grok user-scoped
-  - path: zk@adeck:~/.grok/skills/catppuccin-theming/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/catppuccin-theming/  # Mesh (quita)
-  - path: /mnt/repository/context-vault/.grok/skills/catppuccin-theming/  # Project-scoped in this vault
 
 # Source mapping to skill structure
 sources:

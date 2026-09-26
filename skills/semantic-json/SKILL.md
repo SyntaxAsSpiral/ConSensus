@@ -310,10 +310,7 @@ const importJSONToCanvas = (jsonData, options = {}) => {
 
 ### Artifacts System Integration
 
-Canvas workflows integrate with the [artifacts system](../../artifacts/README.md) through:
-- **Visual modeling infrastructure**: Canvas-to-semantic-JSON anticompiler workflows
-- **Template repositories**: Reusable canvas patterns for common design scenarios
-- **Reference implementations**: Example canvases demonstrating best practices
+Example canvases and JSON files live in [artifacts](../../artifacts/). Use them as references for visual modeling and export formats.
 
 ### Workshop Recipe Integration
 

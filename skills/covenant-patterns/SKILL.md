@@ -29,7 +29,7 @@ This skill maps covenant principles to practical implementation across:
 
 | System | Application |
 |--------|-------------|
-| **Agents** | Steering files may live in `.kiro/`, `.claude/`—always include |
+| **Agents** | Steering files may live in dotfolders or project roots—include both |
 | **Workshop** | Recipes scan for slice markers in dotfiles |
 | **Artifacts** | Canvas exports may create `.obsidian/` metadata |
 

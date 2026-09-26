@@ -14,7 +14,7 @@ output_name: GEMINI.md
 
 target_locations:
   - path: ~/.gemini/GEMINI.md
-  - path: zk@zrrh:~/.gemini/GEMINI.md
+  - path: zk@100.77.90.79:~/.gemini/GEMINI.md
 
 sources:
   - slice: agent=gemini-cli

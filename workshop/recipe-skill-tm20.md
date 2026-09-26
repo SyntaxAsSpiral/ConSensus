@@ -13,20 +13,10 @@ output_format: skill
 
 target_locations:
   - path: ~/.claude/skills/tm20/
-  - path: ~/.codex/skills/tm20/
-  - path: zk@quita:~/.codex/skills/tm20/
-  - path: ~/.pi/agent/skills/tm20/
-  - path: zk@adeck:~/.claude/skills/tm20/
-  - path: zk@adeck:~/.codex/skills/tm20/
-  - path: zk@adeck:~/.hermes/skills/user/tm20/
-  - path: ~/.gemini/skills/tm20/
-  - path: ~/.grok/skills/tm20/
-  - path: zk@adeck:~/.grok/skills/tm20/
-  - path: zk@zrrh:~/.grok/skills/tm20/
-  - path: zk@quita:~/.grok/skills/tm20/
-  - path: zk@zrrh:~/.claude/skills/tm20/
-  - path: zk@zrrh:~/.codex/skills/tm20/
-  - path: /mnt/repository/context-vault/.grok/skills/tm20/
+  - path: ~/.agents/skills/tm20/
+  - path: zk@100.82.51.63:~/.agents/skills/tm20/
+  - path: zk@100.77.90.79:~/.agents/skills/tm20/
+  - path: zk@100.77.90.79:~/.claude/skills/tm20/
 
 sources:
   skill_md:

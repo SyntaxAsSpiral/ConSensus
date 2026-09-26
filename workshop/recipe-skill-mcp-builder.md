@@ -30,18 +30,9 @@ output_format: skill
 
 target_locations:
   - path: ~/.claude/skills/mcp-builder/
-  - path: ~/.codex/skills/mcp-builder/
-  - path: zk@quita:~/.codex/skills/mcp-builder/
-  - path: ~/.pi/agent/skills/mcp-builder/
-  - path: zk@adeck:~/.claude/skills/mcp-builder/
-  - path: zk@adeck:~/.codex/skills/mcp-builder/
-  - path: zk@adeck:~/.hermes/skills/user/mcp-builder/
+  - path: ~/.agents/skills/mcp-builder/
+  - path: zk@100.82.51.63:~/.agents/skills/mcp-builder/
   - path: ~/.gemini/antigravity/skills/mcp-builder/
-  - path: ~/.gemini/skills/mcp-builder/
-  - path: ~/.grok/skills/mcp-builder/           # Grok user-scoped
-  - path: zk@adeck:~/.grok/skills/mcp-builder/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/mcp-builder/  # Mesh (quita)
-  - path: /mnt/repository/context-vault/.grok/skills/mcp-builder/  # Project-scoped in this vault
 
 # Source mapping to skill structure
 sources:

@@ -12,7 +12,7 @@ How local inference actually runs on the mesh (revamped 2026-09-18).
 
 ## The one URL
 
-`http://adeck:1234/v1` — OpenAI-compatible, always-on, wake-gated.
+`http://100.89.32.9:1234/v1` — OpenAI-compatible, always-on, wake-gated. On adeck, `http://127.0.0.1:1234/v1` also works.
 
 adeck is the always-on host. Its `inference-wake` service (aiohttp proxy,
 `inference-wake.py` in the nix-os flake) listens on `0.0.0.0:1234`, forwards
@@ -23,11 +23,11 @@ the family-cookbook OCR sidecar, esocortex.
 
 ```bash
 # plain chat (reasoning off = fast, cheap)
-curl -s http://adeck:1234/v1/chat/completions -H 'Content-Type: application/json' \
+curl -s http://100.89.32.9:1234/v1/chat/completions -H 'Content-Type: application/json' \
   -d '{"model":"qwen/qwen3.8-27b","messages":[{"role":"user","content":"Reply with exactly: PONG"}],"max_tokens":16,"reasoning_effort":"none"}'
 
 # structured output — strict JSON schema
-curl -s http://adeck:1234/v1/chat/completions -H 'Content-Type: application/json' \
+curl -s http://100.89.32.9:1234/v1/chat/completions -H 'Content-Type: application/json' \
   -d '{"model":"google/gemma-4-31b","messages":[{"role":"user","content":"Is 2+2 a number?"}],
        "response_format":{"type":"json_schema","json_schema":{"name":"probe","strict":true,
          "schema":{"type":"object","properties":{"n":{"type":"integer"}},"required":["n"],"additionalProperties":false}}}}'
@@ -38,11 +38,12 @@ curl -s http://adeck:1234/v1/chat/completions -H 'Content-Type: application/json
 LM Studio **LM Link** peers: `adeck` (headless llmster) · `zrrh` (RTX 4090,
 the GPU workhorse) · `nxiz` (RTX 3070). Each host's `lms` CLI sees the union
 inventory (39 models, ~410 GB) and loads a model on whichever peer owns it.
+On adeck, run `lms` directly; from another host, use adeck's Tailscale IP:
 
 ```bash
-ssh zk@adeck lms link status   # peers + connected status
-ssh zk@adeck lms ps            # loaded instances: ctx, parallel, device, TTL
-ssh zk@adeck lms ls            # union fleet with per-model device
+ssh zk@100.89.32.9 lms link status   # peers + connected status
+ssh zk@100.89.32.9 lms ps            # loaded instances: ctx, parallel, device, TTL
+ssh zk@100.89.32.9 lms ls            # union fleet with per-model device
 ```
 
 ## Active pi fleet

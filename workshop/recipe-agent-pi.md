@@ -14,8 +14,7 @@ output_name: AGENTS.md
 
 target_locations:
   - path: ~/.pi/agent/AGENTS.md
-  - path: zk@zrrh:~/.pi/agent/AGENTS.md
-  - path: zk@adeck:~/.pi/agent/AGENTS.md
+  - path: zk@100.77.90.79:~/.pi/agent/AGENTS.md
 sources:
   - slice: agent=pi
     slice-file: agents/agent-roles.md

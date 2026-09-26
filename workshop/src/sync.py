@@ -10,7 +10,6 @@ Key behavior:
 - Handles structured outputs:
   - agent: single markdown file per section (output/agent/*.md)
   - skill: directory per skill name (output/skill/<name>/...)
-  - power: directory per power name (output/power/<name>/...)
 - Avoids filename collisions by syncing from *namespaced output paths* instead of
   assuming output filenames match target basenames (e.g., many targets can be
   named `AGENTS.md`).
@@ -26,9 +25,8 @@ import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime
 import sys
-import json
 import os
 from typing import Any, Dict, List, Optional
 
@@ -141,10 +139,6 @@ def _norm_path_str(p: str) -> str:
     return p.replace("\\", "/").lower()
 
 
-def _is_kiro_target(p: str) -> bool:
-    return "/.kiro/" in _norm_path_str(p)
-
-
 def _is_claude_target(p: str) -> bool:
     np = _norm_path_str(p)
     return "/.claude/" in np or np.endswith("/.claude")
@@ -157,168 +151,6 @@ def _is_dir_target_string(p: str) -> bool:
 def _default_agent_filename_for_target(target_path: str) -> str:
     # Claude consumes CLAUDE.md; everyone else consumes AGENTS.md.
     return "CLAUDE.md" if _is_claude_target(target_path) else "AGENTS.md"
-
-
-def _rewrite_kiro_skills_to_powers_installed(p: str) -> str:
-    # Back-compat: if a recipe used ~/.kiro/skills/<name>/, deploy as a power instead.
-    np = _norm_path_str(p)
-    if "/.kiro/skills/" not in np:
-        return p
-    # Replace using the original string's separators.
-    return re.sub(r"([/\\\\]\\.kiro[/\\\\])skills([/\\\\])", r"\1powers\\installed\2", p, flags=re.IGNORECASE)
-
-
-def _is_kiro_hook_target(p: str) -> bool:
-    np = _norm_path_str(p)
-    return np.endswith(".kiro.hook") or "/.kiro/hooks/" in np or np.endswith("/.kiro/hooks")
-
-
-def _kiro_power_name_from_install_path(target_dir: Path) -> Optional[str]:
-    np = _norm_path_str(str(target_dir))
-    marker = "/.kiro/powers/installed/"
-    if marker not in np:
-        return None
-    # Take final path segment as power name.
-    return target_dir.name or None
-
-
-def _read_power_frontmatter(install_path: Path) -> Dict[str, Any]:
-    power_md = install_path / "POWER.md"
-    if not power_md.exists():
-        return {}
-    try:
-        post = frontmatter.load(power_md)
-    except Exception:
-        return {}
-    if isinstance(post.metadata, dict):
-        return post.metadata
-    return {}
-
-
-def _sync_kiro_registry(active_powers: Dict[str, Dict[str, Any]], dry_run: bool) -> None:
-    """
-    Sync active powers to Kiro registry using 'Prune & Patch' strategy.
-
-    1. Patch: Update/Add all active_powers with installed=True, source.type='local', and metadata.
-    2. Prune: Set installed=False for any other powers with source.type='local'
-    """
-    registry_path = Path.home() / ".kiro" / "powers" / "registry.json"
-    if not registry_path.exists():
-        print(f"☠☠☠ >>> KIRO·REGISTRY·ABSENT ☠☠☠")
-        print(f"Registry not found: {registry_path}")
-        print(f"|001101|—|000000|—|111000|— registry update skipped")
-        return
-
-    try:
-        data = json.loads(registry_path.read_text(encoding="utf-8"))
-    except Exception as e:
-        print(f"☠☠☠ >>> KIRO·REGISTRY·CORRUPTION ☠☠☠")
-        print(f"Failed to parse registry: {registry_path}")
-        print(f"Error-hymn: {e}")
-        print(f"|001101|—|000000|—|111000|— registry update severed")
-        return
-
-    if "version" not in data and "schemaVersion" in data:
-        data["version"] = data.get("schemaVersion")
-        del data["schemaVersion"]
-    data["version"] = "1.0.0"
-
-    powers_raw = data.get("powers")
-    powers: Dict[str, Dict[str, Any]] = {}
-
-    if isinstance(powers_raw, dict):
-        for name, entry in powers_raw.items():
-            if isinstance(entry, dict):
-                entry.setdefault("name", name)
-                powers[name] = entry
-    elif isinstance(powers_raw, list):
-        for entry in powers_raw:
-            if not isinstance(entry, dict):
-                continue
-            name = entry.get("name")
-            if isinstance(name, str) and name:
-                powers[name] = entry
-
-    data["powers"] = powers
-
-    modified = False
-
-    # 1. Patch: ensure active powers are installed and metadata is synced
-    for power_name, info in active_powers.items():
-        install_path = info["path"]
-        metadata = info.get("metadata", {})
-        existing = powers.get(power_name)
-        desired_path = str(install_path)
-
-        if dry_run:
-            print(f"☠☠☠ >>> DRY·RUN·PROTOCOL·ACTIVE ☠☠☠")
-            print(f"Would update power '{power_name}': installed=True, path={desired_path}")
-        else:
-            if not isinstance(existing, dict):
-                existing = {"name": power_name}
-                powers[power_name] = existing
-
-            entry = existing
-            entry["name"] = power_name
-
-            fm = _read_power_frontmatter(install_path)
-            description = metadata.get("description") or entry.get("description") or fm.get("description")
-            if not description:
-                print(f"☠☠☠ >>> POWER·METADATA·MISSING ☠☠☠")
-                print(f"Missing required description for power: {power_name}")
-                print(f"|001101|—|000000|—|111000|— registry update skipped for this power")
-                continue
-
-            entry["description"] = description
-            entry["installed"] = True
-            entry["installPath"] = desired_path
-
-            if "source" in entry and isinstance(entry["source"], dict) and entry["source"].get("type") == "local":
-                del entry["source"]
-
-            if metadata.get("displayName") or fm.get("displayName"):
-                entry["displayName"] = metadata.get("displayName") or fm.get("displayName")
-            if metadata.get("author") or fm.get("author"):
-                entry["author"] = metadata.get("author") or fm.get("author")
-            if metadata.get("license") or fm.get("license"):
-                entry["license"] = metadata.get("license") or fm.get("license")
-            if metadata.get("keywords") or fm.get("keywords"):
-                entry["keywords"] = metadata.get("keywords") or fm.get("keywords")
-            if metadata.get("iconUrl"):
-                entry["iconUrl"] = metadata["iconUrl"]
-            if metadata.get("repositoryUrl") or fm.get("repository"):
-                entry["repositoryUrl"] = metadata.get("repositoryUrl") or fm.get("repository")
-
-            ts = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-            entry.setdefault("installedAt", ts)
-            modified = True
-
-    # 2. Prune: disable stale local powers
-    installed_root = str(Path.home() / ".kiro" / "powers" / "installed").lower()
-    for name, entry in powers.items():
-        if name in active_powers:
-            continue
-        install_path = str(entry.get("installPath") or "").lower()
-        if entry.get("installed") is True and install_path.startswith(installed_root):
-            if dry_run:
-                print(f"☠☠☠ >>> DRY·RUN·PROTOCOL·ACTIVE ☠☠☠")
-                print(f"Would prune power '{name}': installed=False")
-            else:
-                entry["installed"] = False
-                modified = True
-                print(f"☠☠☠ >>> POWER·PRUNED ☠☠☠")
-                print(f"Power pruned from registry: {name}")
-
-    if modified and not dry_run:
-        try:
-            registry_path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-            print(f"☠☠☠ >>> KIRO·REGISTRY·UPDATED ☠☠☠")
-            print(f"Registry synchronized with {len(active_powers)} active powers")
-            print(f"|001101|—|001101|—|111000|— registry coherent")
-        except Exception as e:
-            print(f"☠☠☠ >>> KIRO·REGISTRY·WRITE·FAILURE ☠☠☠")
-            print(f"Failed to write registry: {registry_path}")
-            print(f"Error-hymn: {e}")
 
 
 def _targets_from_config(cfg: Dict[str, Any]) -> List[str]:
@@ -456,56 +288,21 @@ def build_sync_items_from_sections(sections: List[RecipeSection]) -> List[SyncIt
 
         if fmt == "skill":
             rel = (Path("skill") / name).as_posix()
-            # Kiro does not consume Agent Skills directly; keep skill targets for other platforms.
-            skill_targets = [t for t in targets if not _is_kiro_target(t)]
-            items.append(SyncItem(deployment_id=rel, source_relpath=rel, source_is_dir=True, targets=skill_targets))
-            if cfg.get("also_output_as_power"):
-                rel2 = (Path("power") / name).as_posix()
-                # Power targets are Kiro-specific; also support back-compat recipe paths.
-                power_targets: List[str] = []
-                for t in targets:
-                    if _is_claude_target(t):
-                        continue
-                    if _is_kiro_target(t):
-                        power_targets.append(_rewrite_kiro_skills_to_powers_installed(t))
-                items.append(SyncItem(deployment_id=rel2, source_relpath=rel2, source_is_dir=True, targets=power_targets))
-            continue
-
-        if fmt == "power":
-            rel = (Path("power") / name).as_posix()
             items.append(SyncItem(deployment_id=rel, source_relpath=rel, source_is_dir=True, targets=targets))
             continue
 
         if fmt in ("command", "prompt", "hook"):
-            hook_targets = [t for t in targets if _is_kiro_hook_target(t)]
-            md_targets = [t for t in targets if t not in hook_targets]
-
-            if md_targets:
-                md_file = f"{name}.md"
-                rel = (Path("command") / name / md_file).as_posix()
-                dep = (Path("command") / name / Path(md_file).with_suffix("")).as_posix()
-                items.append(
-                    SyncItem(
-                        deployment_id=dep,
-                        source_relpath=rel,
-                        source_is_dir=False,
-                        targets=[_expand_target_path(t) for t in md_targets],
-                    )
+            md_file = f"{name}.md"
+            rel = (Path("command") / name / md_file).as_posix()
+            dep = (Path("command") / name / Path(md_file).with_suffix("")).as_posix()
+            items.append(
+                SyncItem(
+                    deployment_id=dep,
+                    source_relpath=rel,
+                    source_is_dir=False,
+                    targets=[_expand_target_path(t) for t in targets],
                 )
-
-            if hook_targets:
-                hook_file = f"{name}.kiro.hook"
-                rel = (Path("command") / name / hook_file).as_posix()
-                dep = (Path("command") / name / Path(hook_file).with_suffix("")).as_posix()
-                items.append(
-                    SyncItem(
-                        deployment_id=dep,
-                        source_relpath=rel,
-                        source_is_dir=False,
-                        targets=[_expand_target_path(t) for t in hook_targets],
-                    )
-                )
-
+            )
             continue
 
         print(f"☠☠☠ >>> OUTPUT·FORMAT·UNKNOWN ☠☠☠")
@@ -537,7 +334,7 @@ def sync_file_to_targets(output_file: Path, target_paths: List[str], dry_run: bo
                         
                         # Create remote directory
                         subprocess.run(
-                            ["ssh", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_dir}"],
+                            ["ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_dir}"],
                             check=True,
                             capture_output=True,
                             timeout=30,
@@ -545,7 +342,7 @@ def sync_file_to_targets(output_file: Path, target_paths: List[str], dry_run: bo
                         
                         # Rsync file using native rsync/ssh
                         subprocess.run(
-                            ["rsync", "-avz", "-e", "ssh -o StrictHostKeyChecking=no", str(output_file), target_path],
+                            ["rsync", "-avz", "-e", "ssh -F /dev/null -o StrictHostKeyChecking=no", str(output_file), target_path],
                             check=True,
                             capture_output=True,
                             timeout=60,
@@ -605,7 +402,7 @@ def _sync_dir(source_dir: Path, target_dir: Path, dry_run: bool = False) -> None
             
             # Create remote directory
             subprocess.run(
-                ["ssh", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_path}"],
+                ["ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_path}"],
                 check=True,
                 capture_output=True,
                 timeout=30,
@@ -613,7 +410,7 @@ def _sync_dir(source_dir: Path, target_dir: Path, dry_run: bool = False) -> None
             
             # Rsync with delete to mirror using native rsync/ssh
             subprocess.run(
-                ["rsync", "-avz", "--delete", "-e", "ssh -o StrictHostKeyChecking=no", f"{source_dir}/", f"{target_str}/"],
+                ["rsync", "-avz", "--delete", "-e", "ssh -F /dev/null -o StrictHostKeyChecking=no", f"{source_dir}/", f"{target_str}/"],
                 check=True,
                 capture_output=True,
                 timeout=120,
@@ -753,9 +550,8 @@ def update_manifest_sync_status(manifest_path: Path, sync_results: Dict[str, Lis
 
 
 def _chronohex() -> str:
-    """Generate chronohex timestamp ID (hex of current time in microseconds, truncated to 6 chars)."""
-    timestamp_us = int(time.time() * 1_000_000)
-    return hex(timestamp_us)[2:].upper()[:6]
+    """Generate the Pulse Log chronohex from the last six hex digits of Unix nanoseconds."""
+    return hex(time.time_ns())[-6:]
 
 
 def auto_commit_and_push(repo_root: Path) -> bool:
@@ -853,7 +649,7 @@ def main():
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
 
-    base_path = Path("/mnt/repository/context-vault")
+    base_path = Path("/mnt/echo/consensus")
     workshop_dir = base_path / "workshop"
     staging_dir = workshop_dir / "staging"
     manifest_path = workshop_dir / "manifest-recipes.md"
@@ -876,7 +672,7 @@ def main():
     current_deployments: Dict[str, List[str]] = {}
     current_items: Dict[str, SyncItem] = {}
     sync_results: Dict[str, List[str]] = {}
-    active_kiro_powers: Dict[str, Dict[str, Any]] = {}
+    failures: List[str] = []
 
     for recipe_path in recipe_files:
         sections = parse_recipe_sections(recipe_path)
@@ -887,19 +683,6 @@ def main():
         for item in items:
             current_items[item.deployment_id] = item
             current_deployments[item.deployment_id] = item.targets
-            if item.source_is_dir:
-                for t in item.targets:
-                    if _is_ssh_target(t):
-                        continue
-                    if _is_kiro_target(t) and not _is_claude_target(t):
-                        target_path_str = _expand_target_path(t)
-                        if "/.kiro/powers/installed/" in _norm_path_str(target_path_str):
-                            p_name = _kiro_power_name_from_install_path(Path(target_path_str))
-                            if p_name:
-                                active_kiro_powers[p_name] = {
-                                    "path": Path(target_path_str),
-                                    "metadata": recipe_metadata,
-                                }
 
     cleaned_count = cleanup_orphaned_deployments(previous_deployments, current_deployments, args.dry_run)
 
@@ -910,6 +693,7 @@ def main():
             print(f"Expected output missing for deployment: {deployment_id}")
             print(f"Source path leads to void: {source}")
             print(f"|001101|—|000000|—|111000|— transmission severed")
+            failures.append(deployment_id)
             continue
 
         if args.verbose:
@@ -925,12 +709,15 @@ def main():
         else:
             synced = sync_file_to_targets(source, item.targets, args.dry_run)
             sync_results[deployment_id] = synced
+            if len(synced) != len(item.targets):
+                failures.append(deployment_id)
+
+    if failures:
+        print(f"Sync failed for {len(failures)} deployments: {', '.join(failures)}")
+        return 1
 
     if not args.dry_run:
         update_manifest_sync_status(manifest_path, sync_results, cleaned_count)
-
-    if active_kiro_powers or args.dry_run:
-        _sync_kiro_registry(active_kiro_powers, args.dry_run)
 
     print(f"☠☠☠ >>> SYNC·PROTOCOL·COMPLETE ☠☠☠")
     print(f"Sacred deployments processed: {len(sync_results)} specimens")
@@ -940,7 +727,8 @@ def main():
     # Auto-commit and push if sync succeeded and not dry-run
     if not args.dry_run:
         print()
-        auto_commit_and_push(base_path)
+        if not auto_commit_and_push(base_path):
+            return 1
 
     return 0
 

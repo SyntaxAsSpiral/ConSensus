@@ -12,18 +12,9 @@ name: nix-os
 output_format: skill
 target_locations:
   - path: ~/.claude/skills/nix-os/
-  - path: ~/.codex/skills/nix-os/
-  - path: zk@quita:~/.codex/skills/nix-os/
-  - path: zk@adeck:~/.claude/skills/nix-os/
-  - path: zk@adeck:~/.codex/skills/nix-os/
-  - path: zk@adeck:~/.hermes/skills/user/nix-os/
+  - path: ~/.agents/skills/nix-os/
+  - path: zk@100.82.51.63:~/.agents/skills/nix-os/
   - path: ~/.gemini/antigravity/skills/nix-os/
-  - path: ~/.gemini/skills/nix-os/
-  - path: ~/.pi/agent/skills/nix-os/
-  - path: ~/.grok/skills/nix-os/           # Grok user-scoped
-  - path: zk@adeck:~/.grok/skills/nix-os/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/nix-os/  # Mesh (quita)
-  - path: /mnt/repository/context-vault/.grok/skills/nix-os/  # Project-scoped in this vault
 
 sources:
   skill_md:

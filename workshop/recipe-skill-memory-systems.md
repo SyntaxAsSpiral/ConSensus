@@ -21,18 +21,9 @@ output_format: skill
 
 target_locations:
   - path: ~/.claude/skills/memory-systems/
-  - path: ~/.codex/skills/memory-systems/
-  - path: zk@quita:~/.codex/skills/memory-systems/
-  - path: ~/.pi/agent/skills/memory-systems/
-  - path: zk@adeck:~/.claude/skills/memory-systems/
-  - path: zk@adeck:~/.codex/skills/memory-systems/
-  - path: zk@adeck:~/.hermes/skills/user/memory-systems/
+  - path: ~/.agents/skills/memory-systems/
+  - path: zk@100.82.51.63:~/.agents/skills/memory-systems/
   - path: ~/.gemini/antigravity/skills/memory-systems/
-  - path: ~/.gemini/skills/memory-systems/
-  - path: ~/.grok/skills/memory-systems/           # Grok user-scoped
-  - path: zk@adeck:~/.grok/skills/memory-systems/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/memory-systems/  # Mesh (quita)
-  - path: /mnt/repository/context-vault/.grok/skills/memory-systems/  # Project-scoped in this vault
 
 # Source mapping to skill structure
 sources:

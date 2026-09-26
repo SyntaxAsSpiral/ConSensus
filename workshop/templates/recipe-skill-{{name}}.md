@@ -25,11 +25,8 @@ output_format: skill  # Creates Agent Skills standard structure
 
 target_locations:
   - path: ~/.claude/skills/{{name}}/
-  - path: ~/.codex/skills/{{name}}/   # Optional: if Codex supports skills folder
-  - path: ~/.grok/skills/{{name}}/     # Grok user-scoped
-  - path: /mnt/repository/context-vault/.grok/skills/{{name}}/  # Project-scoped in this vault
-  - path: zk@adeck:~/.grok/skills/{{name}}/  # Mesh (adeck)
-  - path: zk@quita:~/.grok/skills/{{name}}/  # Mesh (quita)
+  - path: ~/.agents/skills/{{name}}/
+  - path: zk@100.82.51.63:~/.agents/skills/{{name}}/  # quita
 
 # Source mapping to skill structure
 sources:
@@ -67,7 +64,6 @@ sources:
     - file: # Path to static resource
       output_name: data.json
 
-# Kiro powers are handled via `output_format: power` recipes (separate template).
 
 # Validation
 validate_agentskills_spec: true  # Ensure compliance with agentskills.io standard

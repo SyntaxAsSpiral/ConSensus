@@ -80,10 +80,9 @@ template: |
 
 | Type | Purpose | Example |
 |------|---------|---------|
-| **Agent** | System prompts | `recipe-agent-kiro.md` |
+| **Agent** | System prompts | `recipe-agent-{{platform}}.md` |
 | **Steering** | Context guidance | `recipe-steering-workspace.md` |
 | **Skill** | Skill documentation | `recipe-skill-bundle.md` |
-| **Power** | Kiro power packages | `recipe-power-covenant.md` |
 
 ## Slice Architecture
 
@@ -101,18 +100,18 @@ Content to extract
 
 **Simple Slice**:
 ```markdown
-<!-- slice:agent=kiro -->
-Kiro-specific agent configuration
+<!-- slice:agent=example -->
+Platform-specific agent configuration
 <!-- /slice -->
 ```
 
 **Namespaced Slice**:
 ```markdown
-<!-- slice:agent=kiro:section=identity -->
+<!-- slice:agent=example:section=identity -->
 Identity section only
 <!-- /slice -->
 
-<!-- slice:agent=kiro:section=constraints -->
+<!-- slice:agent=example:section=constraints -->
 Constraints section only
 <!-- /slice -->
 ```
@@ -132,7 +131,7 @@ def resolve_slice(slice_spec, source_file):
 
     content = read_file(source_file)
 
-    # Parse slice spec: "agent=kiro" or "agent=kiro:section=identity"
+    # Parse slice spec: "agent=example" or "agent=example:section=identity"
     parts = parse_slice_spec(slice_spec)
 
     # Build marker pattern
@@ -277,12 +276,6 @@ def cleanup_orphans(manifest, current_outputs):
 
 ## Deployment History
 
-### recipe-agent-kiro
-- Output: workshop/output/recipe-agent-kiro.md
-- Targets:
-  - ~/.kiro/steering/agent.md (deployed)
-- Status: success
-
 ### recipe-skill-bundle
 - Output: workshop/output/recipe-skill-bundle.md
 - Targets:
@@ -354,56 +347,34 @@ def verify_determinism(recipe, run1_output, run2_output):
 ### Agent Steering Recipe
 
 ```yaml
-name: recipe-agent-kiro
+name: Claudi
+output_format: agent
 target_locations:
-  - path: ~/.kiro/steering/agent.md
+  - path: ~/.claude/CLAUDE.md
 sources:
-  - slice: agent=kiro
-    file: agents/agent-roles.md
+  - slice: agent=claudi-claude-code
+    slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-principles.md
-template: |
-  # Kiro Agent Configuration
-
-  ## Identity
-  {content}
-
-  ## Covenant Integration
-  See covenant-patterns skill for principle enforcement.
 ```
 
-### Skill Bundle Recipe
+### Prompt Pseudo-skill Recipe
 
 ```yaml
-name: recipe-skill-bundle
+name: cave
+output_format: skill
 target_locations:
-  - path: ~/.claude/skills/context-bundle.md
+  - path: ~/.codex/skills/cave/
 sources:
-  - slice: skill=covenant-patterns
-    file: skills/covenant-patterns/SKILL.md
-  - slice: skill=agent-steering
-    file: skills/agent-steering/SKILL.md
-template: |
-  # Context Skills Bundle
-
-  Assembled from vault skills for Claude Code deployment.
-
-  {content}
+  skill_md:
+    frontmatter:
+      name: cave
+      description: Use a terse, expressive voice when the user asks for CaveTalk.
+    body:
+      - file: prompts/cave.md
 ```
 
-### Power Package Recipe
-
-```yaml
-name: recipe-power-epistemic
-target_locations:
-  - path: ~/.kiro/powers/epistemic-rendering/POWER.md
-  - path: ~/.kiro/powers/epistemic-rendering/power.json
-sources:
-  - slice: power=epistemic-rendering
-    file: skills/epistemic-rendering/POWER.md
-template: |
-  {content}
-```
+The source stays in `prompts/`; assembly removes its prompt frontmatter and writes skill frontmatter into the generated `SKILL.md`.
 
 ## VSCode Integration
 

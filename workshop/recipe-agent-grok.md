@@ -13,13 +13,7 @@ output_name: AGENTS.md
 
 target_locations:
   - path: ~/.grok/AGENTS.md
-  - path: zk@adeck:~/.grok/AGENTS.md   # Mesh (adeck)
-  - path: zk@quita:~/.grok/AGENTS.md   # Mesh (quita)
-  # Optional named agent profile (for explicit --agent-profile use of the full exocortex context):
-  # - path: ~/.grok/agents/grok-vault.md
-  # - path: zk@adeck:~/.grok/agents/grok-vault.md
-  # Project-local (inside this vault):
-  # - path: /mnt/repository/context-vault/.grok/AGENTS.md
+  - path: zk@100.82.51.63:~/.grok/AGENTS.md   # Mesh (quita)
 
 sources:
   - slice: agent=grok

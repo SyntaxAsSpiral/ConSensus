@@ -14,10 +14,10 @@ output_name: CLAUDE.md
 
 target_locations:
   - path: ~/.claude/CLAUDE.md
-  - path: zk@zrrh:~/.claude/CLAUDE.md
+  - path: zk@100.77.90.79:~/.claude/CLAUDE.md
 
 sources:
-  - slice: agent=claudi-claude-code 
+  - slice: agent=claudi-claude-code
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md

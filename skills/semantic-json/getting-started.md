@@ -289,7 +289,7 @@ created: {{date}}
 ## Next Steps
 
 - **Advanced Workflows**: Learn complex canvas patterns and multi-phase processes
-- **Integration Patterns**: Connect with Kiro specs, exocortex agents, and workshop recipes
+- **Integration Patterns**: Connect with structured specifications, exocortex agents, and workshop recipes
 - **Quality Assurance**: Validate canvas structure and semantic consistency
 - **Performance Optimization**: Handle large canvases and batch processing
 

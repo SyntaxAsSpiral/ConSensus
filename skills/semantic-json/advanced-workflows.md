@@ -6,7 +6,7 @@ Master sophisticated canvas-to-structured-data patterns for complex visual cogni
 
 ### Multi-Phase Development Canvases
 
-Create comprehensive development specifications using the Kiro 3-phase pattern:
+Create development specifications with design, requirements, and task phases:
 
 ```json
 {
