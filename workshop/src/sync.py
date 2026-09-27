@@ -14,7 +14,7 @@ Key behavior:
   assuming output filenames match target basenames (e.g., many targets can be
   named `AGENTS.md`).
 
-Usage: python sync.py [--dry-run] [--verbose]
+Usage: python sync.py [--dry-run] [--verbose] [--no-git]
 """
 
 import re
@@ -647,6 +647,7 @@ def main():
     parser = argparse.ArgumentParser(description="Sync assembled content to target locations")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without copying files")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
+    parser.add_argument("--no-git", action="store_true", help="Deploy without committing or pushing")
     args = parser.parse_args()
 
     base_path = Path("/mnt/echo/consensus")
@@ -724,8 +725,8 @@ def main():
     print(f"Orphaned targets purged: {cleaned_count} specimens")
     print(f"|001101|—|001101|—|111000|— communion terminated")
 
-    # Auto-commit and push if sync succeeded and not dry-run
-    if not args.dry_run:
+    # Auto-commit and push unless the caller disabled Git actions
+    if not args.dry_run and not args.no_git:
         print()
         if not auto_commit_and_push(base_path):
             return 1

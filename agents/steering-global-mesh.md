@@ -37,7 +37,7 @@ lens: infrastructure
 
 ## Host check
 
-Always check `hostname -s` and state: “You are on `<host>`.” at the start of work. If unsure, compare the target with the detected local host before using SSH. From adeck, connect to other hosts by Tailscale IP.
+Always check `hostname -s` at the start of a session. From adeck, connect to other hosts by Tailscale IP.
 
 ## Key Mounts
 
@@ -56,13 +56,9 @@ Always check `hostname -s` and state: “You are on `<host>`.” at the start of
 
 ## Mesh control plane
 
-- `/mnt/echo/nix-os` is the canonical NixOS flake on adeck. Adeck, nxiz, and zrrh use `/etc/nixos` checkouts; tm20 receives secrets only.
-- `/mnt/echo/consensus` is **ConSensus**, the canonical context vault. Its `workshop/` assembles agent instructions and skills; `workshop/src/sync.py` currently deploys them separately from zcli and also commits and pushes.
-- `zcli` comes from `nix-os`. Today `zcli sync` distributes the canonical committed-and-staged flake snapshot, local Git history, and secrets; `build`, `deploy`, and `image` use zrrh for evaluation and builds. Direct `nh os` remains local to the invoking host.
-
-## Project and service trees on adeck
-
-`/mnt/echo` also contains `family-cookbook` (Babette's Table and OCR), `holliday-estate` (estate catalog), `esocortex` (knowledge processing), `sideriod` (Gnomon), `bitburner` (game sync/MCP server), `inf-bench` (inference benchmarking, including ad hoc FLE eval runs), `stack-chan` (device and house-AI work), and `web/` (`whisperbell` and the dormant `lexemancy-site`, awaiting a revamp). Directory presence identifies a project tree, not service health; check the relevant service or worker before acting on it.
+- `/mnt/echo/nix-os` is the canonical **NixOS** flake on adeck. Adeck, nxiz, and zrrh use `/etc/nixos` checkouts; tm20 receives secrets only and is built remotely.
+- `/mnt/echo/consensus` is **ConSensus**, the canonical context vault. Its `workshop/` assembles agent instructions and skills; `zcli sync context` deploys the staged context without committing or pushing.
+- `zcli` comes from `nix-os` and manages both context and system runtime: `zcli sync context` deploys ConSensus context, while `zcli sync [host|all]` publishes the NixOS snapshot, Git history, and secrets. `zcli build`, `deploy`, and `image` evaluate/build on zrrh; direct `nh os` remains local to the invoking host.
 
 ## Services
 
@@ -70,7 +66,7 @@ Always check `hostname -s` and state: “You are on `<host>`.” at the start of
 
 **Babette's Table (`adeck`):** Heirloom recipe curation agent at `https://adeck.tail293e98.ts.net`. Authoritative tree `/mnt/echo/family-cookbook`. Kitchen / family client is `galaxy-tab-a7`. Print host is `tm20` (Pi).
 
-**tm20 thermal mesh print receiver (`tm20` Pi 3B+, `tm20:8766`):** Official mesh print host. NixOS aarch64 appliance configured in adeck's canonical `/mnt/echo/nix-os` flake (`nixosConfigurations.tm20`, no Home-Manager). First boot is `zcli image tm20` — sdImage built on zrrh (`boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`). Live on tailnet at 100.123.184.5 (NixOS 26.11). Epson TM-T20III USB (`04b8:0e28`, 24V brick, USB-B); USB execution is **tm20 only**. udev (plugdev, unbind `usblp`) is configured in `hosts/tm20/configuration.nix`. No CUPS. CLIs open USB only (library TCP :9100 is unused). Paper: generic 80 mm / 3-1/8" thermal. Linux faces: Liberation Sans/Mono. The shared print receiver gates USB access for Holliday Table, holliday-estate, and sideriod. It accepts `POST http://tm20:8766/print` with a unique `job_id` plus a 576px PNG (`image`) or markdown (`markdown`); duplicate ids are not reprinted, and it uses one USB lock. Token `PRINT_TOKEN` (alias `HOLIDAY_PRINT_TOKEN`). Prefer the receiver from other hosts and long-running services. Use `tm20` / `tm20-set` while sitting at the print host for design, preview, hello, status, and recovering a jammed job. How to compose and when to use USB versus the receiver: skill **tm20**.
+**tm20 print receiver:** `tm20` is the mesh print host. Other hosts and services submit jobs to `http://tm20:8766/print`; direct USB printing is only on `tm20`. See the **tm20** skill for setup, endpoint details, and printing workflow.
 
 **SSH / Mullvad (`adeck`):** adeck runs Mullvad. From adeck, SSH by Tailscale IP only (adeck = `100.89.32.9`; other hosts from the table). MagicDNS / hostnames (`adeck`, `adeck.tail293e98.ts.net`, other mesh names) do not work from that box.
 

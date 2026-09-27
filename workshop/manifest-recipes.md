@@ -1,7 +1,7 @@
 ---
 created: 2026-01-11 09:52:44.314556
 id: recipe-manifest
-modified: '2026-09-26T12:43:39.069236'
+modified: '2026-09-26T19:35:20.257228'
 status: log
 type:
 - log
@@ -10,38 +10,38 @@ type:
 # Recipe Assembly Log
 
 ## Active Recipes
-- **agent/Claudi/CLAUDE**: Last run 2026-09-26T12:42:45.573003
+- **agent/Claudi/CLAUDE**: Last run 2026-09-26T19:32:53.756591
   - Output: `agent/Claudi/CLAUDE.md`
   - Target: `~/.claude/CLAUDE.md`
   - Target: `zk@100.77.90.79:~/.claude/CLAUDE.md`
   - Status: ✓ synced
 
-- **agent/Codex/AGENTS**: Last run 2026-09-26T12:42:45.573003
+- **agent/Codex/AGENTS**: Last run 2026-09-26T19:32:53.756591
   - Output: `agent/Codex/AGENTS.md`
   - Target: `~/.codex/AGENTS.md`
   - Target: `zk@100.77.90.79:~/.codex/AGENTS.md`
   - Target: `zk@100.82.51.63:~/.codex/AGENTS.md`
   - Status: ✓ synced
 
-- **agent/Gemini/GEMINI**: Last run 2026-09-26T12:42:45.573003
+- **agent/Gemini/GEMINI**: Last run 2026-09-26T19:32:53.756591
   - Output: `agent/Gemini/GEMINI.md`
   - Target: `~/.gemini/GEMINI.md`
   - Target: `zk@100.77.90.79:~/.gemini/GEMINI.md`
   - Status: ✓ synced
 
-- **agent/Grok/AGENTS**: Last run 2026-09-26T12:42:45.573003
+- **agent/Grok/AGENTS**: Last run 2026-09-26T19:32:53.756591
   - Output: `agent/Grok/AGENTS.md`
   - Target: `~/.grok/AGENTS.md`
   - Target: `zk@100.82.51.63:~/.grok/AGENTS.md`
   - Status: ✓ synced
 
-- **agent/Pi/AGENTS**: Last run 2026-09-26T12:42:45.573003
+- **agent/Pi/AGENTS**: Last run 2026-09-26T19:32:53.756591
   - Output: `agent/Pi/AGENTS.md`
   - Target: `~/.pi/agent/AGENTS.md`
   - Target: `zk@100.77.90.79:~/.pi/agent/AGENTS.md`
   - Status: ✓ synced
 
-- **skill/catppuccin-theming**: Last run 2026-09-26T12:42:45.573003
+- **skill/catppuccin-theming**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/catppuccin-theming/`
   - Target: `~/.claude/skills/catppuccin-theming/`
   - Target: `~/.agents/skills/catppuccin-theming/`
@@ -49,7 +49,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/catppuccin-theming/`
   - Status: ✓ synced
 
-- **skill/factorio-modding**: Last run 2026-09-26T12:42:45.573003
+- **skill/factorio-modding**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/factorio-modding/`
   - Target: `~/.claude/skills/factorio-modding/`
   - Target: `~/.agents/skills/factorio-modding/`
@@ -57,7 +57,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/factorio-modding/`
   - Status: ✓ synced
 
-- **skill/local-inference**: Last run 2026-09-26T12:42:45.573003
+- **skill/local-inference**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/local-inference/`
   - Target: `~/.claude/skills/local-inference/`
   - Target: `~/.agents/skills/local-inference/`
@@ -65,7 +65,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/local-inference/`
   - Status: ✓ synced
 
-- **skill/mcp-builder**: Last run 2026-09-26T12:42:45.573003
+- **skill/mcp-builder**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/mcp-builder/`
   - Target: `~/.claude/skills/mcp-builder/`
   - Target: `~/.agents/skills/mcp-builder/`
@@ -73,7 +73,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/mcp-builder/`
   - Status: ✓ synced
 
-- **skill/memory-systems**: Last run 2026-09-26T12:42:45.573003
+- **skill/memory-systems**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/memory-systems/`
   - Target: `~/.claude/skills/memory-systems/`
   - Target: `~/.agents/skills/memory-systems/`
@@ -81,7 +81,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/memory-systems/`
   - Status: ✓ synced
 
-- **skill/nix-os**: Last run 2026-09-26T12:42:45.573003
+- **skill/nix-os**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/nix-os/`
   - Target: `~/.claude/skills/nix-os/`
   - Target: `~/.agents/skills/nix-os/`
@@ -89,7 +89,7 @@ type:
   - Target: `~/.gemini/antigravity/skills/nix-os/`
   - Status: ✓ synced
 
-- **skill/tm20**: Last run 2026-09-26T12:42:45.573003
+- **skill/tm20**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/tm20/`
   - Target: `~/.claude/skills/tm20/`
   - Target: `~/.agents/skills/tm20/`
@@ -98,12 +98,12 @@ type:
   - Target: `zk@100.77.90.79:~/.claude/skills/tm20/`
   - Status: ✓ synced
 
-- **project/ConSensus/AGENTS**: Last run 2026-09-26T12:42:45.573003
+- **project/ConSensus/AGENTS**: Last run 2026-09-26T19:32:53.756591
   - Output: `project/ConSensus/AGENTS.md`
   - Target: `/mnt/echo/consensus/AGENTS.md`
   - Status: ✓ synced
 
-- **skill/gamut**: Last run 2026-09-26T12:42:45.573003
+- **skill/gamut**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/gamut/`
   - Target: `~/.claude/skills/gamut/`
   - Target: `~/.agents/skills/gamut/`
@@ -111,7 +111,7 @@ type:
   - Target: `~/.hermes/skills/user/gamut/`
   - Status: ✓ synced
 
-- **skill/moeverse**: Last run 2026-09-26T12:42:45.573003
+- **skill/moeverse**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/moeverse/`
   - Target: `~/.claude/skills/moeverse/`
   - Target: `~/.agents/skills/moeverse/`
@@ -119,7 +119,7 @@ type:
   - Target: `~/.hermes/skills/user/moeverse/`
   - Status: ✓ synced
 
-- **skill/doc-consistency-check**: Last run 2026-09-26T12:42:45.573003
+- **skill/doc-consistency-check**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/doc-consistency-check/`
   - Target: `~/.claude/skills/doc-consistency-check/`
   - Target: `~/.agents/skills/doc-consistency-check/`
@@ -127,7 +127,7 @@ type:
   - Target: `~/.hermes/skills/user/doc-consistency-check/`
   - Status: ✓ synced
 
-- **skill/bedtime**: Last run 2026-09-26T12:42:45.573003
+- **skill/bedtime**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/bedtime/`
   - Target: `~/.claude/skills/bedtime/`
   - Target: `~/.agents/skills/bedtime/`
@@ -135,7 +135,7 @@ type:
   - Target: `~/.hermes/skills/user/bedtime/`
   - Status: ✓ synced
 
-- **skill/cave**: Last run 2026-09-26T12:42:45.573003
+- **skill/cave**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/cave/`
   - Target: `~/.claude/skills/cave/`
   - Target: `~/.agents/skills/cave/`
@@ -143,7 +143,7 @@ type:
   - Target: `~/.hermes/skills/user/cave/`
   - Status: ✓ synced
 
-- **skill/murder**: Last run 2026-09-26T12:42:45.573003
+- **skill/murder**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/murder/`
   - Target: `~/.claude/skills/murder/`
   - Target: `~/.agents/skills/murder/`
@@ -151,7 +151,7 @@ type:
   - Target: `~/.hermes/skills/user/murder/`
   - Status: ✓ synced
 
-- **skill/reflect**: Last run 2026-09-26T12:42:45.573003
+- **skill/reflect**: Last run 2026-09-26T19:32:53.756591
   - Output: `skill/reflect/`
   - Target: `~/.claude/skills/reflect/`
   - Target: `~/.agents/skills/reflect/`
@@ -160,6 +160,18 @@ type:
   - Status: ✓ synced
 
 ## Deployment Log
+
+
+### 2026-09-26T19:35:20.257228
+- Synced 20 deployments
+
+
+### 2026-09-26T19:33:27.102552
+- Synced 20 deployments
+
+
+### 2026-09-26T19:16:17.307712
+- Synced 20 deployments
 
 
 ### 2026-09-26T12:43:39.069236
