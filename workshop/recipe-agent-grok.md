@@ -14,6 +14,7 @@ output_name: AGENTS.md
 target_locations:
   - path: ~/.grok/AGENTS.md
   - path: zk@100.115.135.104:~/.grok/AGENTS.md
+  - path: zk@100.77.90.79:~/.grok/AGENTS.md
   - path: zk@100.82.51.63:~/.grok/AGENTS.md
 
 sources:

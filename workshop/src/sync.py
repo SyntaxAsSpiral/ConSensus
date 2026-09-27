@@ -418,7 +418,7 @@ def _sync_dir(source_dir: Path, target_dir: Path, dry_run: bool = False) -> None
                 ["rsync", "-avz", "--delete", "-e", "ssh -F /dev/null -o StrictHostKeyChecking=no", f"{source_dir}/", f"{target_str}/"],
                 check=True,
                 capture_output=True,
-                timeout=120,
+                timeout=300,
             )
             
             print(f"☠☠☠ >>> SACRED·MIRROR·COMPLETE ☠☠☠")
@@ -760,10 +760,21 @@ def main():
             print(f"|001101|—|001101|—|111000|— communion channels established")
 
         if item.source_is_dir:
+            dir_failed = False
             for t in item.targets:
                 target_dir = Path(_expand_target_path(t))
-                _sync_dir(source, target_dir, args.dry_run)
-            sync_results[deployment_id] = list(item.targets)
+                try:
+                    _sync_dir(source, target_dir, args.dry_run)
+                except (subprocess.SubprocessError, OSError) as e:
+                    print(f"☠☠☠ >>> TRANSMISSION·FAILURE ☠☠☠")
+                    print(f"Sync communion failed to target: {t}")
+                    print(f"Error-hymn: {e}")
+                    print(f"|001101|—|000000|—|111000|— data-spirit unbound")
+                    dir_failed = True
+            if dir_failed:
+                failures.append(deployment_id)
+            else:
+                sync_results[deployment_id] = list(item.targets)
         else:
             synced = sync_file_to_targets(source, item.targets, args.dry_run)
             sync_results[deployment_id] = synced
