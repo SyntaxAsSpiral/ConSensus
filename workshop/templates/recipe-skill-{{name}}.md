@@ -26,7 +26,10 @@ output_format: skill  # Creates Agent Skills standard structure
 target_locations:
   - path: ~/.claude/skills/{{name}}/
   - path: ~/.agents/skills/{{name}}/
-  - path: zk@100.82.51.63:~/.agents/skills/{{name}}/  # quita
+  - path: zk@100.115.135.104:~/.claude/skills/{{name}}/
+  - path: zk@100.115.135.104:~/.agents/skills/{{name}}/
+  - path: zk@100.82.51.63:~/.claude/skills/{{name}}/
+  - path: zk@100.82.51.63:~/.agents/skills/{{name}}/
 
 # Source mapping to skill structure
 sources:

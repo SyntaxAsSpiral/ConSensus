@@ -58,19 +58,19 @@ Always check `hostname -s` at the start of a session. From adeck, connect to oth
 
 - `/mnt/echo/nix-os` is the canonical **NixOS** flake on adeck. Adeck, nxiz, and zrrh use `/etc/nixos` checkouts; tm20 receives secrets only and is built remotely.
 - `/mnt/echo/consensus` is **ConSensus**, the canonical context vault. Its `workshop/` assembles agent instructions and skills; `zcli sync context` deploys the staged context without committing or pushing.
-- `zcli` comes from `nix-os` and manages both context and system runtime: `zcli sync context` deploys ConSensus context, while `zcli sync [host|all]` publishes the NixOS snapshot, Git history, and secrets. `zcli build`, `deploy`, and `image` evaluate/build on zrrh; direct `nh os` remains local to the invoking host.
+- `zcli` comes from `nix-os`. `zcli sync context` deploys the ConSensus workshop from adeck without committing or pushing. `zcli sync [host|all]` publishes committed and staged files, local git history, and secrets (tm20 receives secrets only). `zcli build`, `deploy`, and `image` wake zrrh and build there from `adeck:/mnt/echo/nix-os`. `zcli deploy <host>` schedules a reboot; `--switch` activates without rebooting. Apply system changes with `zcli deploy`. `zcli image tm20` builds the SD card. `zcli build tm20` does not.
 
 ## Services
 
-**Inference Gateway (`adeck:1234`):** All inference requests target `adeck:1234`. Adeck routes via `lmlink` — large models to `zrrh`, small models/embeddings local or to `nxiz`. OpenAI-compatible API (`/v1/chat/completions`, `/v1/embeddings`).
+**Inference gateway:** `http://100.89.32.9:1234/v1` (on adeck, `http://127.0.0.1:1234/v1`). OpenAI-compatible. `inference-wake` proxies to the local llmster daemon. An inference POST or WebSocket wakes zrrh and waits until that peer is connected on LM Link. The model loads on the peer that owns it. See the **local-inference** skill for call shape, context, and load rules.
 
-**Babette's Table (`adeck`):** Heirloom recipe curation agent at `https://adeck.tail293e98.ts.net`. Authoritative tree `/mnt/echo/family-cookbook`. Kitchen / family client is `galaxy-tab-a7`. Print host is `tm20` (Pi).
+**Babette's Table (`adeck`):** Heirloom recipe curation. Authoritative tree `/mnt/echo/family-cookbook`. Kitchen client is `galaxy-tab-a7`, which opens `https://adeck.tail293e98.ts.net`. That name does not resolve on adeck. Print host is `tm20`.
 
-**tm20 print receiver:** `tm20` is the mesh print host. Other hosts and services submit jobs to `http://tm20:8766/print`; direct USB printing is only on `tm20`. See the **tm20** skill for setup, endpoint details, and printing workflow.
+**tm20 print receiver:** `tm20` is the mesh print host. Other hosts and services submit jobs to `http://100.123.184.5:8766/print`. Direct USB printing is only on `tm20`. See the **tm20** skill for the job body and the local `tm20-set` path.
 
 **SSH / Mullvad (`adeck`):** adeck runs Mullvad. From adeck, SSH by Tailscale IP only (adeck = `100.89.32.9`; other hosts from the table). MagicDNS / hostnames (`adeck`, `adeck.tail293e98.ts.net`, other mesh names) do not work from that box.
 
-**Other services on adeck:** Docker, qBittorrent, SSH, Tailscale, msgvault, and Hermes agent. The `sideriod` and `bitburner` trees above host their respective Gnomon and sync/MCP services.
+**Other services on adeck:** Docker, qBittorrent, SSH, Tailscale, and msgvault. `/mnt/echo/sideriod` hosts Gnomon. `/mnt/echo/bitburner` hosts its sync and MCP service.
 
 ## Taildrop File Transfer
 

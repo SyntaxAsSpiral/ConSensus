@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-codex
 created: 2026-01-15
-modified: 2026-09-08
+modified: 2026-09-26
 status: active
 type:
   - agent
@@ -14,6 +14,7 @@ output_name: AGENTS.md
 
 target_locations:
   - path: ~/.codex/AGENTS.md
+  - path: zk@100.115.135.104:~/.codex/AGENTS.md
   - path: zk@100.77.90.79:~/.codex/AGENTS.md
   - path: zk@100.82.51.63:~/.codex/AGENTS.md
 

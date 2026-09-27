@@ -14,8 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/bedtime/
   - path: ~/.agents/skills/bedtime/
+  - path: zk@100.115.135.104:~/.claude/skills/bedtime/
+  - path: zk@100.115.135.104:~/.agents/skills/bedtime/
+  - path: zk@100.82.51.63:~/.claude/skills/bedtime/
   - path: zk@100.82.51.63:~/.agents/skills/bedtime/
-  - path: ~/.hermes/skills/user/bedtime/
 
 sources:
   skill_md:

@@ -1,7 +1,7 @@
 ---
 id: recipe-tm20
 created: 2026-09-05
-modified: 2026-09-23
+modified: 2026-09-26
 status: active
 type:
   - "skill"
@@ -14,9 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/tm20/
   - path: ~/.agents/skills/tm20/
+  - path: zk@100.115.135.104:~/.claude/skills/tm20/
+  - path: zk@100.115.135.104:~/.agents/skills/tm20/
+  - path: zk@100.82.51.63:~/.claude/skills/tm20/
   - path: zk@100.82.51.63:~/.agents/skills/tm20/
-  - path: zk@100.77.90.79:~/.agents/skills/tm20/
-  - path: zk@100.77.90.79:~/.claude/skills/tm20/
 
 sources:
   skill_md:

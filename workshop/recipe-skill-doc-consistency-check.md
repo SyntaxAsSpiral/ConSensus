@@ -14,8 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/doc-consistency-check/
   - path: ~/.agents/skills/doc-consistency-check/
+  - path: zk@100.115.135.104:~/.claude/skills/doc-consistency-check/
+  - path: zk@100.115.135.104:~/.agents/skills/doc-consistency-check/
+  - path: zk@100.82.51.63:~/.claude/skills/doc-consistency-check/
   - path: zk@100.82.51.63:~/.agents/skills/doc-consistency-check/
-  - path: ~/.hermes/skills/user/doc-consistency-check/
 
 sources:
   skill_md:

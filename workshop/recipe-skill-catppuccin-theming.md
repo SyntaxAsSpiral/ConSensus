@@ -1,7 +1,7 @@
 ---
 id: recipe-catppuccin-theming
 created: 2026-01-15
-modified: 2026-01-15
+modified: 2026-09-26
 status: active
 type:
   - "skill"
@@ -22,8 +22,10 @@ output_format: skill  # Creates Agent Skills standard structure
 target_locations:
   - path: ~/.claude/skills/catppuccin-theming/
   - path: ~/.agents/skills/catppuccin-theming/
+  - path: zk@100.115.135.104:~/.claude/skills/catppuccin-theming/
+  - path: zk@100.115.135.104:~/.agents/skills/catppuccin-theming/
+  - path: zk@100.82.51.63:~/.claude/skills/catppuccin-theming/
   - path: zk@100.82.51.63:~/.agents/skills/catppuccin-theming/
-  - path: ~/.gemini/antigravity/skills/catppuccin-theming/
 
 # Source mapping to skill structure
 sources:

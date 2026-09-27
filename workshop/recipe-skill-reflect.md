@@ -14,8 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/reflect/
   - path: ~/.agents/skills/reflect/
+  - path: zk@100.115.135.104:~/.claude/skills/reflect/
+  - path: zk@100.115.135.104:~/.agents/skills/reflect/
+  - path: zk@100.82.51.63:~/.claude/skills/reflect/
   - path: zk@100.82.51.63:~/.agents/skills/reflect/
-  - path: ~/.hermes/skills/user/reflect/
 
 sources:
   skill_md:

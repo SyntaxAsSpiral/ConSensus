@@ -14,8 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/moeverse/
   - path: ~/.agents/skills/moeverse/
+  - path: zk@100.115.135.104:~/.claude/skills/moeverse/
+  - path: zk@100.115.135.104:~/.agents/skills/moeverse/
+  - path: zk@100.82.51.63:~/.claude/skills/moeverse/
   - path: zk@100.82.51.63:~/.agents/skills/moeverse/
-  - path: ~/.hermes/skills/user/moeverse/
 
 sources:
   skill_md:

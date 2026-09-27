@@ -14,8 +14,10 @@ output_format: skill
 target_locations:
   - path: ~/.claude/skills/murder/
   - path: ~/.agents/skills/murder/
+  - path: zk@100.115.135.104:~/.claude/skills/murder/
+  - path: zk@100.115.135.104:~/.agents/skills/murder/
+  - path: zk@100.82.51.63:~/.claude/skills/murder/
   - path: zk@100.82.51.63:~/.agents/skills/murder/
-  - path: ~/.hermes/skills/user/murder/
 
 sources:
   skill_md:

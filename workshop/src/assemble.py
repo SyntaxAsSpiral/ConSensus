@@ -16,6 +16,8 @@ Usage: python assemble.py [--dry-run] [--verbose]
 """
 
 import re
+import shutil
+import subprocess
 import yaml
 import frontmatter
 from dataclasses import dataclass
@@ -485,6 +487,22 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
         out_root = staging_dir / "skill" / skill_name
         targets = _targets_from_section(section)
 
+        tree_rel = sources_cfg.get("tree")
+        if tree_rel:
+            tree = (base_path / str(tree_rel)).resolve()
+            if not (tree / "SKILL.md").is_file():
+                print(f"☠☠☠ >>> SKILL·TREE·MISSING ☠☠☠")
+                print(f"No SKILL.md in {tree}: {section.recipe_file}")
+                print(f"|001101|—|000000|—|111000|— skipping corrupted entry")
+                return []
+            if not dry_run:
+                if out_root.exists():
+                    shutil.rmtree(out_root)
+                shutil.copytree(tree, out_root, ignore=shutil.ignore_patterns(".git"))
+            return [
+                OutputArtifact(relpath=(Path("skill") / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
+            ]
+
         # SKILL.md generation
         skill_md_cfg = sources_cfg.get("skill_md") or {}
         if not isinstance(skill_md_cfg, dict):
@@ -513,8 +531,8 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
         skill_md_text = _format_yaml_frontmatter(fm) + "\n\n" + body.strip() + "\n"
         _write_text(out_root / "SKILL.md", skill_md_text, dry_run)
 
-        # Role folders: references/, assets/, scripts/
-        for role, subdir in (("references", "references"), ("assets", "assets"), ("scripts", "scripts")):
+        # Role folders: references/, assets/, scripts/, examples/
+        for role, subdir in (("references", "references"), ("assets", "assets"), ("scripts", "scripts"), ("examples", "examples")):
             items = sources_cfg.get(role) or []
             if not isinstance(items, list):
                 continue
@@ -676,6 +694,42 @@ def update_manifest(manifest_path: Path, entries: List[Dict[str, Any]]) -> None:
         print(f"|001101|—|000000|—|111000|— record keeping compromised")
 
 
+def pull_upstream_repos(base_path: Path, dry_run: bool) -> int:
+    """Fast-forward the reference checkouts assembly copies from."""
+    roots = [base_path / "skills" / "upstream", base_path / ".agents" / "upstream"]
+    found = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for git_meta in root.rglob(".git"):
+            found.append(git_meta.parent)
+    repos = [repo for repo in found if not any(other != repo and other in repo.parents for other in found)]
+    if not repos:
+        return 0
+    failed = False
+    for repo in repos:
+        rel = repo.relative_to(base_path)
+        if dry_run:
+            print(f"☠☠☠ >>> UPSTREAM·PULL·PREVIEW ☠☠☠")
+            print(f"Would pull {rel}")
+            continue
+        print(f"☠☠☠ >>> UPSTREAM·PULL ☠☠☠")
+        print(f"Pulling {rel}")
+        result = subprocess.run(
+            ["git", "-C", str(repo), "pull", "--ff-only"],
+            capture_output=True,
+            text=True,
+        )
+        if result.stdout:
+            print(result.stdout.rstrip())
+        if result.returncode != 0:
+            if result.stderr:
+                print(result.stderr.rstrip())
+            print(f"|001101|—|000000|—|111000|— pull failed")
+            failed = True
+    return 1 if failed else 0
+
+
 def main():
     """Main assembly process."""
     import argparse
@@ -698,16 +752,23 @@ def main():
         print(f"Sacred workshop directory communion failed: {workshop_dir}")
         print(f"|001101|—|000000|—|111000|— path leads to void")
         return 1
-    
+
+    if pull_upstream_repos(base_path, args.dry_run) != 0:
+        return 1
+
+    # Captured before the manifest rewrite. Sync reads this to purge retired targets.
+    previous_manifest = manifest_path.read_bytes() if (not args.dry_run and manifest_path.is_file()) else None
+
     # Clear and recreate staging directory for fresh assembly
     if not args.dry_run:
         if staging_dir.exists():
-            import shutil
             shutil.rmtree(staging_dir)
             print(f"☠☠☠ >>> STAGING·PURGE·COMPLETE ☠☠☠")
             print(f"Previous staging artifacts purged")
             print(f"|001101|—|001101|—|111000|— sanctum cleansed")
         staging_dir.mkdir(exist_ok=True)
+        if previous_manifest is not None:
+            (staging_dir / ".previous-manifest.md").write_bytes(previous_manifest)
     
     # Find and process recipe files
     recipe_files = find_recipe_files(workshop_dir)

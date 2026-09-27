@@ -1,6 +1,6 @@
 ---
 name: semantic-json
-description: Use when working with Obsidian Canvas files as cognitive modeling tools — compiling spatial/visual structure into deterministic JSON, designing canvas layouts with semantic color and edge conventions, exporting structured data from canvas, or importing JSON into canvas form.
+description: Use when creating or editing Obsidian Canvas files (.canvas) — nodes, edges, groups, and connections — or when using a canvas as a cognitive model. Covers semantic color and edge conventions, compiling spatial structure into deterministic JSON, exporting structured data, and importing JSON into canvas form. Complete canvases are in references/EXAMPLES.md.
 ---
 
 # Semantic-JSON
@@ -125,6 +125,14 @@ Generate 16-character lowercase hex strings: `"6f0ad84f44ce9c17"`. IDs must be u
 - Space nodes 50–100px apart; 20–50px padding inside groups
 - Align to grid multiples of 10 or 20
 
+| Node | Width | Height |
+|------|-------|--------|
+| Small text | 200–300 | 80–150 |
+| Medium text | 300–450 | 150–300 |
+| Large text | 400–600 | 300–500 |
+| File preview | 300–500 | 200–400 |
+| Link preview | 250–400 | 100–200 |
+
 ### Validation Checklist
 
 After creating or editing a canvas:
@@ -136,6 +144,42 @@ After creating or editing a canvas:
 6. `fromEnd`/`toEnd` one of: `none`, `arrow`
 7. Color presets are `"1"`–`"6"` or valid hex
 8. JSON is valid and parseable (watch for unescaped newlines in `text` fields)
+
+Full canvases — mind map, project board, research canvas, flowchart — are in [references/EXAMPLES.md](references/EXAMPLES.md).
+
+## Workflows
+
+### Create a Canvas
+
+1. Write `{"nodes": [], "edges": []}` to a `.canvas` file.
+2. Generate a unique 16-character hex id for each node.
+3. Add nodes with `id`, `type`, `x`, `y`, `width`, `height`, plus the type's required field.
+4. Add edges with `fromNode` and `toNode` pointing at those ids.
+5. Validate the checklist above.
+
+### Add a Node
+
+1. Read and parse the existing `.canvas` file.
+2. Generate an id that does not collide with existing node or edge ids.
+3. Place it so it does not overlap (50–100px gap).
+4. Append it to `nodes`. Add edges if it should connect.
+5. Validate ids and edge references.
+
+### Connect Two Nodes
+
+1. Take the source and target ids.
+2. Generate a unique edge id.
+3. Set `fromNode` and `toNode`. Set `fromSide` and `toSide` when the anchor matters.
+4. Set `label` when the edge carries a semantic type (`model`, `sequence`, `compile`, `blocks`, `relates`).
+5. Append the edge to `edges` and validate both ends.
+
+### Edit a Canvas
+
+1. Read and parse the file.
+2. Find the node or edge by `id`.
+3. Change the fields (text, position, color, label).
+4. Write the JSON back.
+5. Validate again. With `autoCompile: true`, a save reorders nodes. Read the exported `.json` when the canvas is large.
 
 ---
 

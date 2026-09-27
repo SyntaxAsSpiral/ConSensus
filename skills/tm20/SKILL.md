@@ -22,7 +22,7 @@ There is only one loom, in a cottage at the edge of the wood (`tm20`, the Pi). T
 
 **Sitting at the loom** is `tm20` / `tm20-set` on the `tm20` host. You see the cloth as it forms. You can stop, trim a stitch, ask if the loom is awake (`hello`, `status`, `list`), or throw away a spoiled preview (`--dry --png`) before any wool is spent. Use this when you are *in the cottage*, designing, debugging, or laying a hand on the machine.
 
-**Sending a sealed pattern** is POST `http://tm20:8766/print`. You do not touch the shuttle. A keeper (the receiver) takes one pattern at a time, will not weave the same job id twice, and cuts the cloth only after the pattern is already finished. Use this when you are *in another house* (adeck, a phone, a long-running service) or when two projects might arrive at once — Holliday Table, holliday-estate, sideriod.
+**Sending a sealed pattern** is POST `http://100.123.184.5:8766/print`. The hostname `tm20` does not resolve on adeck. You do not touch the shuttle. A keeper (the receiver) takes one pattern at a time, will not weave the same job id twice, and cuts the cloth only after the pattern is already finished. Use this when you are *in another house* (adeck, a phone, a long-running service) or when two projects might arrive at once — Holliday Table, holliday-estate, sideriod.
 
 If you are standing in the cottage and only trying a stitch, sit at the loom. If you are sending work from afar, or a script must print without you watching, seal the pattern.
 
@@ -57,7 +57,7 @@ Token: `PRINT_TOKEN` (alias `HOLIDAY_PRINT_TOKEN`). Unique `job_id` (alias `slip
 
 ```bash
 # health
-curl -fsS -H "Authorization: Bearer $PRINT_TOKEN" http://tm20:8766/health
+curl -fsS -H "Authorization: Bearer $PRINT_TOKEN" http://100.123.184.5:8766/health
 
 # PNG job (already-inspected raster, e.g. Le Festin)
 # POST /print  {"job_id","source","sha256","image": "<base64 png>"}

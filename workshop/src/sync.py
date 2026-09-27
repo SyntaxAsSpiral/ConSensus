@@ -135,6 +135,11 @@ def _expand_target_path(p: str) -> str:
     return p
 
 
+def _canonical_target(p: str) -> str:
+    """Compare manifest paths and recipe paths after ~ expansion."""
+    return _expand_target_path(p.strip())
+
+
 def _norm_path_str(p: str) -> str:
     return p.replace("\\", "/").lower()
 
@@ -449,19 +454,66 @@ def _sync_dir(source_dir: Path, target_dir: Path, dry_run: bool = False) -> None
                 dst.unlink()
 
 
+def _ssh_purge_command(target: str, is_file: bool) -> Optional[List[str]]:
+    """ssh rm for one recorded remote target. None when the path is too broad."""
+    match = re.match(r"^([^@]+@[^:]+):(.+)$", target.strip())
+    if not match:
+        return None
+    host, raw = match.group(1), match.group(2).strip().rstrip("/")
+    if not raw or ".." in raw.split("/"):
+        return None
+    if raw.startswith("~/"):
+        parts = [p for p in raw[2:].split("/") if p]
+        remote = '"$HOME"/' + "'" + "/".join(parts).replace("'", "'\\''") + "'"
+    elif raw.startswith("/"):
+        parts = [p for p in raw.split("/") if p]
+        remote = "'/" + "/".join(parts).replace("'", "'\\''") + "'"
+    else:
+        return None
+    if is_file and len(parts) < 2:
+        return None
+    if not is_file and len(parts) < 3:
+        return None
+    op = "rm -f --" if is_file else "rm -rf --"
+    return [
+        "ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=8",
+        host, f"{op} {remote}",
+    ]
+
+
 def cleanup_orphaned_deployments(
     previous_deployments: Dict[str, List[str]], current_deployments: Dict[str, List[str]], dry_run: bool = False
 ) -> int:
-    """Remove targets for deployment IDs that no longer exist in current recipes."""
+    """Remove recorded targets that no longer appear in current recipes."""
     cleaned = 0
+    current_targets = {_canonical_target(t) for targets in current_deployments.values() for t in targets}
+    seen = set()
 
-    orphan_ids = [k for k in previous_deployments.keys() if k not in current_deployments]
-    for deployment_id in orphan_ids:
-        targets = previous_deployments.get(deployment_id, [])
+    for targets in previous_deployments.values():
         for t in targets:
+            canon = _canonical_target(t)
+            if canon in current_targets or canon in seen:
+                continue
+            seen.add(canon)
+            is_file = not t.strip().endswith("/")
             try:
+                if _is_ssh_target(t):
+                    cmd = _ssh_purge_command(t, is_file)
+                    if cmd is None:
+                        print(f"☠☠☠ >>> ORPHAN·PURGE·REFUSED ☠☠☠")
+                        print(f"Remote path is too broad to remove: {t}")
+                        continue
+                    if dry_run:
+                        print(f"☠☠☠ >>> DRY·RUN·PROTOCOL·ACTIVE ☠☠☠")
+                        print(f"Would purge orphaned remote: {t}")
+                        print(f"|001101|—|001101|—|111000|— simulation mode")
+                    else:
+                        subprocess.run(cmd, check=True, capture_output=True, timeout=30)
+                    cleaned += 1
+                    continue
+
                 target_path = Path(_expand_target_path(t))
-                if deployment_id.startswith("agent/"):
+                if is_file:
                     if target_path.exists() and target_path.is_file():
                         if dry_run:
                             print(f"☠☠☠ >>> DRY·RUN·PROTOCOL·ACTIVE ☠☠☠")
@@ -577,7 +629,7 @@ def auto_commit_and_push(repo_root: Path) -> bool:
             ["git", "add", "-A"],
             cwd=repo_root,
             capture_output=True,
-            timeout=10,
+            timeout=60,
             check=True,
         )
 
@@ -588,7 +640,7 @@ def auto_commit_and_push(repo_root: Path) -> bool:
             ["git", "commit", "-m", commit_msg],
             cwd=repo_root,
             capture_output=True,
-            timeout=10,
+            timeout=60,
             check=True,
         )
 
@@ -611,7 +663,7 @@ def auto_commit_and_push(repo_root: Path) -> bool:
             ["git", "push", "origin", current_branch],
             cwd=repo_root,
             capture_output=True,
-            timeout=30,
+            timeout=120,
             check=True,
         )
 
@@ -667,7 +719,12 @@ def main():
         print(f"|001101|—|000000|—|111000|— path leads to void")
         return 1
 
-    previous_deployments = parse_manifest_for_deployments(manifest_path)
+    # Assemble rewrites Active Recipes before sync. The snapshot still has retired targets.
+    previous_manifest = staging_dir / ".previous-manifest.md"
+    if previous_manifest.is_file():
+        previous_deployments = parse_manifest_for_deployments(previous_manifest)
+    else:
+        previous_deployments = parse_manifest_for_deployments(manifest_path)
 
     recipe_files = find_recipe_files(workshop_dir)
     current_deployments: Dict[str, List[str]] = {}
