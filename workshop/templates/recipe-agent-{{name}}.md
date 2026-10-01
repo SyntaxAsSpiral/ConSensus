@@ -24,7 +24,7 @@ sources:
     slice-file: # e.g. agents/agent-roles.md
 
   # Whole file inclusion:
-  # - file: agents/steering-global-principles.md
+  # - file: agents/steering-global-operator.md
 
 # Multi-section: inside this YAML block, separate additional output sections with `---`.
 template: |

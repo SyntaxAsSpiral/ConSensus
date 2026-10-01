@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-pi
 created: 2026-03-02
-modified: 2026-09-26
+modified: 2026-10-01
 status: active
 type:
   - agent
@@ -18,9 +18,8 @@ target_locations:
   - path: zk@100.77.90.79:~/.pi/agent/AGENTS.md
   - path: zk@100.82.51.63:~/.pi/agent/AGENTS.md
 sources:
-  - slice: agent=pi
+  - slice: persona=murder-cogitator
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md
-  - file: agents/steering-global-principles.md
 ```

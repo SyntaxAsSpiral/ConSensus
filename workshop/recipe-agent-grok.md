@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-grok
 created: 2026-05-26
-modified: 2026-09-26
+modified: 2026-10-01
 status: active
 type:
   - agent
@@ -18,9 +18,8 @@ target_locations:
   - path: zk@100.82.51.63:~/.grok/AGENTS.md
 
 sources:
-  - slice: agent=grok
+  - slice: persona=murder-cogitator
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md
-  - file: agents/steering-global-principles.md
 ```

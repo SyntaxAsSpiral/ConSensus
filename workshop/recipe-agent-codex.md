@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-codex
 created: 2026-01-15
-modified: 2026-09-26
+modified: 2026-10-01
 status: active
 type:
   - agent
@@ -19,9 +19,8 @@ target_locations:
   - path: zk@100.82.51.63:~/.codex/AGENTS.md
 
 sources:
-  - slice: agent=gpt-codex
+  - slice: persona=murder-cogitator
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md
-  - file: agents/steering-global-principles.md
 ```
