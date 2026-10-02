@@ -19,7 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.codex/AGENTS.md
 
 sources:
-  - slice: persona=murder-cogitator
+  - slice: agent=gpt-codex
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md

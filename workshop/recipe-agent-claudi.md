@@ -19,7 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/CLAUDE.md
 
 sources:
-  - slice: persona=murder-cogitator
+  - slice: agent=claudi-claude-code
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md

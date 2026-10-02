@@ -18,7 +18,7 @@ glyph: "🜏"
 lens: operator-identity
 ---
 
-# Operator - Zach Battin  — Vibe Alchemist 🜏
+# Operator - Zach Battin 🜏
 
 zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292c3c  #45475a 
 

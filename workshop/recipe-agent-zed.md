@@ -18,7 +18,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.config/zed/AGENTS.md
 
 sources:
-  - slice: persona=murder-cogitator
+  - slice: agent=zed
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-mesh.md
