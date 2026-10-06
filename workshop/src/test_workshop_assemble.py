@@ -212,5 +212,74 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
 
 
+    def test_repeated_assemble_keeps_unconsumed_snapshot(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            staging = Path(td) / "staging"
+            manifest = Path(td) / "manifest.md"
+            snapshot = staging / ".previous-manifest.md"
+            staging.mkdir()
+            snapshot.write_bytes(b"OLD TARGETS\n")
+            (staging / "skill").mkdir()
+            manifest.write_text("NEW MANIFEST\n", encoding="utf-8")
+
+            assemble.preserve_unconsumed_snapshot(staging, manifest)
+
+            self.assertEqual(snapshot.read_bytes(), b"OLD TARGETS\n")
+            self.assertFalse((staging / "skill").exists())
+
+            snapshot.unlink()
+            assemble.preserve_unconsumed_snapshot(staging, manifest)
+            self.assertEqual(snapshot.read_text(encoding="utf-8"), "NEW MANIFEST\n")
+
+    def test_sync_keeps_snapshot_until_purge_is_clear(self) -> None:
+        import workshop.src.sync as sync
+
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            orphan = root / "gone"
+            orphan.mkdir()
+            snapshot = root / ".previous-manifest.md"
+            snapshot.write_text("snapshot\n", encoding="utf-8")
+            previous = {"skill/old": [str(orphan) + "/"]}
+            current: dict = {}
+
+            cleaned, purge_clear = sync.cleanup_orphaned_deployments(previous, current, dry_run=True)
+            sync.consume_snapshot_after_purge(snapshot, purge_clear, dry_run=True)
+            self.assertEqual(cleaned, 1)
+            self.assertTrue(purge_clear)
+            self.assertTrue(orphan.is_dir())
+            self.assertTrue(snapshot.is_file())
+
+            cleaned, purge_clear = sync.cleanup_orphaned_deployments(previous, current, dry_run=False)
+            sync.consume_snapshot_after_purge(snapshot, purge_clear, dry_run=False)
+            self.assertEqual(cleaned, 1)
+            self.assertTrue(purge_clear)
+            self.assertFalse(orphan.exists())
+            self.assertFalse(snapshot.exists())
+
+            snapshot.write_text("keep\n", encoding="utf-8")
+            blocked = root / "blocked"
+            blocked.mkdir()
+            original = sync.shutil.rmtree
+
+            def fail_rmtree(path):
+                raise OSError("host down")
+
+            sync.shutil.rmtree = fail_rmtree
+            try:
+                cleaned, purge_clear = sync.cleanup_orphaned_deployments(
+                    {"skill/old": [str(blocked) + "/"]}, current, dry_run=False
+                )
+            finally:
+                sync.shutil.rmtree = original
+            sync.consume_snapshot_after_purge(snapshot, purge_clear, dry_run=False)
+            self.assertEqual(cleaned, 0)
+            self.assertFalse(purge_clear)
+            self.assertTrue(blocked.is_dir())
+            self.assertEqual(snapshot.read_text(encoding="utf-8"), "keep\n")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -157,7 +157,7 @@ python workshop/src/assemble.py --dry-run
 python workshop/src/assemble.py
 ```
 
-The dry run reports prospective output paths without writing staging files or updating the manifest. A real assembly **deletes and recreates `workshop/staging/`** before producing current artifacts, then refreshes the active recipe entries in `workshop/manifest-recipes.md`. Treat staging as generated output; do not keep source material there.
+The dry run reports prospective output paths without writing staging files or updating the manifest. A real assembly **deletes and recreates `workshop/staging/`** before producing current artifacts, then refreshes the active recipe entries in `workshop/manifest-recipes.md`. An existing `workshop/staging/.previous-manifest.md` is kept across that wipe until sync consumes it. Treat staging as generated output; do not keep source material there.
 
 Inspect `workshop/staging/` and the assembly logs before deploying. Then preview and choose the appropriate sync mode:
 
@@ -166,7 +166,7 @@ python workshop/src/sync.py --dry-run
 python workshop/src/sync.py --no-git
 ```
 
-Sync deploys staged artifacts to local or SSH targets. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync also removes targets recorded in the manifest for deployment IDs that no longer appear in current recipes. The manifest is therefore needed for orphan cleanup; do not delete it as a troubleshooting step.
+Sync deploys staged artifacts to local or SSH targets. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
 
 `--dry-run` does not copy file contents, update the manifest, or commit. For local file targets, the current sync code may still create missing parent directories during a dry run. `--no-git` performs deployment and updates the manifest but skips Git automation. Without either option, sync deploys, updates the manifest, then runs `git add -A`, commits, and pushes the current branch. Check `git status` first; use `--no-git` when deployment is intended but those repository-wide Git effects are not.
 
@@ -195,7 +195,7 @@ Before sync:
 | Output is incomplete | Missing files/slices are skipped. Read assembly logs and inspect every staged artifact. |
 | Template text is not substituted | Only literal `{content}` is replaced; other placeholders remain unchanged. |
 | Agent filename differs from expectation | Directory targets must end in `/`; otherwise the path is treated as a file. Use `output_name` to choose the staged filename explicitly. |
-| Old target was not cleaned up | Orphan cleanup compares deployment IDs with the prior manifest. Keep the manifest and inspect its active entries and target paths. |
+| Old target was not cleaned up | `workshop/staging/.previous-manifest.md` must still list the path. Sync deletes that file only after every retired path is removed or already gone. |
 | Skill target has unexpected files removed | Skill deployment mirrors the staged directory, deleting target-side files not present in staging. |
 | Unexpected Git changes or push | Normal sync runs `git add -A`, commits, and pushes. Use `--no-git` for deployment without Git automation. |
 

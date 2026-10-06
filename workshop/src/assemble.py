@@ -762,6 +762,26 @@ def update_manifest(manifest_path: Path, entries: List[Dict[str, Any]]) -> None:
         print(f"|001101|—|000000|—|111000|— record keeping compromised")
 
 
+def preserve_unconsumed_snapshot(staging_dir: Path, manifest_path: Path) -> None:
+    """Wipe staging. Keep .previous-manifest.md until sync consumes it.
+
+    Repeated assembles are the inspection loop. The snapshot is the manifest
+    from before the first unconsumed rewrite, not whatever the last assemble wrote.
+    """
+    snapshot_path = staging_dir / ".previous-manifest.md"
+    if snapshot_path.is_file():
+        kept = snapshot_path.read_bytes()
+    elif manifest_path.is_file():
+        kept = manifest_path.read_bytes()
+    else:
+        kept = None
+    if staging_dir.exists():
+        shutil.rmtree(staging_dir)
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    if kept is not None:
+        snapshot_path.write_bytes(kept)
+
+
 def pull_upstream_repos(base_path: Path, dry_run: bool) -> int:
     """Fast-forward the reference checkouts assembly copies from."""
     roots = [base_path / "skills" / "upstream", base_path / ".agents" / "upstream"]
@@ -824,19 +844,12 @@ def main():
     if pull_upstream_repos(base_path, args.dry_run) != 0:
         return 1
 
-    # Captured before the manifest rewrite. Sync reads this to purge retired targets.
-    previous_manifest = manifest_path.read_bytes() if (not args.dry_run and manifest_path.is_file()) else None
-
-    # Clear and recreate staging directory for fresh assembly
+    # Clear and recreate staging. An unconsumed orphan snapshot survives the wipe.
     if not args.dry_run:
-        if staging_dir.exists():
-            shutil.rmtree(staging_dir)
-            print(f"☠☠☠ >>> STAGING·PURGE·COMPLETE ☠☠☠")
-            print(f"Previous staging artifacts purged")
-            print(f"|001101|—|001101|—|111000|— sanctum cleansed")
-        staging_dir.mkdir(exist_ok=True)
-        if previous_manifest is not None:
-            (staging_dir / ".previous-manifest.md").write_bytes(previous_manifest)
+        preserve_unconsumed_snapshot(staging_dir, manifest_path)
+        print(f"☠☠☠ >>> STAGING·PURGE·COMPLETE ☠☠☠")
+        print(f"Previous staging artifacts purged")
+        print(f"|001101|—|001101|—|111000|— sanctum cleansed")
     
     # Find and process recipe files
     recipe_files = find_recipe_files(workshop_dir)

@@ -552,9 +552,14 @@ def _ssh_purge_command(target: str, is_file: bool) -> Optional[List[str]]:
 
 def cleanup_orphaned_deployments(
     previous_deployments: Dict[str, List[str]], current_deployments: Dict[str, List[str]], dry_run: bool = False
-) -> int:
-    """Remove recorded targets that no longer appear in current recipes."""
+) -> tuple[int, bool]:
+    """Remove recorded targets that no longer appear in current recipes.
+
+    The second value is False when a purge failed. Already-absent paths are done.
+    A refused path is logged and does not count as a failure.
+    """
     cleaned = 0
+    purge_clear = True
     current_targets = {_canonical_target(t) for targets in current_deployments.values() for t in targets}
     seen = set()
 
@@ -601,12 +606,21 @@ def cleanup_orphaned_deployments(
                             shutil.rmtree(target_path)
                         cleaned += 1
             except Exception as e:
+                purge_clear = False
                 print(f"☠☠☠ >>> ORPHAN·PURGE·FAILURE ☠☠☠")
                 print(f"Failed to purge orphaned target: {t}")
                 print(f"Error-hymn: {e}")
                 print(f"|001101|—|000000|—|111000|— void reclamation severed")
 
-    return cleaned
+    return cleaned, purge_clear
+
+
+def consume_snapshot_after_purge(snapshot_path: Path, purge_clear: bool, dry_run: bool) -> None:
+    """Drop the orphan snapshot once every retired path is gone. A failed purge keeps it."""
+    if dry_run or not purge_clear:
+        return
+    if snapshot_path.is_file():
+        snapshot_path.unlink()
 
 
 def update_manifest_sync_status(manifest_path: Path, sync_results: Dict[str, List[str]], cleaned_count: int) -> None:
@@ -788,7 +802,7 @@ def main():
         print(f"|001101|—|000000|—|111000|— path leads to void")
         return 1
 
-    # Assemble rewrites Active Recipes before sync. The snapshot still has retired targets.
+    # Unconsumed snapshot from the assemble that first dropped the targets. Later assembles keep it.
     previous_manifest = staging_dir / ".previous-manifest.md"
     if previous_manifest.is_file():
         previous_deployments = parse_manifest_for_deployments(previous_manifest)
@@ -811,7 +825,10 @@ def main():
             current_items[item.deployment_id] = item
             current_deployments[item.deployment_id] = item.targets
 
-    cleaned_count = cleanup_orphaned_deployments(previous_deployments, current_deployments, args.dry_run)
+    cleaned_count, purge_clear = cleanup_orphaned_deployments(
+        previous_deployments, current_deployments, args.dry_run
+    )
+    consume_snapshot_after_purge(previous_manifest, purge_clear, args.dry_run)
 
     for deployment_id, item in current_items.items():
         source = staging_dir / Path(item.source_relpath)
