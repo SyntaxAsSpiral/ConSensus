@@ -9,7 +9,8 @@ Key behavior:
 - Supports multi-section recipes (YAML document separators `---` inside YAML block)
 - Handles structured outputs:
   - agent: single markdown file per section (output/agent/*.md)
-  - skill: directory per skill name (output/skill/<name>/...)
+  - skill: directory per skill name (output/skill/global/<name>/...)
+  - project-skill: output/skill/project/<name>/, deployed under <project>/.agents/skills/<name>/
 - Avoids filename collisions by syncing from *namespaced output paths* instead of
   assuming output filenames match target basenames (e.g., many targets can be
   named `AGENTS.md`).
@@ -158,6 +159,56 @@ def _default_agent_filename_for_target(target_path: str) -> str:
     return "CLAUDE.md" if _is_claude_target(target_path) else "AGENTS.md"
 
 
+_GLOBAL_AGENT_DIRS = {".agents", ".claude", ".codex", ".gemini", ".pi", ".grok", ".hermes"}
+
+
+def _is_global_agent_install(path: str) -> bool:
+    """True for ~/.agents, ~/.claude, and the other home agent dirs. Not a project .agents/."""
+    raw = path.strip().replace("\\", "/").rstrip("/")
+    if raw.startswith("~/"):
+        raw = str(Path.home() / raw[2:])
+    parts = [p for p in Path(raw).parts if p not in ("/", "")]
+    home_parts = [p for p in Path.home().parts if p not in ("/", "")]
+    if len(parts) <= len(home_parts) or parts[: len(home_parts)] != home_parts:
+        return False
+    return parts[len(home_parts)] in _GLOBAL_AGENT_DIRS
+
+
+def resolve_project_skill_target(raw: str, skill_name: str) -> Optional[str]:
+    """Map a project root or project .agents dir to <project>/.agents/skills/<name>/.
+
+    Keep this in step with workshop/src/assemble.py. Project skills do not deploy to
+    the home agent directories; those stay on output_format: skill.
+    """
+    if not skill_name or "/" in skill_name or skill_name in (".", ".."):
+        return None
+    if _is_ssh_target(raw):
+        host, remote = raw.split(":", 1)
+        # Keep a remote ~/ instead of expanding it against this host's home.
+        if remote.startswith("~/"):
+            rel = remote[2:].lstrip("/")
+            first = rel.split("/", 1)[0]
+            if first in _GLOBAL_AGENT_DIRS:
+                return None
+            resolved = resolve_project_skill_target("/" + rel, skill_name)
+            if not resolved:
+                return None
+            return f"{host}:~/{resolved.lstrip('/')}"
+        resolved = resolve_project_skill_target(remote, skill_name)
+        if not resolved:
+            return None
+        return f"{host}:{resolved}"
+    if _is_global_agent_install(raw):
+        return None
+    expanded = _expand_target_path(raw).replace("\\", "/").rstrip("/")
+    if not expanded.startswith("/"):
+        return None
+    project = expanded[: -len("/.agents")] if expanded.endswith("/.agents") else expanded
+    if not project or project.endswith("/.agents") or _is_global_agent_install(project):
+        return None
+    return f"{project}/.agents/skills/{skill_name}/"
+
+
 def _targets_from_config(cfg: Dict[str, Any]) -> List[str]:
     targets = cfg.get("target_locations") or []
     resolved: List[str] = []
@@ -292,8 +343,26 @@ def build_sync_items_from_sections(sections: List[RecipeSection]) -> List[SyncIt
             continue
 
         if fmt == "skill":
-            rel = (Path("skill") / name).as_posix()
+            rel = (Path("skill") / "global" / name).as_posix()
             items.append(SyncItem(deployment_id=rel, source_relpath=rel, source_is_dir=True, targets=targets))
+            continue
+
+        if fmt == "project-skill":
+            rel = (Path("skill") / "project" / name).as_posix()
+            resolved_targets = []
+            for raw in targets:
+                resolved = resolve_project_skill_target(raw, name)
+                if not resolved:
+                    print(f"\u2620\u2620\u2620 >>> PROJECT\u00b7SKILL\u00b7TARGET\u00b7REFUSED \u2620\u2620\u2620")
+                    print(f"Project skills deploy under a project .agents/, not a home agent dir: {raw}")
+                    print(f"|001101|\u2014|000000|\u2014|111000|\u2014 skipping corrupted entry")
+                    continue
+                resolved_targets.append(resolved)
+            if not resolved_targets:
+                continue
+            items.append(
+                SyncItem(deployment_id=rel, source_relpath=rel, source_is_dir=True, targets=resolved_targets)
+            )
             continue
 
         if fmt in ("command", "prompt", "hook"):

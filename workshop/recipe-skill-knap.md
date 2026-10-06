@@ -1,40 +1,21 @@
 ---
 id: recipe-knap
 created: 2026-09-26
-modified: 2026-09-26
+modified: 2026-10-06
 status: active
 type:
-  - "skill"
+  - "project-skill"
 ---
 
 ```yaml
 name: knap
-output_format: skill
+output_format: project-skill
 
+# Project root or its .agents/ directory. Deployed to <project>/.agents/skills/knap/.
+# /mnt/mount does not exist on adeck; esocortex is /mnt/echo/esocortex.
 target_locations:
-  - path: ~/.claude/skills/knap/
-  - path: ~/.agents/skills/knap/
-  - path: zk@100.115.135.104:~/.claude/skills/knap/
-  - path: zk@100.115.135.104:~/.agents/skills/knap/
-  - path: zk@100.82.51.63:~/.claude/skills/knap/
-  - path: zk@100.82.51.63:~/.agents/skills/knap/
+  - path: /mnt/echo/esocortex/.agents/
 
 sources:
-  skill_md:
-    frontmatter:
-      name: knap
-      description: Render Markdown from templates and structured data using Knap CLI. Use when the user asks to apply a Knap template, turn JSON or CSV data into notes, batch-generate Markdown files, format Defuddle output into a note, or render a review document from selected JSONL records.
-    body:
-      - file: skills/knap/SKILL.md
-
-  examples:
-    - file: skills/knap/examples/review.sh
-      output_name: review.sh
-    - file: skills/knap/examples/review-template.md
-      output_name: review-template.md
-  assets:
-    - file: skills/knap/LICENSE
-      output_name: LICENSE
-
-validate_agentskills_spec: true
+  tree: skills/upstream/obsidian-skills/skills/knap
 ```

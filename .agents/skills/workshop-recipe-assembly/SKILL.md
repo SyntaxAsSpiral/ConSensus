@@ -1,5 +1,5 @@
 ---
-name: recipe-assembly
+name: workshop-recipe-assembly
 description: Create, inspect, assemble, and deploy context recipes in the ConSensus workshop. Use when editing workshop recipes, source slices, assembly behavior, staged agent files or skills, deployment targets, or the recipe manifest.
 ---
 
@@ -51,7 +51,7 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 | Key | Use |
 |---|---|
 | `name` | Output name and staging directory. |
-| `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
+| `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `project-skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
 | `target_locations` | Deployment destinations as path strings or mappings with a `path` key. |
 | `sources` | Source list for agent/project output; role mapping for skill and command-like output. |
 | `template` | Optional literal `{content}` wrapper for agent/project or command-like output. |
@@ -99,7 +99,7 @@ If `template` contains the literal `{content}`, it is replaced with assembled so
 
 ### Skills
 
-`skill` recipes use a mapping of source roles and stage a directory at `workshop/staging/skill/<name>/`. The `skill_md` role defines generated frontmatter and body sources:
+`skill` recipes use a mapping of source roles and stage a directory at `workshop/staging/skill/global/<name>/`. The `skill_md` role defines generated frontmatter and body sources:
 
 ```yaml
 name: example-skill
@@ -128,6 +128,21 @@ validate_agentskills_spec: true
 Supported optional directory roles are `references`, `assets`, `scripts`, and `examples`. Each item may use `inline`, `file`, or `slice` plus `slice-file`; `output_name` sets its destination name and may include subdirectories. The skill body uses whole-file/slice source handling and strips leading frontmatter; role files are copied as bytes.
 
 The current `validate_agentskills_spec` implementation only checks a basic lowercase/digit/hyphen name pattern and the description's maximum length. It does not enforce every Agent Skills specification rule, so validate generated skills against the full specification when compliance matters.
+
+### Project skills
+
+`project-skill` uses the same source mapping and tree copy as `skill`, and stages at `workshop/staging/skill/project/<name>/`. It does not deploy to `~/.agents/skills/` or `~/.claude/skills/`.
+
+Each target is a project root or that project's `.agents/` directory, including an SSH path such as `zk@100.77.90.79:~/.config/OpenRGB/.agents/`. Assembly and sync resolve it to `<project>/.agents/skills/<name>/` and keep a remote `~/` unexpanded. A target under a home agent directory (`~/.agents`, `~/.claude`, `~/.codex`, and the other home agent dirs) is refused. Home-wide skills stay on `output_format: skill`.
+
+```yaml
+name: example-skill
+output_format: project-skill
+target_locations:
+  - path: /mnt/echo/example/.agents/
+sources:
+  tree: skills/upstream/example/skills/example-skill
+```
 
 ### Command-like formats
 

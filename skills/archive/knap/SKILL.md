@@ -1,7 +1,9 @@
 ---
 name: knap
-description: Render Markdown from templates and structured data using Knap CLI. Use when the user asks to apply a Knap template, turn JSON or CSV data into notes, batch-generate Markdown files, or format Defuddle output into a note.
+description: Render Markdown from templates and structured data using Knap CLI. Use when the user asks to apply a Knap template, turn JSON or CSV data into notes, batch-generate Markdown files, format Defuddle output into a note, or render a review document from selected JSONL records.
 ---
+
+Archived local overlay. Deployed knap is the upstream tree in `skills/upstream/obsidian-skills/skills/knap`, via `workshop/recipe-skill-knap.md`. This copy keeps the JSONL review section and `examples/`.
 
 # Knap
 
@@ -100,3 +102,21 @@ Use `--data articles.json` for an array or `--data ./articles` for a folder of J
 Use `--dry-run` to validate and list output paths without writing files. Existing files require `--overwrite`, including during a dry run. Duplicate output names within a batch are errors even with `--overwrite`.
 
 Filename templates must produce a single filename with its extension, without directories. Use `safe_name` for data-derived names. Without `--filename`, Knap preserves source JSON basenames or numbers CSV rows and array items as `1.md`, `2.md`, and so on.
+
+## JSONL review documents
+
+Esocortex renders one review from selected JSONL records. The JSONL stays authoritative. The review is a disposable projection. Preserve `augment_output` in failure reviews.
+
+`examples/review.sh` selects with jq, builds one JSON object, and renders `examples/review-template.md`. In the esocortex repo those files live at `knap/review.sh` and `knap/review-template.md`, and the script writes `docs/review/<chronohex>-<label>`. `--output` is a filename label, not a path. Chronohex is the last six hex digits of `time.time_ns()`. The renderer is pinned at `knap@0.6.0`.
+
+```bash
+knap/review.sh \
+  --select '.augment_error != null' \
+  --title 'ISTA augmentation errors' \
+  --output ista-augmentation-errors.md \
+  data/aug/*.jsonl
+```
+
+The template walks `entries` with `{% for entry in entries %}`, optional metadata rows, a warning callout for `augment_error`, and `blockquote` / `list` filters for model text and key names.
+
+If `npx` cannot reach the registry, find the cached `knap@0.6.0` `package.json` under `~/.npm/_npx/` and run its `dist/cli.js` with `node` against the same template and selection data. Keep Knap as the renderer.

@@ -154,6 +154,62 @@ class TestWorkshopAssemble(unittest.TestCase):
         self.assertEqual(items[0].targets[0].replace("\\", "/").lower(), expected_codex)
         self.assertEqual(items[1].targets[0].replace("\\", "/").lower(), expected_claude)
 
+    def test_project_skill_resolves_agents_dir_and_refuses_home(self) -> None:
+        import workshop.src.assemble as assemble
+        import workshop.src.sync as sync
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            project = Path(td) / "esocortex"
+            tree = base / "skills" / "upstream" / "suite" / "skills" / "knap"
+            tree.mkdir(parents=True)
+            (tree / "SKILL.md").write_text("---\nname: knap\n---\n\n# Knap\n", encoding="utf-8")
+
+            section = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config={
+                    "name": "knap",
+                    "output_format": "project-skill",
+                    "target_locations": [{"path": str(project / ".agents") + "/"}],
+                    "sources": {"tree": "skills/upstream/suite/skills/knap"},
+                },
+            )
+
+            artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
+            self.assertEqual(len(artifacts), 1)
+            self.assertEqual(artifacts[0].relpath, "skill/project/knap")
+            self.assertTrue((artifacts[0].abspath / "SKILL.md").is_file())
+            self.assertEqual(
+                artifacts[0].targets,
+                [str(project / ".agents" / "skills" / "knap") + "/"],
+            )
+
+            refused = assemble.resolve_project_skill_target("~/.agents/skills/knap/", "knap")
+            self.assertIsNone(refused)
+            self.assertEqual(
+                assemble.resolve_project_skill_target(str(project) + "/", "knap"),
+                str(project / ".agents" / "skills" / "knap") + "/",
+            )
+
+            sync_section = sync.RecipeSection(
+                recipe_file=Path("recipe.md"),
+                index=0,
+                config=section.config,
+            )
+            items = sync.build_sync_items_from_sections([sync_section])
+            self.assertEqual(items[0].deployment_id, "skill/project/knap")
+            self.assertEqual(items[0].targets, artifacts[0].targets)
+            self.assertEqual(
+                assemble.resolve_project_skill_target(
+                    "zk@100.77.90.79:~/.config/OpenRGB/.agents/", "openrgb"
+                ),
+                "zk@100.77.90.79:~/.config/OpenRGB/.agents/skills/openrgb/",
+            )
+            self.assertIsNone(
+                assemble.resolve_project_skill_target("zk@100.77.90.79:~/.agents/", "openrgb")
+            )
 
 
 if __name__ == "__main__":

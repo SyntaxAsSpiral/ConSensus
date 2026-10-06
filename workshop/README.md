@@ -1,6 +1,6 @@
 # Workshop
 
-Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root.
+Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root. `output_format: skill` deploys to home agent directories. `output_format: project-skill` deploys only under a project's `.agents/skills/`.
 
 ```bash
 python workshop/src/assemble.py --dry-run

@@ -358,7 +358,7 @@ Multi-agent coordination should be replayable:
 - **[covenant-patterns](../covenant-patterns/SKILL.md)** — Context hygiene, data fidelity principles
 - **[agent-steering](../agent-steering/SKILL.md)** — Single-agent configuration (foundation)
 - **[epistemic-rendering](../epistemic-rendering/SKILL.md)** — Different lenses for different agents
-- **[recipe-assembly](../../../.agents/skills/recipe-assembly/SKILL.md)** — Agent role slice extraction
+- **[workshop-recipe-assembly](../../../.agents/skills/workshop-recipe-assembly/SKILL.md)** — Agent role slice extraction
 
 ---
 

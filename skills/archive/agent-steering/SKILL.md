@@ -439,7 +439,7 @@ Documentation-integrated steering:
 
 - **[covenant-patterns](../covenant-patterns/SKILL.md)** — Principles that steering enforces
 - **[epistemic-rendering](../epistemic-rendering/SKILL.md)** — Cognitive lenses for different agent modes
-- **[recipe-assembly](../../../.agents/skills/recipe-assembly/SKILL.md)** — Slice extraction for steering deployment
+- **[workshop-recipe-assembly](../../../.agents/skills/workshop-recipe-assembly/SKILL.md)** — Slice extraction for steering deployment
 - **[multi-agent-coordination](../multi-agent-coordination/SKILL.md)** — Multi-agent steering patterns
 
 ---

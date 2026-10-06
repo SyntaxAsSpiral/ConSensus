@@ -395,7 +395,7 @@ sources:
 
 - **[covenant-patterns](../covenant-patterns/SKILL.md)** — Principles that constrain lens application
 - **[agent-steering](../agent-steering/SKILL.md)** — Agent modes using different lenses
-- **[recipe-assembly](../../../.agents/skills/recipe-assembly/SKILL.md)** — Slice extraction for lens deployment
+- **[workshop-recipe-assembly](../../../.agents/skills/workshop-recipe-assembly/SKILL.md)** — Slice extraction for lens deployment
 - **[multi-agent-coordination](../multi-agent-coordination/SKILL.md)** — Different daemons using different lenses
 
 ---

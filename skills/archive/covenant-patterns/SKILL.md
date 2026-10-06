@@ -349,7 +349,7 @@ def validate_covenant_compliance(operation, system):
 
 - **[agent-steering](../agent-steering/SKILL.md)** — Universal agent configuration with covenant enforcement
 - **[epistemic-rendering](../epistemic-rendering/SKILL.md)** — Cognitive lenses that respect data fidelity
-- **[recipe-assembly](../../../.agents/skills/recipe-assembly/SKILL.md)** — Workshop patterns with final-state surgery
+- **[workshop-recipe-assembly](../../../.agents/skills/workshop-recipe-assembly/SKILL.md)** — Workshop patterns with final-state surgery
 - **[multi-agent-coordination](../multi-agent-coordination/SKILL.md)** — Pentadyadic patterns with context hygiene
 
 ---

@@ -124,6 +124,60 @@ def _default_agent_filename_for_target(target_path: str) -> str:
     return "CLAUDE.md" if _is_claude_target(target_path) else "AGENTS.md"
 
 
+_GLOBAL_AGENT_DIRS = {".agents", ".claude", ".codex", ".gemini", ".pi", ".grok", ".hermes"}
+
+
+def _is_ssh_target(p: str) -> bool:
+    return bool(re.match(r"^[^@]+@[^:]+:.+$", p))
+
+
+def _is_global_agent_install(path: str) -> bool:
+    """True for ~/.agents, ~/.claude, and the other home agent dirs. Not a project .agents/."""
+    raw = path.strip().replace("\\", "/").rstrip("/")
+    if raw.startswith("~/"):
+        raw = str(Path.home() / raw[2:])
+    parts = [p for p in Path(raw).parts if p not in ("/", "")]
+    home_parts = [p for p in Path.home().parts if p not in ("/", "")]
+    if len(parts) <= len(home_parts) or parts[: len(home_parts)] != home_parts:
+        return False
+    return parts[len(home_parts)] in _GLOBAL_AGENT_DIRS
+
+
+def resolve_project_skill_target(raw: str, skill_name: str) -> Optional[str]:
+    """Map a project root or project .agents dir to <project>/.agents/skills/<name>/.
+
+    Keep this in step with workshop/src/sync.py. Project skills do not deploy to
+    the home agent directories; those stay on output_format: skill.
+    """
+    if not skill_name or "/" in skill_name or skill_name in (".", ".."):
+        return None
+    if _is_ssh_target(raw):
+        host, remote = raw.split(":", 1)
+        # Keep a remote ~/ instead of expanding it against this host's home.
+        if remote.startswith("~/"):
+            rel = remote[2:].lstrip("/")
+            first = rel.split("/", 1)[0]
+            if first in _GLOBAL_AGENT_DIRS:
+                return None
+            resolved = resolve_project_skill_target("/" + rel, skill_name)
+            if not resolved:
+                return None
+            return f"{host}:~/{resolved.lstrip('/')}"
+        resolved = resolve_project_skill_target(remote, skill_name)
+        if not resolved:
+            return None
+        return f"{host}:{resolved}"
+    if _is_global_agent_install(raw):
+        return None
+    expanded = _expand_target_path(raw).replace("\\", "/").rstrip("/")
+    if not expanded.startswith("/"):
+        return None
+    project = expanded[: -len("/.agents")] if expanded.endswith("/.agents") else expanded
+    if not project or project.endswith("/.agents") or _is_global_agent_install(project):
+        return None
+    return f"{project}/.agents/skills/{skill_name}/"
+
+
 def _resolve_context_path(base_path: Path, p: str) -> Path:
     # Support `.context/...` prefix in recipes for portability.
     if p.startswith(".context/"):
@@ -475,17 +529,31 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
             )
         ]
 
-    if output_format == "skill":
+    if output_format in ("skill", "project-skill"):
         sources_cfg = cfg.get("sources") or {}
         if not isinstance(sources_cfg, dict):
-            print(f"☠☠☠ >>> SOURCE·CONFIGURATION·HERESY ☠☠☠")
+            print(f"\u2620\u2620\u2620 >>> SOURCE\u00b7CONFIGURATION\u00b7HERESY \u2620\u2620\u2620")
             print(f"Skill sources must be a mapping of roles: {section.recipe_file}")
-            print(f"|001101|—|000000|—|111000|— void communion")
+            print(f"|001101|\u2014|000000|\u2014|111000|\u2014 void communion")
             return []
 
         skill_name = recipe_name
-        out_root = staging_dir / "skill" / skill_name
+        stage_root = Path("skill") / ("project" if output_format == "project-skill" else "global")
+        out_root = staging_dir / stage_root / skill_name
         targets = _targets_from_section(section)
+        if output_format == "project-skill":
+            resolved_targets = []
+            for raw in targets:
+                resolved = resolve_project_skill_target(raw, skill_name)
+                if not resolved:
+                    print(f"\u2620\u2620\u2620 >>> PROJECT\u00b7SKILL\u00b7TARGET\u00b7REFUSED \u2620\u2620\u2620")
+                    print(f"Project skills deploy under a project .agents/, not a home agent dir: {raw}")
+                    print(f"|001101|\u2014|000000|\u2014|111000|\u2014 skipping corrupted entry")
+                    continue
+                resolved_targets.append(resolved)
+            if not resolved_targets:
+                return []
+            targets = resolved_targets
 
         tree_rel = sources_cfg.get("tree")
         if tree_rel:
@@ -500,7 +568,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                     shutil.rmtree(out_root)
                 shutil.copytree(tree, out_root, ignore=shutil.ignore_patterns(".git"))
             return [
-                OutputArtifact(relpath=(Path("skill") / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
+                OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
             ]
 
         # SKILL.md generation
@@ -549,7 +617,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                 _write_bytes(out_root / subdir / str(out_name), data, dry_run)
 
         artifacts: List[OutputArtifact] = [
-            OutputArtifact(relpath=(Path("skill") / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
+            OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
         ]
 
         return artifacts
