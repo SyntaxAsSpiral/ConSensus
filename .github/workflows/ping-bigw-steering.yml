@@ -1,0 +1,22 @@
+name: Ping Big W steering sync
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workshop/staging/agent/GrokBot/**"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: POST webhook
+        env:
+          URL: ${{ secrets.BIGW_STEERING_WEBHOOK_URL }}
+          KEY: ${{ secrets.BIGW_STEERING_WEBHOOK_KEY }}
+        run: |
+          curl -fsS -m 8 -X POST "$URL" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $KEY" \
+            -H "X-Automation-Key: $KEY" \
+            -d "{\"event\":\"push\",\"repo\":\"${GITHUB_REPOSITORY}\",\"sha\":\"${GITHUB_SHA}\"}"
