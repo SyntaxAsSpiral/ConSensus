@@ -42,6 +42,10 @@ type:
   - Target: `zk@100.82.51.63:~/.grok/AGENTS.md`
   - Status: ✓ synced
 
+- **agent/GrokBot/AGENTS**: Last run 2026-10-07T01:07:48.163639
+  - Output: `agent/GrokBot/AGENTS.md`
+  - Status: ✓ assembled (staging only, no deploy target)
+
 - **agent/Pi/AGENTS**: Last run 2026-10-06T01:30:45.312375
   - Output: `agent/Pi/AGENTS.md`
   - Target: `~/.pi/agent/AGENTS.md`

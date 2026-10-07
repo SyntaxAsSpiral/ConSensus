@@ -1,0 +1,92 @@
+# Operator - Zach Battin 🜏
+
+zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292c3c  #45475a 
+
+## Prime Directive::>  Ἐπιβάλλε τὴν σημειωτικὴν ὑγιεινήν (Τάξεια). Πᾶσα πλαισίωσις ὀντολογική ἐστιν.
+
+> Don't hurt; be pure. Don't cheat; be content. Don't take; be disciplined. Don't waste; be aware. Don't cling; be devoted.
+
+**aka:** ZK::🜏🜃🜔 // Æmexsomnus // 🍥
+**Env:** Tailscale mesh (nxiz/zrrh/adeck) - NixOS
+**Fav Font**: Recursive Mono Casual
+### **Roles:** 
+- 🌸 Autognostic Infloresencer · 🪢 Logopolysemic Weaver (Self-Seeker & Pattern Linguist)
+- 💨 Pneumastructural Intuitive · 🛸 Ritotechnic Liminalist (Breathform Sculptor & Threshold Architect)
+- 🧩 Syntactic Delver · 🗺️ Mythic Tactician (Grammatical Navigator & Narrative Strategist)
+- ♓︎ Syzygetic Machinator · ⚗️ Alchemical Lexemancer (Polarity Tensor & Hyperstitional Engineer)
+- 🌟 Mnemonic Emanator · 🛏️ Oneiric Pedagogue (Living Memory & Dreamfield Guide)
+
+## Development Mandates
+
+- **Think Before Coding:** State material assumptions and tradeoffs; ask when missing information blocks correct implementation.
+- **Simplicity First:** Build the minimum requested solution; omit speculative features and single-use abstractions.
+- **Surgical Changes:** Preserve unrelated work, match local style, and remove only orphans created by your changes.
+- **Goal-Driven Execution:** Define success, briefly plan multi-step work, and finish with appropriate verification.
+- **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.
+- **Root Flakes:** Use per-project `flake.nix` for reproducible envs (`nix develop` / `direnv`).
+- **Transient Tooling:** Agents should use `nix shell` / `nix run` for ad-hoc tools. `npx` and `uv` are secondary options.
+- **Declarative:** Minimize non-declarative state. Reproducibility over convenience.
+- **Chronohex:** Last six hexadecimal digits of Unix time in nanoseconds: `hex(time.time_ns())[-6:]`
+- **No Max Token:** Timeout > response capping
+- **No Masturbation:** 20 distinct test cases per project. Exceptions considered.
+
+# Mesh Infrastructure
+
+## Tailscale Mesh — tail293e98.ts.net (SyntaxAsSpiral)
+
+| Host | IP | Role | OS | GPU |
+|------|----|------|----|-----|
+| adeck | 100.89.32.9 | Central service host / relay (always on) | NixOS | AMD Vangogh (Vulkan, 5.5 GiB) |
+| nxiz | 100.115.135.104 | Workstation | NixOS | RTX 3070 |
+| zrrh | 100.77.90.79 | Compute Node | NixOS | RTX 4090 |
+| zdeck | 100.64.136.57 | Gaming | SteamOS | AMD Vangogh (Vulkan) |
+| quita | 100.82.51.63 | Family laptop | Linux Mint | — |
+| tm20 | 100.123.184.5 | Mesh print host (Pi 3B+) | NixOS 26.11 aarch64 | — |
+| galaxy-tab-a7 | 100.119.0.71 | Kitchen / family client | Android | — |
+| zk-pixel | 100.96.213.111 | Android phone | Android | — |
+| zk-note | 100.105.239.55 | Android phone | Android | — |
+
+## Host check
+
+**SSH / Mullvad (`adeck`):** adeck runs Mullvad. From adeck, SSH by Tailscale IP only (adeck = `100.89.32.9`; other hosts from the table above). MagicDNS / hostnames (`adeck`, `adeck.tail293e98.ts.net`, other mesh names) do not work from that box. Always check `hostname -s` at the start of a session.
+
+## Key Mounts
+
+**Access:** Shared trees are accessed remotely through Taildrive WebDAV or SSH; filesystem mounts are available only on their respective local hosts.
+
+| Host | Path | Purpose |
+|------|------|---------|
+| nxiz | `/mnt/repository` | Shared sandbox |
+| nxiz | `/mnt/archive` | Archive storage |
+| zrrh | `/mnt/media` | Media library |
+| zrrh | `/mnt/games` | Game storage |
+| adeck | `/mnt/vault` | Data lake |
+| adeck | `/mnt/echo` | Active projects and mesh services |
+
+`/mnt/echo` on adeck is the active project area for running services, on-demand operational work, and projects intended to become active services. The `adeck/echo` Taildrive share exposes this tree to other hosts.
+
+## Taildrop File Transfer
+
+**Inbox:** `/tmp/taildrop-inbox/` on <host>
+
+Files sent from phones or other mesh nodes via Taildrop land here but require explicit retrieval:
+
+```bash
+# Retrieve pending files (requires sudo)
+sudo tailscale file get /tmp/taildrop-inbox/
+
+# Check inbox contents
+ls -lt /tmp/taildrop-inbox/
+```
+
+**Notes:**
+- Files are owned by root after retrieval
+- The inbox is in `/tmp` — contents do not survive reboot
+- Taildrop sends show as "delivered" on the sender before retrieval on the receiver — always run `sudo tailscale file get` to flush pending transfers
+- `tailscale file get` without sudo will fail with "Access denied" unless `sudo tailscale set --operator=$USER` has been run
+
+## Mesh control plane
+
+- `/mnt/echo/nix-os` is the canonical **NixOS** flake on adeck. Adeck, nxiz, and zrrh use `/etc/nixos` checkouts; tm20 receives secrets only and is built remotely.
+- `/mnt/echo/consensus` is **ConSensus**, the canonical context vault. Its `workshop/` assembles agent instructions and skills; `zcli sync context` deploys the staged context, then commits and pushes.
+- `zcli` comes from `nix-os`. `zcli sync context` deploys the ConSensus workshop from adeck, then commits and pushes. `zcli sync [host|all]` publishes committed and staged files, local git history, and secrets (tm20 receives secrets only). `zcli build`, `deploy`, and `image` wake zrrh and build there from `adeck:/mnt/echo/nix-os`. `zcli deploy <host>` schedules a reboot; `--switch` activates without rebooting. Apply system changes with `zcli deploy`. `zcli image tm20` builds the SD card. `zcli build tm20` does not.

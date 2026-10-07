@@ -7,12 +7,11 @@ type:
   - agent
 ---
 ```yaml
-name: Grok Bot
+name: GrokBot
 output_format: agent
 output_name: AGENTS.md
 
-target_locations:
-  - path: /workspace/shared/AGENTS.md
+target_locations: []
 
 sources:
   - file: agents/steering-global-operator.md
