@@ -436,6 +436,16 @@ def _read_source_bytes(source: Dict[str, Any], base_path: Path) -> Optional[byte
     return None
 
 
+def _location_is_fleet(entry: Any) -> bool:
+    """Raw target_locations entry owned by the fleet runner. Keep in step with sync.py."""
+    if isinstance(entry, dict):
+        path = entry.get("path")
+        return bool(path) and str(path).startswith("fleet:")
+    if isinstance(entry, str):
+        return entry.startswith("fleet:")
+    return False
+
+
 def _agent_output_filename(recipe_name: str, section: RecipeSection, total_sections: int) -> str:
     cfg = section.config
     explicit = cfg.get("output_name")
@@ -443,6 +453,8 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
         return str(explicit)
 
     targets = cfg.get("target_locations") or []
+    if isinstance(targets, list):
+        targets = [t for t in targets if not _location_is_fleet(t)]
     if isinstance(targets, list) and len(targets) == 1:
         t = targets[0]
         if isinstance(t, dict) and t.get("path"):
@@ -470,12 +482,15 @@ def _targets_from_section(section: RecipeSection) -> List[str]:
 
     if isinstance(targets, list):
         for t in targets:
+            if _location_is_fleet(t):
+                continue
             if isinstance(t, dict) and t.get("path"):
                 resolved.append(_expand_target_path(str(t["path"])))
             elif isinstance(t, str):
                 resolved.append(_expand_target_path(t))
     elif isinstance(targets, str):
-        resolved.append(_expand_target_path(targets))
+        if not _location_is_fleet(targets):
+            resolved.append(_expand_target_path(targets))
 
     return [p for p in resolved if p]
 

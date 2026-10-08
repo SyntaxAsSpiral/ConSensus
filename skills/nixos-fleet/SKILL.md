@@ -1,0 +1,1 @@
+../../../nix-os/.agents/skills/nixos-fleet/SKILL.md

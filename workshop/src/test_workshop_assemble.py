@@ -280,6 +280,79 @@ class TestWorkshopAssemble(unittest.TestCase):
             self.assertTrue(blocked.is_dir())
             self.assertEqual(snapshot.read_text(encoding="utf-8"), "keep\n")
 
+    def test_mixed_targets_drop_fleet_prefix(self) -> None:
+        import workshop.src.assemble as assemble
+        import workshop.src.sync as sync
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            base.mkdir()
+            (base / "a.md").write_text("A\n", encoding="utf-8")
+            config = {
+                "name": "Demo",
+                "output_format": "agent",
+                "target_locations": [
+                    {"path": "fleet:/workspace/shared/AGENTS.md"},
+                    {"path": "~/Demo/AGENTS.md"},
+                    "fleet:/workspace/shared/ROLES.md",
+                ],
+                "sources": [{"file": "a.md"}],
+            }
+            section = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config=config,
+            )
+            artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
+            expected = str(Path.home() / "Demo" / "AGENTS.md")
+            self.assertEqual(len(artifacts), 1)
+            self.assertEqual(artifacts[0].relpath, "agent/Demo/AGENTS.md")
+            self.assertEqual(artifacts[0].targets, [expected])
+
+            items = sync.build_sync_items_from_sections(
+                [sync.RecipeSection(recipe_file=Path("recipe.md"), index=0, config=config)]
+            )
+            self.assertEqual(len(items), 1)
+            self.assertEqual(items[0].source_relpath, "agent/Demo/AGENTS.md")
+            self.assertEqual(items[0].targets, [expected])
+
+    def test_fleet_only_targets_resolve_none(self) -> None:
+        import workshop.src.assemble as assemble
+        import workshop.src.sync as sync
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            base.mkdir()
+            (base / "a.md").write_text("A\n", encoding="utf-8")
+            for locations in (
+                [{"path": "fleet:/workspace/shared/AGENTS.md"}],
+                ["fleet:/workspace/shared/AGENTS.md"],
+            ):
+                config = {
+                    "name": "Demo",
+                    "output_format": "agent",
+                    "target_locations": locations,
+                    "sources": [{"file": "a.md"}],
+                }
+                section = assemble.RecipeSection(
+                    recipe_file=Path(td) / "recipe.md",
+                    index=0,
+                    config=config,
+                )
+                artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
+                self.assertEqual(len(artifacts), 1)
+                self.assertEqual(artifacts[0].relpath, "agent/Demo/Demo.md")
+                self.assertEqual(artifacts[0].targets, [])
+
+                items = sync.build_sync_items_from_sections(
+                    [sync.RecipeSection(recipe_file=Path("recipe.md"), index=0, config=config)]
+                )
+                self.assertEqual(len(items), 1)
+                self.assertEqual(items[0].source_relpath, "agent/Demo/Demo.md")
+                self.assertEqual(items[0].targets, [])
+
 
 if __name__ == "__main__":
     unittest.main()

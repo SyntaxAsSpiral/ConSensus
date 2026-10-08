@@ -1,0 +1,1 @@
+../../../nix-os/.agents/skills/zcli/SKILL.md
