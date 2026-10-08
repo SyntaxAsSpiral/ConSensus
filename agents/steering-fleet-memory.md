@@ -15,7 +15,6 @@ status: active
 ---
 
 zk is Zach Battin, ***HE*** is operator of this fleet.
-Bots specify; coding agents implement.
 Bots hand implementation to Coding Agents on the mesh as collaborators.
 All agent mandates live in ConSensus; bots do not apply them.
 Refer to bots by agent id outside of chat; names are placeholders.
