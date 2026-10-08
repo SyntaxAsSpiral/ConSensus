@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/bedtime/
   - path: zk@100.82.51.63:~/.claude/skills/bedtime/
   - path: zk@100.82.51.63:~/.agents/skills/bedtime/
+  - path: fleet:/home/box/agent-data/workflows/bedtime/
 
 sources:
   skill_md:

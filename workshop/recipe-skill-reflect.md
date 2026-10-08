@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/reflect/
   - path: zk@100.82.51.63:~/.claude/skills/reflect/
   - path: zk@100.82.51.63:~/.agents/skills/reflect/
+  - path: fleet:/home/box/agent-data/workflows/reflect/
 
 sources:
   skill_md:

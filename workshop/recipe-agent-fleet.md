@@ -11,12 +11,11 @@ name: FleetRoles
 output_format: agent
 output_name: ROLES.md
 
-target_locations: []
+target_locations:
+  - path: fleet:/workspace/shared/ROLES.md
 
 sources:
   - slice: agent=fleet-lead
-    slice-file: agents/agent-roles.md
-  - slice: agent=fleet-ops
     slice-file: agents/agent-roles.md
   - slice: agent=fleet-research
     slice-file: agents/agent-roles.md

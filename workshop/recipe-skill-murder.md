@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/murder/
   - path: zk@100.82.51.63:~/.claude/skills/murder/
   - path: zk@100.82.51.63:~/.agents/skills/murder/
+  - path: fleet:/home/box/agent-data/workflows/murder/
 
 sources:
   skill_md:

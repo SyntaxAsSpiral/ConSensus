@@ -12,7 +12,8 @@ name: Fleet
 output_format: project
 output_name: AGENTS.md
 
-target_locations: []
+target_locations:
+  - path: fleet:/workspace/shared/AGENTS.md
 
 sources:
   - file: agents/steering-global-operator.md

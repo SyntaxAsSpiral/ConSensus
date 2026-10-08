@@ -52,13 +52,27 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 |---|---|
 | `name` | Output name and staging directory. |
 | `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `project-skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
-| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. |
+| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` belong to the fleet runner; see [Fleet targets](#fleet-targets). |
 | `sources` | Source list for agent/project output; role mapping for skill and command-like output. |
 | `template` | Optional literal `{content}` wrapper for agent/project or command-like output. |
 | `output_name` | Optional explicit filename for agent/project output. |
 | `validate_agentskills_spec` | Enables the assembler's limited skill-name/description checks. |
 
 Recipes may contain multiple YAML documents separated by `---` inside the fenced block. Each document becomes a section. Only `name` and `output_format` are inherited from the first document; other keys must be repeated where needed.
+
+### Fleet targets
+
+A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is owned by the fleet runner on the shared fleet PC, not by adeck. Everything after the prefix is the literal path on that PC:
+
+```yaml
+target_locations:
+  - path: ~/.agents/skills/example-skill/
+  - path: fleet:/workspace/shared/skills/example-skill/
+```
+
+`assemble.py` and `sync.py` drop these entries before path expansion, so adeck never deploys, records in the manifest, or purges them. They are also ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. Every other target is handled as before. The two scripts keep separate copies of the check (`_location_is_fleet`), so change both together.
+
+A recipe with `target_locations: []`, or only `fleet:` targets, is assembled into staging and not deployed by adeck. The fleet runner is a separate modified copy of the assembler on the fleet PC and is not part of this repository's scripts.
 
 ## Source forms and slices
 
@@ -80,7 +94,7 @@ Content to include
 <!-- /slice -->
 ```
 
-The `slice` value must exactly match the start marker. Extraction ends at the first `<!-- /slice -->` or the next `<!-- slice:` marker, whichever comes first. A closing marker is optional if the next slice or end of file bounds the content. Slices are not nested or parsed as a structured language.
+The `slice` value must exactly match the start marker, including any prefix such as `agent=`. Extraction ends at the first `<!-- /slice -->` or the next `<!-- slice:` marker, whichever comes first. A closing marker is optional if the next slice or end of file bounds the content, but add one after the last slice of a group that is followed by a heading or other prose; otherwise that text is captured too. Slices are not nested or parsed as a structured language.
 
 Missing source files or slice markers are reported and skipped; they do **not** reliably stop the build. If at least one source succeeds, the result may contain partial content. If a recipe produces no artifacts, assembly logs a failure for that recipe but may still exit successfully overall. Review the output and logs rather than treating exit status alone as proof that every recipe assembled correctly.
 
@@ -156,6 +170,8 @@ Run commands from the repository root:
 python workshop/src/assemble.py --dry-run
 python workshop/src/assemble.py
 ```
+
+Before assembling, `assemble.py` fast-forwards (`git pull --ff-only`) every git checkout under `skills/upstream/` and `.agents/upstream/`; a failed pull stops the run. A dry run only reports what it would pull.
 
 The dry run reports prospective output paths without writing staging files or updating the manifest. A real assembly **deletes and recreates `workshop/staging/`** before producing current artifacts, then refreshes the active recipe entries in `workshop/manifest-recipes.md`. An existing `workshop/staging/.previous-manifest.md` is kept across that wipe until sync consumes it. Treat staging as generated output; do not keep source material there.
 

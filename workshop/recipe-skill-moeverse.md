@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/moeverse/
   - path: zk@100.82.51.63:~/.claude/skills/moeverse/
   - path: zk@100.82.51.63:~/.agents/skills/moeverse/
+  - path: fleet:/home/box/agent-data/workflows/moeverse/
 
 sources:
   skill_md:
