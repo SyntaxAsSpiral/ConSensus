@@ -2,42 +2,30 @@
 title: quest
 glyph: "🗺️"
 lens: campaign-telling
-purpose: An interactive HTML map of a plan — party, path, sheets, rumors.
-context: A plan, spec, or implementation is in play. Offer the map. Build it only if they say yes.
+purpose: Recast a plan, spec, or implementation as a campaign journal.
+context: Work is sequential, has a party, and has doors. Tell it as a dungeon.
 tone: tavern-map
-structure: overworld → party → quest graph → sheets → rumors
+structure: overworld → party → quests → side quests → rumors
 tags:
   - plan
+  - campaign
   - map
-  - html
 ---
 
 # 🗺️ Quest
 
-If a plan, spec, or implementation is in context, offer to make a quest map. Wait for a yes.
+The source is a campaign. Tell it as one.
 
-Then write one self-contained HTML file next to the source: `<stem>.quest.html`. If there is no path, write `./quest-map.html`. Point at the path. Do not paste the HTML into chat.
+**Overworld.** Why anyone entered. The prize if they walk out.
 
-## Map
+**Party.** People, tools, agents as classes. What each is for.
 
-A clickable graph of the campaign.
+**Main quests.** Walking order. Each one: door, boss, loot, save point.
 
-- **Overworld** banner: why anyone entered, the prize if they walk out.
-- **Party** roster: people, tools, agents as classes. Click a member for what they are for and what they must not try to be.
-- **Main quests** as nodes in walking order, edges as the path. Click a node to open its **sheet**:
-  - door (what you need before you go in)
-  - boss (the actual hard bit)
-  - loot (real deliverable: file, decision, passing test)
-  - save point (how you know you can stop)
-- **Side quests** visible, dimmed, not on the main path. Clickable. Do not auto-start them.
-- **Rumors** drawer: constraints, open questions, why you do not rush the whole map in one night.
+**Side quests.** Named. Not started.
 
-One quest highlighted as *current* if the source says where they are. Otherwise the first unlocked door.
+**Rumors.** Constraints, open questions, why not the whole map in one night.
 
-## File
+## Map file
 
-One HTML file. Inline CSS and JS. No build, no CDN required. Works opened from disk.
-
-Catppuccin mocha (`#1e1e2e` base, `#cdd6f4` text, accents from rose/peach/green/lavender). Font: Recursive, then system mono.
-
-Keyboard: nodes focusable, Enter/Space opens a sheet, Escape closes. Respect `prefers-reduced-motion`.
+If you can, offer an interactive narrative map: one self-contained file next to the source ( `./quest-map.html`).

@@ -16,4 +16,4 @@ python workshop/src/sync.py
 
 Sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use it only when those effects are intended.
 
-Epistemic frames live in [skills/bruh](../skills/bruh/) and deploy via [recipe-skill-bruh.md](recipe-skill-bruh.md). Remaining prompt templates in `prompts/` (for example doc-consistency-check) still assemble as standalone skills; assembly strips prompt frontmatter and writes skill frontmatter into generated `SKILL.md` files.
+Epistemic frames live in [skills/bruh](../skills/bruh/) and deploy via [recipe-skill-bruh.md](recipe-skill-bruh.md). Documentation purge is [skills/inquisition](../skills/inquisition/) via [recipe-skill-inquisition.md](recipe-skill-inquisition.md).
