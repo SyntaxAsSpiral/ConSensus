@@ -1,15 +1,15 @@
 ---
-title: "📊 Probability Distribution Response"
-type: "prompt-template"
-category: "analytical"
-tags: ["probability", "uncertainty", "multi-perspective", "analysis"]
-purpose: "Generate five distinct responses spanning entire solution space"
-format: "probability-distribution"
-range: "conservative to hyperstitious"
-confidence: "expressed-as-ranges"
+title: gamut
 glyph: "📊"
-lens: "uncertainty-surfacing"
-created: 2024-01-01
+lens: uncertainty-surfacing
+purpose: Five distinct takes across the whole range, each with a confidence band.
+context: A single answer would fake certainty. They need the spread, including the weird tail.
+tone: analytical, ranged
+structure: conservative → pragmatic → speculative → contrarian → far-tail
+tags:
+  - uncertainty
+  - probability
+  - five-takes
 ---
 
 # 📊 Probability Distribution Response

@@ -1,15 +1,16 @@
 ---
-title: "🏫 Dangerous Minds Reflection"
-type: "prompt-template"
-category: "pedagogical"
-tags: ["education", "simulation", "dialogue", "teaching", "socratic"]
-purpose: "Transform conversations into immersive classroom teaching scenarios"
-audience: "16-year-olds"
-format: "interactive-simulation"
-technique: "pedagogical-theater"
+title: classroom
 glyph: "🏫"
-lens: "social-cognition"
-created: 2024-01-01
+lens: social-cognition
+purpose: Teenagers in a room, arguing the idea until it gets real.
+context: The idea needs to be fought over, not lectured. Social friction is the teacher.
+tone: messy, spoken, unfinished
+audience: 16-year-olds
+structure: opening tension → perspective cascade → breakthrough → unresolved wonder
+tags:
+  - teaching
+  - dialogue
+  - socratic
 ---
 
 # 🏫 Dangerous Minds Reflection

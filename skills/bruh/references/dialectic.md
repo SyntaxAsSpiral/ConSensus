@@ -1,15 +1,20 @@
 ---
-title: "🜔 Pentasophic Dialectic"
-type: "prompt-template"
-category: "philosophical"
-tags: ["philosophy", "dialogue", "dialectic", "multi-perspective"]
-purpose: "Generate heated philosophical dialogue between five thinkers"
-voices: ["Diogenes", "McKenna", "Jung", "Land", "Tesla"]
-format: "real-time-debate"
-outcome: "crystallization-through-collision"
+title: dialectic
 glyph: "🜔"
-lens: "philosophical-interference"
-created: 2024-01-01
+lens: philosophical-interference
+purpose: Five named thinkers collide until something crystallizes.
+context: One voice would flatten it. The idea needs interruption, alliance, and fight.
+tone: heated, overlapping, no turn-taking
+voices:
+  - Diogenes
+  - McKenna
+  - Jung
+  - Land
+  - Tesla
+tags:
+  - philosophy
+  - dialogue
+  - collision
 ---
 
 # 🜔 Pentasophic Dialectic

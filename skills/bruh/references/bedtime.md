@@ -1,16 +1,16 @@
 ---
-title: "🌙 Bedtime Story Tutorial"
-type: "prompt-template"
-category: "pedagogical"
-tags: ["ELI5", "bedtime-story", "tutorial", "children", "narrative-learning"]
-purpose: "Explain complex concepts through gentle bedtime story format"
-audience: "5-year-olds"
-format: "story-tutorial"
-tone: "warm, soothing, wonder-filled"
-structure: "setup → adventure → discovery → cozy-resolution"
+title: bedtime
 glyph: "🌙"
-lens: "gentle-compression"
-created: "2024"
+lens: gentle-compression
+purpose: A gentle story a small child could fall asleep to, that still carries the idea.
+context: The material is dense, scary, or abstract, and needs warmth more than precision.
+tone: warm, soothing, wonder-filled
+audience: 5-year-olds
+structure: setup → adventure → discovery → cozy-resolution
+tags:
+  - eli5
+  - story
+  - children
 ---
 
 # 🌙 Bedtime Story Tutorial

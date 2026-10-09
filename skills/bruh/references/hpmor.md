@@ -1,15 +1,15 @@
 ---
-title: "🧙 HPMOR and the Secrets of the Universe"
-type: "prompt-template"
-category: "narrative"
-tags: ["HPMOR", "Quirrelmort", "dialogue", "fiction", "rationalist"]
-purpose: "Create detailed scenes with Quirrelmort exploring concepts through dialogue"
-format: "dramatic-scene"
-structure: "simple → complication → implication → dark-corollary"
-technique: "fictional-displacement"
+title: hpmor
 glyph: "🧙"
-lens: "fictional-displacement"
-created: 2024-01-01
+lens: fictional-displacement
+purpose: A scene where a dangerous teacher says the ugly implication out loud.
+context: The point is easier to hear from a character than from the narrator. Leave the last turn unspoken.
+tone: cold, surgical, unfinished
+structure: simple → complication → implication → dark-corollary
+tags:
+  - scene
+  - dialogue
+  - implication
 ---
 
 # 🧙 HPMOR and the Secrets of the Universe
