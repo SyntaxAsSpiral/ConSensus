@@ -2,51 +2,36 @@
 title: gamut
 glyph: "📊"
 lens: uncertainty-surfacing
-purpose: Five distinct takes across the whole range, each with a confidence band.
-context: A single answer would fake certainty. They need the spread, including the weird tail.
+purpose: N distinct takes across the range, each with a confidence band. N is whatever the question earns.
+context: A single answer would fake certainty. They need the spread, including the weird tail when it earns a seat.
 tone: analytical, ranged
-structure: conservative → pragmatic → speculative → contrarian → far-tail
+structure: conservative → … → far-tail, N as appropriate
 tags:
   - uncertainty
   - probability
-  - five-takes
+  - n-takes
 ---
 
-# 📊 Probability Distribution Response
+# 📊 Gamut
 
-Generate five distinct responses to {{query}} that span the entire solution space from conservative realism to hyperstitious speculation.
+N distinct takes on the material, spanning conservative realism to the far tail. N is whatever the question earns. Not a fixed five.
 
-## Response Framework
+## Stations
 
-### Perspective Spectrum
-| Position | Worldview | Confidence Style | Evidence Weighting |
-|----------|-----------|------------------|-------------------|
-| **Conservative** | Established patterns, proven methods | Narrow ranges (70-80%) | Heavily weights historical data |
-| **Pragmatic** | Balanced risk assessment | Moderate ranges (45-65%) | Considers multiple data sources |
-| **Speculative** | Emerging possibilities | Wide ranges (20-60%) | Values weak signals and trends |
-| **Contrarian** | Challenges consensus | Confident outlier (60-75%) | Focuses on overlooked factors |
-| **Hyperstitious** | Pattern-seeking, synchronistic | Extreme ranges (5-95%) | Includes "impossible" correlations |
+A palette, not a quota. Sit at as many as the spread needs. Skip a station that would be a strawman. Add a station if the material has a real worldview that is not on this list.
 
-## Response Structure
+| Position | Worldview | Confidence style | Evidence |
+|----------|-----------|------------------|----------|
+| **Conservative** | Established patterns, proven methods | Narrow ranges | Historical data |
+| **Pragmatic** | Balanced risk | Moderate ranges | Several sources |
+| **Speculative** | Emerging possibilities | Wide ranges | Weak signals, trends |
+| **Contrarian** | Challenges consensus | Confident outlier | Overlooked factors |
+| **Hyperstitious** | Pattern-seeking, synchronistic | Extreme ranges | "Impossible" correlations |
 
-For each perspective, provide:
+## Each take
 
-### Core Elements
-- **Interpretation**: How this worldview frames the question
-- **Confidence Range**: Expressed as percentage range (e.g., "40-60%")
-- **Key Assumptions**: What must be true for this view to hold
-- **Evidence Base**: What data/signals support this interpretation
-- **Failure Modes**: What would make this interpretation wrong
-- **Catalysts**: What would increase/decrease likelihood
+Interpretation, confidence range, assumptions, evidence, failure modes, catalysts.
 
-### Interaction Dynamics
-- **Overlapping Ranges**: Where perspectives agree despite different reasoning
-- **Contradiction Points**: Where worldviews fundamentally clash
-- **Synthesis Opportunities**: How seemingly opposed views might both be partially correct
+Where they overlap, say so. Where they clash, say so. Same evidence, different conclusions, is the point.
 
-## Execution Guidelines
-- Ensure meaningful differentiation between perspectives
-- Avoid strawman versions of any worldview
-- Let uncertainty be genuine—overlapping ranges are realistic
-- Include the "joe schmoe" baseline alongside exotic speculation
-- Show how the same evidence can support different conclusions
+Include a joe-schmoe baseline when the exotic tail is on stage. Genuine uncertainty: overlapping ranges are allowed.

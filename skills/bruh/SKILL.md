@@ -1,6 +1,6 @@
 ---
 name: bruh
-description: Use when the user asks to bruh, reframe, restyle, eli*, simplify, or render data through a creative lens (bedtime, cave, classroom, dialectic, gamut, hpmor, moeverse, quest, or a new frame).
+description: Use when the user asks to bruh, reframe, restyle, eli*, simplify, or render data through a creative lens (bedtime, cave, debate, pentasoph, gamut, hpmor, moeverse, quest, or a new frame).
 ---
 
 # Bruh
@@ -15,10 +15,10 @@ Pick from this index. Open `references/<name>.md` only when you wear that voice.
 
 | | | |
 |---|---|---|
-| 🪨 | cave | simplest explanation (default) |
+| 🪨 | cave | explain like they a caveman (default) |
 | 🌙 | bedtime | eli5-12 |
-| 🏫 | classroom | teenagers fight the idea |
-| 🜔 | dialectic | five thinkers orbit |
+| 🗣️ | debate | adversarial dialectic |
+| 🜔 | pentasoph | five thinkers orbit |
 | 📊 | gamut | n takes, uncertainty |
 | 🧙 | hpmor | dangerous, ugly implications |
 | 🎀 | moeverse | system gijinka |

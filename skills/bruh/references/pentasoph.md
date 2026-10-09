@@ -1,5 +1,5 @@
 ---
-title: dialectic
+title: pentasoph
 glyph: "🜔"
 lens: philosophical-interference
 purpose: Five named thinkers collide until something crystallizes.
@@ -17,7 +17,7 @@ tags:
   - collision
 ---
 
-# 🜔 Pentasophic Dialectic
+# 🜔 Pentasoph
 
 Refract {{concept/conversation}} through five philosophical perspectives in 
 heated internal dialogue:

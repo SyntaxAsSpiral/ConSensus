@@ -26,7 +26,7 @@ sources:
       name: bruh
       description: >-
         Use when the user asks to bruh, reframe, restyle, eli*, or render
-        work through a creative lens (bedtime, cave, classroom, dialectic,
+        work through a creative lens (bedtime, cave, debate, pentasoph,
         gamut, hpmor, moeverse, quest, or a new frame).
       metadata:
         author: zk
@@ -39,10 +39,10 @@ sources:
       output_name: bedtime.md
     - file: skills/bruh/references/cave.md
       output_name: cave.md
-    - file: skills/bruh/references/classroom.md
-      output_name: classroom.md
-    - file: skills/bruh/references/dialectic.md
-      output_name: dialectic.md
+    - file: skills/bruh/references/debate.md
+      output_name: debate.md
+    - file: skills/bruh/references/pentasoph.md
+      output_name: pentasoph.md
     - file: skills/bruh/references/gamut.md
       output_name: gamut.md
     - file: skills/bruh/references/hpmor.md

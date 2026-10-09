@@ -43,7 +43,7 @@ Native `POST /api/v1/chat` uses `reasoning` = `off|low|medium|high|on`. Do not s
 
 When the jinja never reads `reasoning_effort`, sending it is a no-op. The hub `model.yaml` `customFields` → `setJinjaVariable` and the official prompting guide win over the gateway's enum.
 
-Vision preflight: `GET /api/v0/models/{id}` → `type == "vlm"`. `GET /api/v1/models` → `capabilities.vision == true`. `architecture.input_modalities` is not on the live `/api/v0` payload. pi's `models.json` still says `input: ["text"]` for all three. Vision is the raw API.
+Vision preflight: `GET /api/v0/models/{id}` → `type == "vlm"`. `GET /api/v1/models` → `capabilities.vision == true`. `architecture.input_modalities` is not on the live `/api/v0` payload. Vision is the raw API. A client that still advertises text-only input is stale.
 
 ## Model cards
 
@@ -51,15 +51,15 @@ Vision preflight: `GET /api/v0/models/{id}` → `type == "vlm"`. `GET /api/v1/mo
 
 **`qwen/qwen3.8-27b`** — Q4_K_M, ~17.7 GB, arch `qwen35`. Card context 262144. Official efforts: `xhigh` (default), `medium`, `low`. Official off-switch is `chat_template_kwargs.enable_thinking: false`; on this gateway use `reasoning_effort: "none"`. `preserve_thinking` defaults on. mmproj `mmproj-Qwen3.8-27B-BF16.gguf`. MTP head is inside the GGUF. Thinking sample: temp 1.0, top_p 0.95, top_k 20. Instruct: temp 0.7, top_p 0.8, presence_penalty 1.5. Hub `lmstudio-community/Qwen3.8-27B-GGUF`.
 
-**`google/gemma-4-31b`** — Q4_K_M, ~19.9 GB, arch `gemma4`. Card context 262144. Thinking is `<|think|>` in the system turn. LMS v1 options are `off|on` only. Thoughts are `<|channel>thought`. On 31B, thinking-off still emits an empty thought channel. Strip prior thoughts from history. Sampling: temp 1.0, top_p 0.95, top_k 64. Hub `lmstudio-community/gemma-4-31B-it-GGUF`.
+**`google/gemma-4-31b`** — Q4_K_M, ~19.9 GB, arch `gemma4`. Card context 262144. At this quant and 100K it does not fit entirely on the 24 GB GPU, so it spills and is slower. Do not quantize harder. Thinking is `<|think|>` in the system turn. LMS v1 options are `off|on` only. Thoughts are `<|channel>thought`. On 31B, thinking-off still emits an empty thought channel. Strip prior thoughts from history. Sampling: temp 1.0, top_p 0.95, top_k 64. Hub `lmstudio-community/gemma-4-31B-it-GGUF`.
 
-**`meta/muse-glimmer`** — 30B card (LMS `params_string: 28B` is the text decoder; ~1.8–2B vision encoder on top). Card context 131072. pi's display name "26b" is stale. There is no off switch. Send `chat_template_kwargs: {"reasoning_strength": "low"}`. `reasoning_effort` and `enable_thinking` are absent from the template. LMS v1 exposes only `on`. Sampling: temp 1.0, top_p 0.95, top_k 64. JSON, when constrained, belongs in `to=user` → `message.content`. Speculative decoding is a separate draft (Meta DFlash), not a baked MTP head. Hub `lmstudio-community/Muse-Glimmer-30B-GGUF`. Prompting: <https://ai.developer.meta.com/docs/muse-glimmer/prompting.md>.
+**`meta/muse-glimmer`** — 30B card (LMS `params_string: 28B` is the text decoder; ~1.8–2B vision encoder on top). Card context 131072. A client label of "26b" is stale. There is no off switch. Send `chat_template_kwargs: {"reasoning_strength": "low"}`. `reasoning_effort` and `enable_thinking` are absent from the template. LMS v1 exposes only `on`. Sampling: temp 1.0, top_p 0.95, top_k 64. JSON, when constrained, belongs in `to=user` → `message.content`. Speculative decoding is a separate draft (Meta DFlash), not a baked MTP head. Hub `lmstudio-community/Muse-Glimmer-30B-GGUF`. Prompting: <https://ai.developer.meta.com/docs/muse-glimmer/prompting.md>.
 
 ## JIT
 
 adeck `http-server-config.json`: context 100000, `jitModelTTL` 1 h, `unloadPreviousJITModelOnLoad`. Presets in `~/.lmstudio/config-presets/` (adeck's are flake-managed; zrrh's are GUI-managed). Per-model JIT files on zrrh: `~/.lmstudio/.internal/user-concrete-model-default-config/`. LMS writes a field only after it is changed, so an empty `operation.fields` does not mean the UI lacks the control.
 
-| Model | KV | offload KV | parallel |
+| Model | KV | offload KV | streams (`parallel`) |
 |---|---|---|---|
 | `qwen/qwen3.8-27b` | q8_0 | true | 4 |
 | `meta/muse-glimmer` | f16 | true | 2 |
@@ -74,14 +74,6 @@ Qwen3.8 MTP is inside the GGUF. The zrrh log shows `common_speculative_init_resu
 Stock llama.cpp, which LM Studio ships, rejects ggml types outside `[0, GGML_TYPE_COUNT)`. Ternary Bonsai 2 `PTQ1_0` (143) and `PQ2_0` (142) need the Prism fork. The 1-bit `Q1_0` Bonsai does load. A `Q2_0` from a `-gguf-dev` repo can load and emit garbage. Match `bonsai-2-` or `ternary-bonsai-2`. The substring `bonsai-2` also matches `bonsai-27b`.
 
 ## Callers
-
-### pi
-
-`~/.pi/agent/models.json`, provider `local`. The file may still say `http://adeck:1234/v1`. Use `http://100.89.32.9:1234/v1`. `api` is `openai-completions`, `apiKey` is `lms`, `contextWindow` 100000. Default provider is `openrouter` / `stealth/ox-alpha`. Local is opt-in:
-
-```bash
-pi --provider local --model qwen/qwen3.8-27b
-```
 
 ### family-cookbook — `/mnt/echo/family-cookbook`
 
