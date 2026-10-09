@@ -476,6 +476,33 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
     return f"{safe_suffix}.md"
 
 
+def _section_has_fleet_target(section: RecipeSection) -> bool:
+    targets = section.config.get("target_locations") or []
+    entries = targets if isinstance(targets, list) else [targets]
+    return any(_location_is_fleet(t) for t in entries)
+
+
+def _fleet_skill_artifact(
+    section: RecipeSection, staging_dir: Path, skill_name: str, out_root: Path, dry_run: bool
+) -> List[OutputArtifact]:
+    """Copy a skill into staging/skill/fleet for the fleet wrapper. Adeck does not deploy it."""
+    if not _section_has_fleet_target(section):
+        return []
+    fleet_root = staging_dir / "skill" / "fleet" / skill_name
+    if not dry_run and out_root.exists():
+        if fleet_root.exists():
+            shutil.rmtree(fleet_root)
+        shutil.copytree(out_root, fleet_root, ignore=shutil.ignore_patterns(".git"))
+    return [
+        OutputArtifact(
+            relpath=f"skill/fleet/{skill_name}",
+            abspath=fleet_root,
+            targets=[],
+            is_dir=True,
+        )
+    ]
+
+
 def _targets_from_section(section: RecipeSection) -> List[str]:
     targets = section.config.get("target_locations") or []
     resolved: List[str] = []
@@ -583,7 +610,8 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                     shutil.rmtree(out_root)
                 shutil.copytree(tree, out_root, ignore=shutil.ignore_patterns(".git"))
             return [
-                OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
+                OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
+                *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
             ]
 
         # SKILL.md generation
@@ -632,7 +660,8 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                 _write_bytes(out_root / subdir / str(out_name), data, dry_run)
 
         artifacts: List[OutputArtifact] = [
-            OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True)
+            OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
+            *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
         ]
 
         return artifacts

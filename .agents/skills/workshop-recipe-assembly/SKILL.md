@@ -70,7 +70,7 @@ target_locations:
   - path: fleet:/workspace/shared/skills/example-skill/
 ```
 
-`assemble.py` and `sync.py` drop these entries before path expansion, so adeck never deploys, records in the manifest, or purges them. They are also ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. Every other target is handled as before. The two scripts keep separate copies of the check (`_location_is_fleet`), so change both together.
+`assemble.py` and `sync.py` drop these entries before path expansion, so adeck never deploys them or purges them. A skill recipe that has one also gets a copy at `workshop/staging/skill/fleet/<name>/` for the fleet wrapper. That copy is recorded with no deploy targets. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. Every other target is handled as before. The two scripts keep separate copies of the check (`_location_is_fleet`), so change both together.
 
 A recipe with `target_locations: []`, or only `fleet:` targets, is assembled into staging and not deployed by adeck. The fleet runner is a separate modified copy of the assembler on the fleet PC and is not part of this repository's scripts.
 

@@ -546,7 +546,7 @@ openrgb --noautoconnect --mode static --color 000000
 
 ## Related Skills
 
-- catppuccin-theming — one possible palette source, deployed as its own skill
+- catppuccin — one possible palette source, deployed as its own skill
 - agent-steering — archived in the ConSensus vault
 
 ## Resources

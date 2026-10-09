@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "workshop/staging/agent/GrokBot/**"
+      - "workshop/staging/skill/fleet/**"
   workflow_dispatch:
 jobs:
   ping:

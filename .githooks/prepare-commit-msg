@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Stamp a chronohex seal into the commit message. Git strips the litany comments.
+# Chronohex: last six hex digits of Unix time in nanoseconds.
+set -euo pipefail
+
+msg_file=$1
+source=${2:-}
+
+case "$source" in
+  merge|squash) exit 0 ;;
+esac
+
+if grep -qE '\|[0-9a-f]{6}\| stable\.|⟳ [0-9a-f]{6}' "$msg_file"; then
+  exit 0
+fi
+
+seal="|$(python3 -c 'import time; print(hex(time.time_ns())[-6:])')| stable."
+
+python3 - "$msg_file" "$seal" <<'PY'
+import sys
+
+path, seal = sys.argv[1], sys.argv[2]
+lines = open(path).read().splitlines(keepends=True)
+cut = next((i for i, line in enumerate(lines) if line.startswith("#")), len(lines))
+head, tail = lines[:cut], lines[cut:]
+while head and head[-1].strip() == "":
+    head.pop()
+if any(line.strip() for line in head):
+    if head and not head[-1].endswith("\n"):
+        head[-1] += "\n"
+    out = head + ["\n", seal + "\n"]
+else:
+    out = ["\n", seal + "\n"]
+if tail:
+    out.append("\n")
+open(path, "w").writelines(out + tail)
+PY

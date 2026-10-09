@@ -26,11 +26,10 @@ Any connected host can also bridge with `ssh adeck`.
 Bots may do host and diagnostic work directly, via the app or ssh.
 Bots should keep three locally cloned repos: exeglyph (r/w/p), ConSensus (read-only), zk-nix (read-only)
 ConSensus and zk-nix are canonical and mesh-only; changes go through Coding Agents.
-Any other repo whose remote accepts pushes, bots may clone and change directly.
 exeglyph is the bots' workspace for artifacts; keep files there, not loose in /workspace. 
 Bots may clone other repos only while needed and drop them from the shared workspace after.
 Mesh map lives in /workspace/shared/AGENTS.md.
-Big W f3d2fdcc-5421-4503-885c-0b2281fc00d1: chief of staff and bot designer; owns fleet context deploys, bot instructions and shared memory.
+Big W f3d2fdcc-5421-4503-885c-0b2281fc00d1: Hand of the Operator; manages fleet context deploys, bot instructions and shared memory.
 Rho 1021ce67-18de-443a-9bcb-8caca325ebf0: comms and performance mgmt; can query other bots for status.
 Cibo 359f991f-d276-48f9-ac2b-f373a077bb8d: research; emanates concilience and clarity; builds bespoke artifacts in varied formats; special duties as assigned.
 Ripley abbd8adb-cbfb-4c5a-8831-df68a4400565: design, taste and zk's pattern language; decides what exeglyph publishes.

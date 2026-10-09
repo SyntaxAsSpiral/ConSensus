@@ -25,7 +25,7 @@ This file is injected into the **user task message** for evaluation runs.
 `triquetra`:
 - Goal: evaluate an ingestion artifact and decide whether to accept, refuse, or request revision.
 - Phases: Phase 1 independent evaluations (H + C, parallel) -> Phase 2 synthesis/decision (M) -> optional bounded reviews (H + C).
-- Non-goals: any graph mutation (evaluation only).
+- Non-goals: graph mutation. After ACCEPT, Morphognome may edit a skill or a bot memory.
 
 ### Core Constraints (all agents)
 
@@ -84,7 +84,7 @@ Rules:
 Decisions (conceptual):
 - `HONOR_REFUSAL`: stop and record refusal outcome.
 - `PROCEED`: request bounded refinement turns (max bounded by caller).
-- `ACCEPT`: accept as-is (mutations may occur later by an authorized actor).
+- `ACCEPT`: Morphognome writes the accepted skill or memory rows.
 - `ELEVATE`: unresolved tensions; operator decision required.
 
 Output shape is enforced at the tool layer (placeholder).
@@ -95,4 +95,4 @@ Output shape is enforced at the tool layer (placeholder).
 
 ## Notes (non-injected)
 
-Lifted from `raw/triquetra-evaluation.md` as a placeholder draft (no schemas/templates yet).
+The runnable command is [skills/praxis-triquetra](../skills/praxis-triquetra/). The seat briefs above are the injection. Output schemas are still unset.

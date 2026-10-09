@@ -72,7 +72,7 @@ DO NOT REPLY. One closer.
 
 ## Slip skeleton (feast / week menu)
 
-Locked compositor: `family-cookbook/slips/sample/compose_feast.py`. One cartouche around the whole week. Type is PIL Liberation Serif in the raster. Head/foot vine ~168 dots or it becomes a line. Do not lace every day.
+Locked compositor: `family-cookbook/slips/sample/compose_feast.py`. One cartouche around the whole week. Type is PIL Liberation Serif in the raster. The vine height is the gilding band in [tape.md](tape.md).
 
 ```markdown
 ![le festin](this-week-card.png)

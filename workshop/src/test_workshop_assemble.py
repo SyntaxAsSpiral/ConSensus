@@ -212,6 +212,48 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
 
 
+    def test_fleet_target_also_stages_skill_fleet_copy(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            tree = base / "skills" / "git"
+            tree.mkdir(parents=True)
+            (tree / "SKILL.md").write_text("---\nname: git\n---\n\n# Git\n", encoding="utf-8")
+
+            section = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config={
+                    "name": "git",
+                    "output_format": "skill",
+                    "target_locations": [
+                        {"path": "~/.agents/skills/git/"},
+                        {"path": "fleet:/home/box/agent-data/workflows/git/"},
+                    ],
+                    "sources": {"tree": "skills/git"},
+                },
+            )
+
+            artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
+            self.assertEqual([a.relpath for a in artifacts], ["skill/global/git", "skill/fleet/git"])
+            self.assertEqual((out / "skill" / "fleet" / "git" / "SKILL.md").read_text(encoding="utf-8"), (tree / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertEqual(artifacts[1].targets, [])
+
+            plain = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config={
+                    "name": "git",
+                    "output_format": "skill",
+                    "target_locations": [{"path": "~/.agents/skills/git/"}],
+                    "sources": {"tree": "skills/git"},
+                },
+            )
+            only = assemble.build_output_artifacts(plain, base, out, dry_run=False)
+            self.assertEqual([a.relpath for a in only], ["skill/global/git"])
+
     def test_repeated_assemble_keeps_unconsumed_snapshot(self) -> None:
         import workshop.src.assemble as assemble
 

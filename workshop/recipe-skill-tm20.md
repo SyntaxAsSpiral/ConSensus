@@ -1,7 +1,7 @@
 ---
 id: recipe-tm20
 created: 2026-09-05
-modified: 2026-09-26
+modified: 2026-10-09
 status: active
 type:
   - "skill"
@@ -30,7 +30,7 @@ sources:
         printer, 80 mm receipts, or the mesh print receiver. Slash: /tm20
       metadata:
         author: zk
-        version: "0.5.0"
+        version: "0.6.0"
         category: print
         compatibility: USB and tm20 binaries are the tm20 Pi only; other hosts POST the receiver. No CUPS. Paper must be loaded.
 
@@ -38,6 +38,14 @@ sources:
       - file: skills/tm20/SKILL.md
 
   references:
+    - file: skills/tm20/references/usb.md
+      output_name: usb.md
+    - file: skills/tm20/references/receiver.md
+      output_name: receiver.md
+    - file: skills/tm20/references/markdown.md
+      output_name: markdown.md
+    - file: skills/tm20/references/tape.md
+      output_name: tape.md
     - file: skills/tm20/references/motifs.md
       output_name: motifs.md
 

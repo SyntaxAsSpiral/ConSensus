@@ -3,7 +3,7 @@ name: cli-coding
 description: Use when choosing which coding CLI runs the work. The roster is always Pi on the local gateway plus one designated primary cloud coder. The current primary is Grok. Covers local fan-out up to one loaded model's prediction streams, escalation to that primary, and Pi on OpenRouter when the primary is at limit. Model dials, JIT presets, and GPU checks stay in local-inference.
 metadata:
   author: zk
-  version: "0.6"
+  version: "0.8"
   category: coding
 ---
 
@@ -20,6 +20,8 @@ Always Pi on the local gateway, plus one primary cloud coder. One designation at
 Frontline is [references/pi.md](references/pi.md).
 
 The current primary is Grok: `grok --prompt-file <task> --output-format json`. Read [references/grok.md](references/grok.md) before launching it.
+
+Granularity is a model or effort change inside the seated CLI. The order is [references/priority.md](references/priority.md). Flag names stay in the Pi and Grok leaves. A second CLI is a different seat.
 
 Other coding agents are logged under `Coding Agents` in `agents/agent-roles.md` and are not seated. Personas stay in that file. Fleet roles are not coding CLIs. Changing the primary is an edit of this section.
 

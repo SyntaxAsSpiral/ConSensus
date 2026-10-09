@@ -2,7 +2,7 @@
 
 The current primary. Read this before launching it. The seat and the handoff contract are in `SKILL.md`.
 
-Checked on adeck 2026-10-09. `grok` 1.0.46 (`2765805b9442`) at `/run/current-system/sw/bin/grok`. Login was grok.com. `grok models` listed default `grok-4.7`, plus `grok-4.7-build-fast`, `grok-4.6`, and `grok-4.5`. Re-read `grok --help` before copying a flag that is not in the one-shot block below.
+`grok` 1.0.46 (`2765805b9442`) at `/run/current-system/sw/bin/grok`. Login is grok.com. `grok models` lists default `grok-4.7`, plus `grok-4.7-build-fast`, `grok-4.6`, and `grok-4.5`. Re-read `grok --help` before copying a flag that is not in the one-shot block below.
 
 This leaf blends three upstream skills. The open-session client is copied under `scripts/`. grapeot's files and franke's `cdx.py` are not.
 
@@ -24,7 +24,7 @@ grok --prompt-file <task> --output-format json --cwd <absolute-dir>
 
 Flags present on 1.0.46 and useful on that command: `--permission-mode` (`default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`), `--always-approve`, `--max-turns`, `-m` / `--model`, `--reasoning-effort` / `--effort`, `--json-schema` (implies `--output-format json`), `--cwd`. `--output-format` also accepts `plain`, `streaming-json`, and `streaming-messages-json`.
 
-Pass `-m` only when the task names a model. Otherwise leave the CLI default.
+Granularity is `-m` / `--model` and `--reasoning-effort` (`xhigh`, `high`, `medium`, `low`). Which row to run is [priority.md](priority.md). Leave both unset to keep the CLI default, `grok-4.7`, while that table is blank.
 
 Exit 0 means the process ended. The proof is the diff and the command in the prompt file. A stdout summary is not that proof. If the prompt required a result file, the file has to be on disk and non-empty.
 
@@ -40,17 +40,15 @@ scarletkc launches:
 grok [--permission-mode <mode>] [--sandbox <profile>] agent --no-leader [--model <id>] [--reasoning-effort <effort>] stdio
 ```
 
-`--permission-mode` and `--sandbox` go before `agent`. `--model` and `--reasoning-effort` go after `--no-leader`. Then `stdio`. `--no-leader` and `agent stdio` both exist on 1.0.46. The ping below ran this shape.
+`--permission-mode` and `--sandbox` go before `agent`. `--model` and `--reasoning-effort` go after `--no-leader`. Then `stdio`. `--no-leader` and `agent stdio` both exist on 1.0.46.
 
-Their client speaks ACP, returns a task id immediately, and stores state under `$XDG_STATE_HOME/grok-acp` or `~/.local/state/grok-acp`. Verbs: `start --cwd --prompt-file`, `wait`, `status`, `reply`, `permission --request-id --option-id`, `cancel`, `close`. `wait` returning on timeout does not cancel the turn. A follow-up waits until the current turn finishes. Answer `needs_approval` with an option id Grok offered. Omit `--permission-mode`, `--sandbox`, `--model`, and `--effort` to inherit Grok's own config. Do not pass `bypassPermissions` to avoid an approval.
-
-The client is installed on adeck at `skills/cli-coding/scripts/grok.py`, copied from scarletkc commit `eb55005652d5708f369bde008cc48c71159f9e95` with `acp_client.py`, `agent_task_runtime.py`, and `windows_job.py`. Apache-2.0 text is `scripts/LICENSE`. Python 3.12 or newer. There is no Nix package. State is `$XDG_STATE_HOME/grok-acp` or `~/.local/state/grok-acp`.
+The client is `skills/cli-coding/scripts/grok.py`, with `acp_client.py`, `agent_task_runtime.py`, and `windows_job.py`. Apache-2.0 text is `scripts/LICENSE`. Python 3.12 or newer. There is no Nix package. State is `$XDG_STATE_HOME/grok-acp` or `~/.local/state/grok-acp`.
 
 ```bash
 python3 skills/cli-coding/scripts/grok.py start --cwd <absolute-dir> --prompt-file <task>
 ```
 
-On 2026-10-09 a plan-mode ping from `/tmp/grok-acp-ping` returned task id `b98ae6ae8de541da95840a7db698f3a5`. `wait` finished `completed`, text `pong`, `auth_method` `cached_token`, `agent_version` `1.0.46`, model `grok-4.7`. `close` then set `closed` true. `start` itself only means the worker launched. Read `status` before treating the turn as finished.
+Verbs: `start --cwd --prompt-file`, `wait`, `status`, `reply`, `permission --request-id --option-id`, `cancel`, `close`. `start` means the worker launched. Read `status` before treating the turn as finished. `wait` returning on timeout does not cancel the turn. A follow-up waits until the current turn finishes. Answer `needs_approval` with an option id Grok offered. Omit `--permission-mode`, `--sandbox`, `--model`, and `--effort` to inherit Grok's own config. Do not pass `bypassPermissions` to avoid an approval.
 
 This client drives Grok only. The command is hardcoded to `grok agent --no-leader stdio`. It does not start Pi, Claude, Codex, or Gemini.
 
