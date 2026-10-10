@@ -15,7 +15,7 @@ Key behavior:
   assuming output filenames match target basenames (e.g., many targets can be
   named `AGENTS.md`).
 
-Usage: python sync.py [--dry-run] [--verbose] [--no-git]
+Usage: python sync.py [--dry-run] [--verbose] [--no-git] [--host [HOST]]
 """
 
 import re
@@ -117,6 +117,58 @@ def _extract_yaml_block(md_content: str) -> Optional[str]:
 def _is_ssh_target(p: str) -> bool:
     """Check if target is SSH remote (user@host:path format)."""
     return bool(re.match(r"^[^@]+@[^:]+:.+$", p))
+
+
+def _select_local_targets(targets: List[str]) -> List[str]:
+    """Keep paths on this machine. SSH and fleet: targets are remote."""
+    kept = []
+    for target in targets:
+        if _is_ssh_target(_expand_target_path(target)):
+            continue
+        kept.append(target)
+    return kept
+
+
+# Names accepted by --host. adeck is the machine sync is running on.
+SYNC_HOSTS = {
+    "adeck": "",
+    "nxiz": "100.115.135.104",
+    "zrrh": "100.77.90.79",
+    "quita": "100.82.51.63",
+    "fleet": "100.105.160.85",
+}
+
+
+def _select_host_targets(targets: List[str], host: str) -> List[str]:
+    """Keep targets for one host. `adeck` means paths on this machine."""
+    key = host.strip().lower()
+    if key == "adeck":
+        return _select_local_targets(targets)
+    needle = SYNC_HOSTS.get(key, host.strip())
+    if not needle:
+        return []
+    return [target for target in targets if needle in _expand_target_path(target)]
+
+
+def _target_host(target: str) -> str:
+    expanded = _expand_target_path(target)
+    if _is_ssh_target(expanded):
+        return expanded.split(":", 1)[0]
+    return "adeck"
+
+
+def _ssh_argv() -> List[str]:
+    return [
+        "ssh", "-F", "/dev/null",
+        "-o", "StrictHostKeyChecking=no",
+        "-o", "BatchMode=yes",
+        "-o", "ConnectTimeout=10",
+        "-o", "ConnectionAttempts=1",
+    ]
+
+
+def _rsync_rsh() -> str:
+    return " ".join(_ssh_argv())
 
 
 # Tailscale IP of the fleet node. The name `fleet` does not resolve on adeck.
@@ -412,11 +464,23 @@ def build_sync_items_from_sections(sections: List[RecipeSection]) -> List[SyncIt
     return items
 
 
-def sync_file_to_targets(output_file: Path, target_paths: List[str], dry_run: bool = False) -> List[str]:
+def sync_file_to_targets(
+    output_file: Path,
+    target_paths: List[str],
+    dry_run: bool = False,
+    down_hosts: Optional[set] = None,
+) -> List[str]:
     """Sync a single output file to all its target locations (local or SSH)."""
     synced_targets: List[str] = []
 
+    unreachable = down_hosts if down_hosts is not None else set()
     for target_path in target_paths:
+        host = _target_host(target_path)
+        if host in unreachable:
+            print(f"☠☠☠ >>> HOST·UNREACHABLE ☠☠☠")
+            print(f"Skipping {target_path}")
+            print(f"|001101|—|000000|—|111000|— host already failed this run")
+            continue
         try:
             if _is_ssh_target(target_path):
                 # SSH target - use rsync
@@ -434,15 +498,15 @@ def sync_file_to_targets(output_file: Path, target_paths: List[str], dry_run: bo
                         
                         # Create remote directory
                         subprocess.run(
-                            ["ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_dir}"],
+                            [*_ssh_argv(), remote_host, f"mkdir -p {remote_dir}"],
                             check=True,
                             capture_output=True,
-                            timeout=30,
+                            timeout=20,
                         )
                         
                         # Rsync file using native rsync/ssh
                         subprocess.run(
-                            ["rsync", "-avz", "-e", "ssh -F /dev/null -o StrictHostKeyChecking=no", str(output_file), target_path],
+                            ["rsync", "-avz", "-e", _rsync_rsh(), str(output_file), target_path],
                             check=True,
                             capture_output=True,
                             timeout=60,
@@ -471,6 +535,8 @@ def sync_file_to_targets(output_file: Path, target_paths: List[str], dry_run: bo
                 synced_targets.append(target_path)
 
         except Exception as e:
+            if _is_ssh_target(_expand_target_path(target_path)):
+                unreachable.add(host)
             print(f"☠☠☠ >>> TRANSMISSION·FAILURE ☠☠☠")
             print(f"Sync communion failed to target: {target_path}")
             print(f"Error-hymn: {e}")
@@ -502,15 +568,15 @@ def _sync_dir(source_dir: Path, target_dir: Path, dry_run: bool = False) -> None
             
             # Create remote directory
             subprocess.run(
-                ["ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", remote_host, f"mkdir -p {remote_path}"],
+                [*_ssh_argv(), remote_host, f"mkdir -p {remote_path}"],
                 check=True,
                 capture_output=True,
-                timeout=30,
+                timeout=20,
             )
             
             # Rsync with delete to mirror using native rsync/ssh
             subprocess.run(
-                ["rsync", "-avz", "--delete", "-e", "ssh -F /dev/null -o StrictHostKeyChecking=no", f"{source_dir}/", f"{target_str}/"],
+                ["rsync", "-avz", "--delete", "-e", _rsync_rsh(), f"{source_dir}/", f"{target_str}/"],
                 check=True,
                 capture_output=True,
                 timeout=300,
@@ -571,30 +637,41 @@ def _ssh_purge_command(target: str, is_file: bool) -> Optional[List[str]]:
         return None
     op = "rm -f --" if is_file else "rm -rf --"
     return [
-        "ssh", "-F", "/dev/null", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=8",
+        *_ssh_argv(),
         host, f"{op} {remote}",
     ]
 
 
 def cleanup_orphaned_deployments(
-    previous_deployments: Dict[str, List[str]], current_deployments: Dict[str, List[str]], dry_run: bool = False
+    previous_deployments: Dict[str, List[str]],
+    current_deployments: Dict[str, List[str]],
+    dry_run: bool = False,
+    host: Optional[str] = None,
 ) -> tuple[int, bool]:
     """Remove recorded targets that no longer appear in current recipes.
 
     The second value is False when a purge failed. Already-absent paths are done.
     A refused path is logged and does not count as a failure.
+    When host is set, only that host is contacted. The snapshot is left intact.
     """
     cleaned = 0
     purge_clear = True
     current_targets = {_canonical_target(t) for targets in current_deployments.values() for t in targets}
     seen = set()
+    down: set = set()
 
     for targets in previous_deployments.values():
         for t in targets:
             canon = _canonical_target(t)
             if canon in current_targets or canon in seen:
                 continue
+            if host is not None and not _select_host_targets([t], host):
+                continue
             seen.add(canon)
+            target_host = _target_host(t)
+            if target_host in down:
+                purge_clear = False
+                continue
             is_file = not t.strip().endswith("/")
             try:
                 if _is_ssh_target(t):
@@ -633,6 +710,8 @@ def cleanup_orphaned_deployments(
                         cleaned += 1
             except Exception as e:
                 purge_clear = False
+                if _is_ssh_target(_expand_target_path(t)):
+                    down.add(target_host)
                 print(f"☠☠☠ >>> ORPHAN·PURGE·FAILURE ☠☠☠")
                 print(f"Failed to purge orphaned target: {t}")
                 print(f"Error-hymn: {e}")
@@ -809,6 +888,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without copying files")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--no-git", action="store_true", help="Deploy without committing or pushing")
+    parser.add_argument("--host", nargs="?", const="adeck", default=None, help="Sync one host. No value means adeck. Skips other hosts, orphan purge, manifest updates, and git")
     args = parser.parse_args()
 
     base_path = Path("/mnt/echo/consensus")
@@ -851,12 +931,33 @@ def main():
             current_items[item.deployment_id] = item
             current_deployments[item.deployment_id] = item.targets
 
-    cleaned_count, purge_clear = cleanup_orphaned_deployments(
-        previous_deployments, current_deployments, args.dry_run
-    )
-    consume_snapshot_after_purge(previous_manifest, purge_clear, args.dry_run)
+    host_limited = args.host is not None
+    if host_limited:
+        matched = any(_select_host_targets(item.targets, args.host) for item in current_items.values())
+        retired = any(_select_host_targets(targets, args.host) for targets in previous_deployments.values())
+        if args.host.strip().lower() not in SYNC_HOSTS and not matched and not retired:
+            known = ", ".join(sorted(SYNC_HOSTS))
+            print(f"☠☠☠ >>> HOST·UNKNOWN ☠☠☠")
+            print(f"No targets for host '{args.host}'. Known names: {known}. An address also works.")
+            print(f"|001101|—|000000|—|111000|— nothing to sync")
+            return 1
+        print(f"☠☠☠ >>> HOST·ONLY ☠☠☠")
+        print(f"Syncing {args.host}. Other hosts, manifest updates, and git are skipped")
+        print(f"|001101|—|001101|—|111000|— one machine")
+        cleaned_count, _purge_clear = cleanup_orphaned_deployments(
+            previous_deployments, current_deployments, args.dry_run, host=args.host
+        )
+    else:
+        cleaned_count, purge_clear = cleanup_orphaned_deployments(
+            previous_deployments, current_deployments, args.dry_run
+        )
+        consume_snapshot_after_purge(previous_manifest, purge_clear, args.dry_run)
 
+    down_hosts: set = set()
     for deployment_id, item in current_items.items():
+        targets = _select_host_targets(item.targets, args.host) if host_limited else item.targets
+        if not targets:
+            continue
         source = staging_dir / Path(item.source_relpath)
         if not source.exists():
             print(f"☠☠☠ >>> OUTPUT·RELIC·ABSENT ☠☠☠")
@@ -868,16 +969,25 @@ def main():
 
         if args.verbose:
             print(f"☠☠☠ >>> TRANSMISSION·PROTOCOL·INITIATED ☠☠☠")
-            print(f"Syncing {deployment_id} to {len(item.targets)} sacred targets")
+            print(f"Syncing {deployment_id} to {len(targets)} sacred targets")
             print(f"|001101|—|001101|—|111000|— communion channels established")
 
         if item.source_is_dir:
             dir_failed = False
-            for t in item.targets:
+            for t in targets:
+                host = _target_host(t)
+                if host in down_hosts:
+                    print(f"☠☠☠ >>> HOST·UNREACHABLE ☠☠☠")
+                    print(f"Skipping {t}")
+                    print(f"|001101|—|000000|—|111000|— host already failed this run")
+                    dir_failed = True
+                    continue
                 target_dir = Path(_expand_target_path(t))
                 try:
                     _sync_dir(source, target_dir, args.dry_run)
                 except (subprocess.SubprocessError, OSError) as e:
+                    if _is_ssh_target(_expand_target_path(t)):
+                        down_hosts.add(host)
                     print(f"☠☠☠ >>> TRANSMISSION·FAILURE ☠☠☠")
                     print(f"Sync communion failed to target: {t}")
                     print(f"Error-hymn: {e}")
@@ -886,18 +996,21 @@ def main():
             if dir_failed:
                 failures.append(deployment_id)
             else:
-                sync_results[deployment_id] = list(item.targets)
+                sync_results[deployment_id] = list(targets)
         else:
-            synced = sync_file_to_targets(source, item.targets, args.dry_run)
+            synced = sync_file_to_targets(source, targets, args.dry_run, down_hosts)
             sync_results[deployment_id] = synced
-            if len(synced) != len(item.targets):
+            if len(synced) != len(targets):
                 failures.append(deployment_id)
 
     if failures:
+        if down_hosts:
+            print(f"Unreachable hosts this run: {', '.join(sorted(down_hosts))}")
+            print(f"Retry one with: python workshop/src/sync.py --host <name>")
         print(f"Sync failed for {len(failures)} deployments: {', '.join(failures)}")
         return 1
 
-    if not args.dry_run:
+    if not args.dry_run and not host_limited:
         update_manifest_sync_status(manifest_path, sync_results, cleaned_count)
 
     print(f"☠☠☠ >>> SYNC·PROTOCOL·COMPLETE ☠☠☠")
@@ -906,7 +1019,7 @@ def main():
     print(f"|001101|—|001101|—|111000|— communion terminated")
 
     # Auto-commit and push unless the caller disabled Git actions
-    if not args.dry_run and not args.no_git:
+    if not args.dry_run and not args.no_git and not host_limited:
         print()
         if not auto_commit_and_push(base_path):
             return 1

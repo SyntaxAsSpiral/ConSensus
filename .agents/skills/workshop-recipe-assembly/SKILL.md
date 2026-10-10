@@ -62,7 +62,17 @@ Recipes may contain multiple YAML documents separated by `---` inside the fenced
 
 ### Fleet targets
 
-A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. Sync rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` and rsyncs it. The hostname `fleet` does not resolve on adeck, so the host is that Tailscale address (`FLEET_SSH_HOST` in both scripts).
+A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. The same path works over SSH. Sync rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` and rsyncs it. The hostname `fleet` does not resolve on adeck, so the host is that Tailscale address (`FLEET_SSH_HOST` in both scripts).
+
+These are the fleet targets:
+
+| What | Path | Recipe |
+|---|---|---|
+| Fleet steering | `/workspace/shared/AGENTS.md` | `recipe-project-fleet` |
+| Bot instructions | `/workspace/shared/ROLES.md` | `recipe-agent-fleet` |
+| One skill | `/home/box/agent-data/workflows/<skill-name>/` | that skill's recipe |
+
+`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. There is no memory recipe. Big W reads `agents/steering-fleet.md` from the repo when it is pushed. A skill target is one folder, and that folder has a `SKILL.md`.
 
 ```yaml
 target_locations:
@@ -179,10 +189,12 @@ Inspect `workshop/staging/` and the assembly logs before deploying. Then preview
 
 ```bash
 python workshop/src/sync.py --dry-run
+python workshop/src/sync.py --host
+python workshop/src/sync.py --host fleet
 python workshop/src/sync.py --no-git
 ```
 
-Sync deploys staged artifacts to local or SSH targets. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
+`--host` syncs copies to one machine. With no name it means adeck. `--host fleet`, `nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync continues with the other hosts and does not commit or push if any host failed. Sync otherwise deploys staged artifacts to local or SSH targets. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
 
 `--dry-run` does not copy file contents, update the manifest, or commit. For local file targets, the current sync code may still create missing parent directories during a dry run. `--no-git` performs deployment and updates the manifest but skips Git automation. Without either option, sync deploys, updates the manifest, then runs `git add -A`, commits, and pushes the current branch. Check `git status` first; use `--no-git` when deployment is intended but those repository-wide Git effects are not.
 

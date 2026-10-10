@@ -20,5 +20,5 @@ ConSensus is ZK's canonical context vault at `/mnt/echo/consensus`. It holds sou
 
 1. Preview and assemble with `python workshop/src/assemble.py --dry-run` and `python workshop/src/assemble.py`.
 2. Inspect `workshop/staging/`.
-3. Preview deployment with `python workshop/src/sync.py --dry-run`; deploy without Git actions with `python workshop/src/sync.py --no-git`. This updates the manifest without committing or pushing.
+3. Preview deployment with `python workshop/src/sync.py --dry-run`. Sync copies to one machine with `python workshop/src/sync.py --host` (adeck) or `--host fleet`. That run purges retired paths on that host only, and it skips the manifest update and git. A full sync still purges every retired path. Deploy without Git actions with `python workshop/src/sync.py --no-git`. This updates the manifest without committing or pushing.
 4. To seal context, run `python workshop/src/sync.py`. It deploys, records the manifest, stages all worktree changes, commits, and pushes. Check `git status` first.

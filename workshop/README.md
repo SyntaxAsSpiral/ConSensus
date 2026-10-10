@@ -11,9 +11,11 @@ Assembly replaces `workshop/staging/` and refreshes the active entries in `works
 
 ```bash
 python workshop/src/sync.py --dry-run
+python workshop/src/sync.py --host
+python workshop/src/sync.py --host fleet
 python workshop/src/sync.py
 ```
 
-Sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use it only when those effects are intended.
+`--host` syncs copies to one machine. With no name it means adeck, the paths on this computer. `--host fleet` (or `nxiz`, `zrrh`, `quita`, or an address) retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use the full sync only when those effects are intended. A full sync that hits a failed host does not commit or push.
 
 Epistemic frames live in [skills/bruh](../skills/bruh/) and deploy via [recipe-skill-bruh.md](recipe-skill-bruh.md). Documentation purge is [skills/inquisition](../skills/inquisition/) via [recipe-skill-inquisition.md](recipe-skill-inquisition.md). Adversarial structural review is [skills/praxis-taxeia](../skills/praxis-taxeia/) via [recipe-skill-praxis-taxeia.md](recipe-skill-praxis-taxeia.md). Design judgment is [skills/morphognome](../skills/morphognome/) via [recipe-skill-morphognome.md](recipe-skill-morphognome.md). Walkthroughs are [skills/consilience](../skills/consilience/) via [recipe-skill-consilience.md](recipe-skill-consilience.md). Repeated mistakes made impossible are [skills/archeoform](../skills/archeoform/) via [recipe-skill-archeoform.md](recipe-skill-archeoform.md). Triquetra evaluation is [skills/praxis-triquetra](../skills/praxis-triquetra/) via [recipe-skill-praxis-triquetra.md](recipe-skill-praxis-triquetra.md). The dev diary is [skills/dear-diary](../skills/dear-diary/) via [recipe-skill-dear-diary.md](recipe-skill-dear-diary.md). Repo rights and the house commit style are [skills/house-git](../skills/house-git/) via [recipe-skill-house-git.md](recipe-skill-house-git.md). The corpus API is [skills/esocortex](../skills/esocortex/) via [recipe-skill-esocortex.md](recipe-skill-esocortex.md).

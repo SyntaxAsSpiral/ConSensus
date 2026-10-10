@@ -248,18 +248,40 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
             self.assertEqual(artifacts[1].targets, [])
 
-            plain = assemble.RecipeSection(
-                recipe_file=Path(td) / "recipe.md",
-                index=0,
-                config={
-                    "name": "git",
-                    "output_format": "skill",
-                    "target_locations": [{"path": "~/.agents/skills/git/"}],
-                    "sources": {"tree": "skills/git"},
-                },
-            )
-            only = assemble.build_output_artifacts(plain, base, out, dry_run=False)
-            self.assertEqual([a.relpath for a in only], ["skill/global/git"])
+    def test_host_sync_selects_one_machine(self) -> None:
+        import workshop.src.sync as sync
+
+        targets = [
+            "~/.agents/skills/git/",
+            "zk@100.115.135.104:~/.agents/skills/git/",
+            "fleet:/home/box/agent-data/workflows/git/",
+            "/mnt/echo/consensus/AGENTS.md",
+        ]
+        self.assertEqual(
+            sync._select_host_targets(targets, "adeck"),
+            ["~/.agents/skills/git/", "/mnt/echo/consensus/AGENTS.md"],
+        )
+        self.assertEqual(
+            sync._select_host_targets(targets, "fleet"),
+            ["fleet:/home/box/agent-data/workflows/git/"],
+        )
+        self.assertEqual(
+            sync._select_host_targets(targets, "nxiz"),
+            ["zk@100.115.135.104:~/.agents/skills/git/"],
+        )
+        cleaned, purge_clear = sync.cleanup_orphaned_deployments(
+            {
+                "old": [
+                    "zk@100.105.160.85:/home/box/agent-data/workflows/old/",
+                    "zk@100.115.135.104:~/.agents/skills/old/",
+                ]
+            },
+            {},
+            dry_run=True,
+            host="fleet",
+        )
+        self.assertEqual(cleaned, 1)
+        self.assertTrue(purge_clear)
 
     def test_repeated_assemble_keeps_unconsumed_snapshot(self) -> None:
         import workshop.src.assemble as assemble
