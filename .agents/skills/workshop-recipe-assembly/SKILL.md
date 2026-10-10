@@ -52,7 +52,7 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 |---|---|
 | `name` | Output name and staging directory. |
 | `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `project-skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
-| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` belong to the fleet runner; see [Fleet targets](#fleet-targets). |
+| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` deploy to the fleet PC; see [Fleet targets](#fleet-targets). |
 | `sources` | Source list for agent/project output; role mapping for skill and command-like output. |
 | `template` | Optional literal `{content}` wrapper for agent/project or command-like output. |
 | `output_name` | Optional explicit filename for agent/project output. |
@@ -62,17 +62,17 @@ Recipes may contain multiple YAML documents separated by `---` inside the fenced
 
 ### Fleet targets
 
-A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is owned by the fleet runner on the shared fleet PC, not by adeck. Everything after the prefix is the literal path on that PC:
+A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. Sync rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` and rsyncs it. The hostname `fleet` does not resolve on adeck, so the host is that Tailscale address (`FLEET_SSH_HOST` in both scripts).
 
 ```yaml
 target_locations:
   - path: ~/.agents/skills/example-skill/
-  - path: fleet:/workspace/shared/skills/example-skill/
+  - path: fleet:/home/box/agent-data/workflows/example-skill/
 ```
 
-`assemble.py` and `sync.py` drop these entries before path expansion, so adeck never deploys them or purges them. A skill recipe that has one also gets a copy at `workshop/staging/skill/fleet/<name>/` for the fleet wrapper. That copy is recorded with no deploy targets. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. Every other target is handled as before. The two scripts keep separate copies of the check (`_location_is_fleet`), so change both together.
+A skill recipe that has a fleet target also gets a copy at `workshop/staging/skill/fleet/<name>/` with no deploy targets of its own. The ping workflow watches that copy. Sync deploys the global skill, which carries the rewritten SSH path. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. The two scripts keep separate copies of `_location_is_fleet` and `FLEET_SSH_HOST`, so change both together.
 
-A recipe with `target_locations: []`, or only `fleet:` targets, is assembled into staging and not deployed by adeck. The fleet runner is a separate modified copy of the assembler on the fleet PC and is not part of this repository's scripts.
+A recipe with `target_locations: []` is assembled into staging and not deployed. A recipe whose only targets are `fleet:` paths is still deployed to the fleet PC.
 
 ## Source forms and slices
 

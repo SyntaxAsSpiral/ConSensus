@@ -1,6 +1,7 @@
 ---
 name: consilience
-description: Use when the user asks how something works, where it lives, which layer owns it, or for a walkthrough before a change. Also when a bot explains a system by sending local explorers.
+description: Use when the user asks how something works, where it lives, which layer owns it, or for a walkthrough before a change.
+
 ---
 
 # Consilience

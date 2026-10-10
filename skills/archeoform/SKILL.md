@@ -1,6 +1,6 @@
 ---
 name: archeoform
-description: "Find the mistakes agents keep repeating in this repo and make each one impossible. Try architecture first, then types, then a lint whose error names the fix, then a test, and write docs last. Prove each check fails on a real past mistake. Repeat this each time the operator corrects you. Use for /archeoform."
+description: "Use when agents keep repeating a mistake in this repo. Make it impossible: architecture, then types, then a lint whose error names the fix, then a test. Docs last. The check must fail on a real past mistake."
 disable-model-invocation: true
 ---
 

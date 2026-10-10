@@ -1,6 +1,6 @@
 ---
 name: praxis-taxeia
-description: Use when the user asks for praxis-taxeia, an adversarial review, a falsifier pass, or to stress-test a diff, design, or claim before accepting it. Also use when a bot runs that review by launching local coding agents.
+description: Use when the user asks for praxis-taxeia, an adversarial review, a falsifier pass, or to stress-test a diff, design, or claim before accepting it.
 ---
 
 # Taxeia praxis

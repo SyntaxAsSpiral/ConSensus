@@ -32,11 +32,11 @@ sources:
     # SKILL.md with required frontmatter
     frontmatter:
       name: local-inference
-      description: Use when calling local models on the mesh. Adeck is the gateway for LM Studio, Qwen TTS, and any later embedder gateway. Covers the LM Studio proxy at http://100.89.32.9:1234/v1, JIT presets, reasoning dials, and the family-cookbook and esocortex callers.
+      description: Use when calling a local model on the mesh. Covers the LM Studio gateway, Qwen TTS, JIT presets, reasoning dials, and the inf-bench evaluator.
       compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). Tailscale required. zrrh needs its GUI session for CUDA.
       metadata:
         author: zk
-        version: "2.8"
+        version: "2.9"
         category: inference
     
     body:  # Markdown instructions for agents
@@ -61,6 +61,8 @@ sources:
       output_name: paths.md
     - file: skills/local-inference/references/gpu.md
       output_name: gpu.md
+    - file: skills/local-inference/references/bench.md
+      output_name: bench.md
 
 # Validation
 validate_agentskills_spec: true  # Ensure compliance with agentskills.io standard

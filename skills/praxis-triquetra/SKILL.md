@@ -1,6 +1,6 @@
 ---
 name: praxis-triquetra
-description: Use when the user asks for praxis-triquetra, a triquetra, or for morphognome to write what this session learned into a skill or a bot memory. Harmonion and critikon evaluate first. No graph write.
+description: Use when the user asks for praxis-triquetra, a triquetra, or for morphognome to write what this session learned into a skill, bot memory, or another durable artifact.
 ---
 
 # Triquetra praxis
@@ -9,9 +9,9 @@ Harmonion and Critikon, apart, then Morphognome writes. The product is the edit.
 
 The synthesis seat is Morphognome. The morphognome skill is the pattern language. This command uses the seat.
 
-Homes are a skill, the shared bot memory, or that bot's personal memory. The menu is [references/homes.md](references/homes.md).
+Homes are a skill, a bot memory, or another durable artifact. The menu is [references/homes.md](references/homes.md).
 
-This command does not write the graph. It does not deploy, commit, or push.
+This command does not deploy, commit, or push.
 
 ## Procedure
 

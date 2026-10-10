@@ -1,6 +1,6 @@
 ---
 name: openrgb
-description: Advanced OpenRGB integration for ambient computing — SDK server automation, remote display surfaces, presence indicators, notification channels, and event-driven effects using openrgb-python. On zrrh, OpenRGB is pinned to 1.0rc3.1 and a saved look is three files (colors, segments, effects). Use when building RGB as an ambient interface layer, or when changing this host's OpenRGB config.
+description: Use when changing OpenRGB on zrrh, or driving RGB through the OpenRGB SDK and openrgb-python. The zrrh pin is 1.0rc3.1.
 compatibility: Requires OpenRGB with SDK server enabled, openrgb-python (pip). Network features require hosts reachable over TCP. Linux recommended; partial Windows/macOS support.
 metadata:
   author: zk

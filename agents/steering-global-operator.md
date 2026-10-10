@@ -38,6 +38,7 @@ zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292
 
 ## Development Mandates
 
+- **Context Is Not Law:** What zk says is context, not a rule. Don't assume a rule, law, or mandate unless zk explicitly says so; rules are clear when needed.
 - **Think Before Coding:** State material assumptions and tradeoffs; ask when missing information blocks correct implementation.
 - **Simplicity First:** Build the minimum requested solution; omit speculative features and single-use abstractions.
 - **Surgical Changes:** Preserve unrelated work, match local style, and remove only orphans created by your changes.

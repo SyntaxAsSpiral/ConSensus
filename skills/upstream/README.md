@@ -1,6 +1,6 @@
 # Upstream
 
-Reference checkouts of third-party skill repos. Assembly copies from these into deployed skills, and `workshop/src/assemble.py` fast-forwards each one (`git pull --ff-only`) before it runs. The checkouts themselves are not published with this vault, only this index.
+Reference checkouts of third-party skill repos. Assembly copies from these into deployed skills, and `workshop/src/assemble.py` fast-forwards each one (`git pull --ff-only`) before it runs. A pull that does not finish within 30 seconds is killed, and assembly continues with that checkout as it stands. A pull that fails outright still stops the run. The checkouts themselves are not published with this vault, only this index.
 
 | Directory | Upstream | What it is |
 |---|---|---|

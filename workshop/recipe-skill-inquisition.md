@@ -26,7 +26,7 @@ sources:
       name: inquisition
       description: >-
         Use when the user asks for an inquisition, a documentation consistency
-        check, or a purge of terminology drift and slop.
+        check, or a purge of drift, slop, and other heresies.
       metadata:
         author: zk
         type: skill

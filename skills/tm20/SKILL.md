@@ -4,7 +4,7 @@ description: >-
   Print 80 mm thermal slips and receipts on the mesh Epson TM-T20III via tm20/tm20-set
   or the tm20 print receiver. Use when designing or printing tape, item listings,
   logos, QR, ESC/POS, 1-bit art, or when the user mentions tm20, TM-T20III, thermal
-  printer, 80 mm receipts, or the mesh print receiver. Slash: /tm20
+  printer, 80 mm receipts, or the mesh print receiver.
 metadata:
   author: zk
   version: "0.6.0"

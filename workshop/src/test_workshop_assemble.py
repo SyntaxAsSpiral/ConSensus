@@ -239,6 +239,13 @@ class TestWorkshopAssemble(unittest.TestCase):
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
             self.assertEqual([a.relpath for a in artifacts], ["skill/global/git", "skill/fleet/git"])
             self.assertEqual((out / "skill" / "fleet" / "git" / "SKILL.md").read_text(encoding="utf-8"), (tree / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertEqual(
+                artifacts[0].targets,
+                [
+                    assemble._expand_target_path("~/.agents/skills/git/"),
+                    f"{assemble.FLEET_SSH_HOST}:/home/box/agent-data/workflows/git/",
+                ],
+            )
             self.assertEqual(artifacts[1].targets, [])
 
             plain = assemble.RecipeSection(
@@ -322,7 +329,7 @@ class TestWorkshopAssemble(unittest.TestCase):
             self.assertTrue(blocked.is_dir())
             self.assertEqual(snapshot.read_text(encoding="utf-8"), "keep\n")
 
-    def test_mixed_targets_drop_fleet_prefix(self) -> None:
+    def test_mixed_targets_translate_fleet_prefix(self) -> None:
         import workshop.src.assemble as assemble
         import workshop.src.sync as sync
 
@@ -347,19 +354,24 @@ class TestWorkshopAssemble(unittest.TestCase):
                 config=config,
             )
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
-            expected = str(Path.home() / "Demo" / "AGENTS.md")
+            expected = [
+                f"{assemble.FLEET_SSH_HOST}:/workspace/shared/AGENTS.md",
+                str(Path.home() / "Demo" / "AGENTS.md"),
+                f"{assemble.FLEET_SSH_HOST}:/workspace/shared/ROLES.md",
+            ]
+            self.assertEqual(assemble.FLEET_SSH_HOST, sync.FLEET_SSH_HOST)
             self.assertEqual(len(artifacts), 1)
             self.assertEqual(artifacts[0].relpath, "agent/Demo/AGENTS.md")
-            self.assertEqual(artifacts[0].targets, [expected])
+            self.assertEqual(artifacts[0].targets, expected)
 
             items = sync.build_sync_items_from_sections(
                 [sync.RecipeSection(recipe_file=Path("recipe.md"), index=0, config=config)]
             )
             self.assertEqual(len(items), 1)
             self.assertEqual(items[0].source_relpath, "agent/Demo/AGENTS.md")
-            self.assertEqual(items[0].targets, [expected])
+            self.assertEqual(items[0].targets, expected)
 
-    def test_fleet_only_targets_resolve_none(self) -> None:
+    def test_fleet_only_targets_resolve_ssh(self) -> None:
         import workshop.src.assemble as assemble
         import workshop.src.sync as sync
 
@@ -384,16 +396,57 @@ class TestWorkshopAssemble(unittest.TestCase):
                     config=config,
                 )
                 artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
+                expected = [f"{assemble.FLEET_SSH_HOST}:/workspace/shared/AGENTS.md"]
                 self.assertEqual(len(artifacts), 1)
                 self.assertEqual(artifacts[0].relpath, "agent/Demo/Demo.md")
-                self.assertEqual(artifacts[0].targets, [])
+                self.assertEqual(artifacts[0].targets, expected)
 
                 items = sync.build_sync_items_from_sections(
                     [sync.RecipeSection(recipe_file=Path("recipe.md"), index=0, config=config)]
                 )
                 self.assertEqual(len(items), 1)
                 self.assertEqual(items[0].source_relpath, "agent/Demo/Demo.md")
-                self.assertEqual(items[0].targets, [])
+                self.assertEqual(items[0].targets, expected)
+
+
+    def test_stalled_upstream_pull_does_not_stop_the_run(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            base = Path(td)
+            for name in ("stuck", "fine"):
+                (base / "skills" / "upstream" / name / ".git").mkdir(parents=True)
+
+            def fake(repo: Path, timeout: float = assemble.UPSTREAM_PULL_TIMEOUT_S):
+                if repo.name == "stuck":
+                    return 124, "", "stalled"
+                return 0, "up to date", ""
+
+            original = assemble._pull_repo
+            assemble._pull_repo = fake
+            try:
+                code = assemble.pull_upstream_repos(base, dry_run=False)
+            finally:
+                assemble._pull_repo = original
+            self.assertEqual(code, 0)
+
+    def test_failed_upstream_pull_still_stops_the_run(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            base = Path(td)
+            (base / "skills" / "upstream" / "broken" / ".git").mkdir(parents=True)
+
+            def fake(repo: Path, timeout: float = assemble.UPSTREAM_PULL_TIMEOUT_S):
+                return 1, "", "not possible to fast-forward"
+
+            original = assemble._pull_repo
+            assemble._pull_repo = fake
+            try:
+                code = assemble.pull_upstream_repos(base, dry_run=False)
+            finally:
+                assemble._pull_repo = original
+            self.assertEqual(code, 1)
 
 
 if __name__ == "__main__":

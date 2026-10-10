@@ -1,6 +1,6 @@
 ---
 name: catppuccin
-description: Use when applying Catppuccin colors to a config, stylesheet, terminal theme, or prompt, including the variants rose, sage, grape, honey, and blueberry.
+description: Use when working with Catppuccin palettes.
 metadata:
   author: zk
   version: "2.0"

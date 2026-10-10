@@ -23,6 +23,10 @@ A shared memory deleted in the operator's stead is the veto. It is not a Critiko
 
 A fact that is true for one bot and false for the others. Write only the memory that bot already reads. Do not write another bot's memory. If that file cannot be found, ELEVATE. Do not invent a path.
 
+## Durable artifact
+
+A graph write is one. So is any other artifact the row belongs in. Write it there.
+
 ## Mechanism
 
 A lint, a script, or a type could enforce it. Leave the row for archeoform. Do not add prose to a skill or a memory to cover it.

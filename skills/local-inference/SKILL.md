@@ -1,10 +1,10 @@
 ---
 name: local-inference
-description: Use when calling local models on the mesh. Adeck is the gateway for LM Studio, Qwen TTS, and any later embedder gateway. Covers the LM Studio proxy at http://100.89.32.9:1234/v1, JIT presets, reasoning dials, and the family-cookbook and esocortex callers.
+description: Use when calling a local model on the mesh. Covers the LM Studio gateway, Qwen TTS, JIT presets, reasoning dials, and the inf-bench evaluator.
 compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). Tailscale required. zrrh needs its GUI session for CUDA.
 metadata:
   author: zk
-  version: "2.8"
+  version: "2.9"
   category: inference
 ---
 
@@ -27,6 +27,7 @@ Adeck is the mesh gateway for local inference. Backends on it compete for the me
 | [tts](references/tts.md) | Qwen TTS on adeck. |
 | [logs](references/logs.md) | Which host's LM Studio file to read. |
 | [callers](references/callers.md) | family-cookbook and esocortex. |
+| [bench](references/bench.md) | inf-bench Factorio evaluator against this gateway. |
 | [paths](references/paths.md) | Flake paths and doc links. |
 | [gpu](references/gpu.md) | A Nix-built binary misses the GPU. |
 
@@ -53,6 +54,10 @@ ssh zk@100.89.32.9 lms ps
 ssh zk@100.89.32.9 lms ls
 ssh zk@100.89.32.9 lms link status
 ```
+
+On adeck, run `lms ps` directly. `ssh zk@100.89.32.9 lms ps` fails from adeck itself.
+
+Live JIT `parallel`: `qwen/qwen3.8-27b` 4, `meta/muse-glimmer` 2.
 
 ## Gone
 

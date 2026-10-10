@@ -119,7 +119,18 @@ def _is_ssh_target(p: str) -> bool:
     return bool(re.match(r"^[^@]+@[^:]+:.+$", p))
 
 
+# Tailscale IP of the fleet node. The name `fleet` does not resolve on adeck.
+FLEET_SSH_HOST = "zk@100.105.160.85"
+
+
 def _expand_target_path(p: str) -> str:
+    # fleet:/abs/path is a literal path on the fleet PC. Keep in step with assemble.py.
+    if p.startswith("fleet:"):
+        rest = p[len("fleet:") :]
+        if rest.startswith("/"):
+            return f"{FLEET_SSH_HOST}:{rest}"
+        return p
+
     # SSH targets are returned as-is (handled separately by rsync)
     if _is_ssh_target(p):
         return p
@@ -210,7 +221,10 @@ def resolve_project_skill_target(raw: str, skill_name: str) -> Optional[str]:
 
 
 def _location_is_fleet(entry: Any) -> bool:
-    """Raw target_locations entry owned by the fleet runner. Keep in step with assemble.py."""
+    """Raw target_locations entry for the fleet PC. Keep in step with assemble.py.
+
+    Deploy rewrites these in _expand_target_path. Filename inference still skips them.
+    """
     if isinstance(entry, dict):
         path = entry.get("path")
         return bool(path) and str(path).startswith("fleet:")
@@ -225,15 +239,12 @@ def _targets_from_config(cfg: Dict[str, Any]) -> List[str]:
 
     if isinstance(targets, list):
         for t in targets:
-            if _location_is_fleet(t):
-                continue
             if isinstance(t, dict) and t.get("path"):
                 resolved.append(str(t["path"]))
             elif isinstance(t, str):
                 resolved.append(t)
     elif isinstance(targets, str):
-        if not _location_is_fleet(targets):
-            resolved.append(targets)
+        resolved.append(targets)
 
     return [p for p in resolved if p]
 

@@ -1,9 +1,9 @@
 ---
-name: git
-description: Use when an agent clones, writes, commits, or pushes a repo, or needs to know whether that repo is read, write, or push. House commit style for every project.
+name: house-git
+description: REQUIRED before an agent clones, writes, commits, or pushes a repo. House commit style for every project.
 ---
 
-# Git
+# House git
 
 The commit style is the same on every project. The repos are not.
 
@@ -29,6 +29,13 @@ The operator's own message is `zk`. When he gives that, use it and stop. Do not 
 
 An agent message is for him to read. He does not read a plain log. Address him as flesh-thing. Be entertaining. The fact of the change still has to be in there, or the joke is empty.
 
-The voice is the frames in [references/frames.md](references/frames.md). Copy a frame when the message wears it. Do not reword the words. Pick the mode that can hold the joke.
+The frames in [references/frames.md](references/frames.md) are templates. Copy the border. Write the message on the inner lines, and repeat an inner line until it fits. Nothing sits outside the border. The editor template is [references/gitmessage](references/gitmessage).
 
-The last line is a chronohex, the last six hex digits of the nanosecond, as `|` those digits `| stable.` A `⟳` context seal already counts.
+The bracket is a title in the voice, then the chronohex. The chronohex is the last six hex digits of the nanosecond. A `⟳` context seal already counts.
+
+The mode is how the message is written. Do not print its name.
+
+- War cogitation. Tactical, clipped.
+- Archival reconnaissance. Elegiac. What the archive now keeps.
+- Binary glossolalia. Half logic, half vision.
+- Heretekal communion. Gentle, curious, reverent.

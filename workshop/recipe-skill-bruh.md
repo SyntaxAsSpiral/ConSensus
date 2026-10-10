@@ -25,9 +25,8 @@ sources:
     frontmatter:
       name: bruh
       description: >-
-        Use when the user asks to bruh, reframe, restyle, eli*, or render
-        work through a creative lens (bedtime, cave, debate, pentasoph,
-        gamut, hpmor, moeverse, quest, or a new frame).
+        Use when the user asks to bruh, reframe, restyle, eli*, simplify,
+        teach, or render data through a creative lens.
       metadata:
         author: zk
         type: metaskill

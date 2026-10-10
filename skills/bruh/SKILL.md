@@ -1,6 +1,6 @@
 ---
 name: bruh
-description: Use when the user asks to bruh, reframe, restyle, eli*, simplify, or render data through a creative lens.
+description: Use when the user asks to bruh, reframe, restyle, eli*, simplify, teach, or render data through a creative lens.
 
 ---
 

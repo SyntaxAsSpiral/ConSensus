@@ -17,6 +17,7 @@ Usage: python assemble.py [--dry-run] [--verbose]
 
 import re
 import shutil
+import signal
 import subprocess
 import yaml
 import frontmatter
@@ -65,7 +66,18 @@ def _configure_stdio_utf8() -> None:
         pass
 
 
+# Tailscale IP of the fleet node. The name `fleet` does not resolve on adeck.
+FLEET_SSH_HOST = "zk@100.105.160.85"
+
+
 def _expand_target_path(p: str) -> str:
+    # fleet:/abs/path is a literal path on the fleet PC. Keep in step with sync.py.
+    if p.startswith("fleet:"):
+        rest = p[len("fleet:") :]
+        if rest.startswith("/"):
+            return f"{FLEET_SSH_HOST}:{rest}"
+        return p
+
     # Expand "~/" while preserving trailing separators (directory targets).
     trailing_sep = p.endswith("/")
     if p.startswith("~/"):
@@ -437,7 +449,10 @@ def _read_source_bytes(source: Dict[str, Any], base_path: Path) -> Optional[byte
 
 
 def _location_is_fleet(entry: Any) -> bool:
-    """Raw target_locations entry owned by the fleet runner. Keep in step with sync.py."""
+    """Raw target_locations entry for the fleet PC. Keep in step with sync.py.
+
+    Deploy rewrites these in _expand_target_path. Filename inference still skips them.
+    """
     if isinstance(entry, dict):
         path = entry.get("path")
         return bool(path) and str(path).startswith("fleet:")
@@ -485,7 +500,10 @@ def _section_has_fleet_target(section: RecipeSection) -> bool:
 def _fleet_skill_artifact(
     section: RecipeSection, staging_dir: Path, skill_name: str, out_root: Path, dry_run: bool
 ) -> List[OutputArtifact]:
-    """Copy a skill into staging/skill/fleet for the fleet wrapper. Adeck does not deploy it."""
+    """Copy a skill into staging/skill/fleet for the ping workflow. This copy has no targets.
+
+    The global skill artifact carries the rewritten fleet SSH path and is what sync deploys.
+    """
     if not _section_has_fleet_target(section):
         return []
     fleet_root = staging_dir / "skill" / "fleet" / skill_name
@@ -509,15 +527,12 @@ def _targets_from_section(section: RecipeSection) -> List[str]:
 
     if isinstance(targets, list):
         for t in targets:
-            if _location_is_fleet(t):
-                continue
             if isinstance(t, dict) and t.get("path"):
                 resolved.append(_expand_target_path(str(t["path"])))
             elif isinstance(t, str):
                 resolved.append(_expand_target_path(t))
     elif isinstance(targets, str):
-        if not _location_is_fleet(targets):
-            resolved.append(_expand_target_path(targets))
+        resolved.append(_expand_target_path(targets))
 
     return [p for p in resolved if p]
 
@@ -826,6 +841,31 @@ def preserve_unconsumed_snapshot(staging_dir: Path, manifest_path: Path) -> None
         snapshot_path.write_bytes(kept)
 
 
+# A fetch that sits on the wire this long is killed. Assembly continues.
+UPSTREAM_PULL_TIMEOUT_S = 30
+
+
+def _pull_repo(repo: Path, timeout: float = UPSTREAM_PULL_TIMEOUT_S) -> Tuple[int, str, str]:
+    """Fast-forward one checkout. Code 124 means the pull was killed for stalling."""
+    proc = subprocess.Popen(
+        ["git", "-C", str(repo), "pull", "--ff-only"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+    )
+    try:
+        stdout, stderr = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGKILL)
+        stdout, stderr = proc.communicate()
+        note = f"pull stalled past {int(timeout)}s and was killed"
+        stderr = f"{stderr or ''}\n{note}".strip()
+        return 124, stdout or "", stderr
+    return proc.returncode or 0, stdout or "", stderr or ""
+
+
 def pull_upstream_repos(base_path: Path, dry_run: bool) -> int:
     """Fast-forward the reference checkouts assembly copies from."""
     roots = [base_path / "skills" / "upstream", base_path / ".agents" / "upstream"]
@@ -847,16 +887,17 @@ def pull_upstream_repos(base_path: Path, dry_run: bool) -> int:
             continue
         print(f"☠☠☠ >>> UPSTREAM·PULL ☠☠☠")
         print(f"Pulling {rel}")
-        result = subprocess.run(
-            ["git", "-C", str(repo), "pull", "--ff-only"],
-            capture_output=True,
-            text=True,
-        )
-        if result.stdout:
-            print(result.stdout.rstrip())
-        if result.returncode != 0:
-            if result.stderr:
-                print(result.stderr.rstrip())
+        code, stdout, stderr = _pull_repo(repo)
+        if stdout:
+            print(stdout.rstrip())
+        if code == 124:
+            if stderr:
+                print(stderr.rstrip())
+            print(f"|001101|—|001101|—|111000|— pull skipped")
+            continue
+        if code != 0:
+            if stderr:
+                print(stderr.rstrip())
             print(f"|001101|—|000000|—|111000|— pull failed")
             failed = True
     return 1 if failed else 0

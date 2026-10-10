@@ -1,6 +1,6 @@
 ---
 name: morphognome
-description: Use when the user asks for morphognome, a taste or design review, a pattern-language pass, a sketch before a piece hardens, or whether a piece is beautiful or slop. One bespoke style per project.
+description: Use when the user asks for morphognome, a taste or design review, a pattern-language pass, a sketch before a piece hardens, or whether a piece is beautiful or slop.
 ---
 
 # Morphognome

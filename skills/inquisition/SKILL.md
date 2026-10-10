@@ -1,6 +1,6 @@
 ---
 name: inquisition
-description: Use when the user asks for an inquisition, a documentation consistency check, or a purge of terminology drift and slop.
+description: Use when the user asks for an inquisition, a documentation consistency check, or a purge of drift, slop, and other heresies.
 ---
 
 # 🔥 Inquisition

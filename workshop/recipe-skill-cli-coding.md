@@ -25,10 +25,10 @@ sources:
   skill_md:
     frontmatter:
       name: cli-coding
-      description: Use when choosing which coding CLI runs the work. The roster is always Pi on the local gateway plus one designated primary cloud coder. The current primary is Grok. Covers local fan-out up to one loaded model's prediction streams, escalation to that primary, and Pi on OpenRouter when the primary is at limit. Model dials, JIT presets, and GPU checks stay in local-inference.
+      description: Use when choosing which coding CLI runs the work. Frontline is Pi on the local gateway. The cloud primary is Grok. Last resort is Pi on OpenRouter. Model dials stay in local-inference.
       metadata:
         author: zk
-        version: "0.8"
+        version: "0.11"
         category: coding
     body:
       - file: skills/cli-coding/SKILL.md
@@ -38,8 +38,8 @@ sources:
       output_name: pi.md
     - file: skills/cli-coding/references/grok.md
       output_name: grok.md
-    - file: skills/cli-coding/references/priority.md
-      output_name: priority.md
+    - file: skills/cli-coding/references/routing.md
+      output_name: routing.md
 
   scripts:
     - file: skills/cli-coding/scripts/grok.py
