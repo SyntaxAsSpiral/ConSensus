@@ -4,21 +4,17 @@ created: 2026-09-26
 modified: 2026-10-11
 status: active
 type:
-  - "skill"
+  - "project-skill"
 ---
 
 ```yaml
 name: agents-best-practices
-output_format: skill
+output_format: project-skill
 
+# This vault only. Loads while working in /mnt/echo/consensus.
+# Not a home skill and not a fleet workflow.
 target_locations:
-  - path: ~/.claude/skills/agents-best-practices/
-  - path: ~/.agents/skills/agents-best-practices/
-  - path: zk@100.115.135.104:~/.claude/skills/agents-best-practices/
-  - path: zk@100.115.135.104:~/.agents/skills/agents-best-practices/
-  - path: zk@100.82.51.63:~/.claude/skills/agents-best-practices/
-  - path: zk@100.82.51.63:~/.agents/skills/agents-best-practices/
-  - path: fleet:/home/box/agent-data/workflows/agents-best-practices/
+  - path: /mnt/echo/consensus/.agents/
 
 sources:
   tree: skills/upstream/agents-best-practices

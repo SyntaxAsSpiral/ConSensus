@@ -426,6 +426,62 @@ def _assemble_source_list(sources: Iterable[Dict[str, Any]], base_path: Path) ->
     return assembled_parts
 
 
+VAULT_ROOT = "/mnt/echo/consensus"
+
+
+def _source_notice_paths(sources: Any) -> List[str]:
+    """Canonical vault paths a projection was built from.
+
+    Relative recipe paths only resolve inside this checkout. The notice is read on every mesh host.
+    """
+    paths: List[str] = []
+
+    def add(raw: Any) -> None:
+        rel = str(raw).strip() if raw else ""
+        if not rel:
+            return
+        if rel.startswith(VAULT_ROOT + "/") or rel == VAULT_ROOT:
+            full = rel
+        else:
+            full = f"{VAULT_ROOT}/{rel.lstrip('/')}"
+        if full not in paths:
+            paths.append(full)
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            add(node.get("tree"))
+            add(node.get("file"))
+            add(node.get("slice-file") or node.get("slice_file"))
+            for value in node.values():
+                if isinstance(value, (dict, list)):
+                    walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(sources)
+    return paths
+
+
+def _edit_notice(sources: Any) -> str:
+    """Point a projection at the vault files that own it."""
+    paths = _source_notice_paths(sources)
+    if not paths:
+        return ""
+    lines = "\n".join(f"- `{path}`" for path in paths)
+    return f"Do not edit this document.\n\nSource:\n\n{lines}"
+
+
+def _with_edit_notice(text: str, notice: str) -> str:
+    """Append the notice as a footer. Frontmatter stays at the top."""
+    if not notice:
+        return text
+    body = text.rstrip("\n")
+    if not body:
+        return f"{notice}\n"
+    return f"{body}\n\n{notice}\n"
+
+
 def assemble_content(sources: Iterable[Dict[str, Any]], base_path: Path, template: Optional[str] = None) -> Optional[str]:
     """Assemble content from sources; apply optional `{content}` template."""
     assembled_parts = _assemble_source_list(sources, base_path)
@@ -615,6 +671,9 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
         content = assemble_content(sources, base_path, template=template)
         if not content:
             return []
+        content = _with_edit_notice(content, _edit_notice(sources))
+        if not content.endswith("\n"):
+            content += "\n"
 
         # Determine filename with optional disambiguation.
         total_sections = int(cfg.get("_total_sections", 1))
@@ -627,7 +686,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
             filename = f"{base}-{dis}{ext}"
 
         out_path = staging_dir / output_format / recipe_name / filename
-        _write_text(out_path, content + "\n", dry_run)
+        _write_text(out_path, content, dry_run)
 
         targets = _targets_from_section(section)
         resolved_targets: List[str] = []
@@ -685,6 +744,11 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                 if out_root.exists():
                     shutil.rmtree(out_root)
                 shutil.copytree(tree, out_root, ignore=shutil.ignore_patterns(".git"))
+                skill_md = out_root / "SKILL.md"
+                skill_md.write_text(
+                    _with_edit_notice(skill_md.read_text(encoding="utf-8"), _edit_notice(sources_cfg)),
+                    encoding="utf-8",
+                )
             return [
                 OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
                 *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
@@ -715,7 +779,10 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
             body_sources = []
         body = assemble_content(body_sources, base_path, template=None) or ""
         body = _strip_frontmatter(body)
-        skill_md_text = _format_yaml_frontmatter(fm) + "\n\n" + body.strip() + "\n"
+        skill_md_text = _with_edit_notice(
+            _format_yaml_frontmatter(fm) + "\n\n" + body.strip() + "\n",
+            _edit_notice(sources_cfg),
+        )
         _write_text(out_root / "SKILL.md", skill_md_text, dry_run)
 
         # Role folders: references/, assets/, scripts/, examples/
@@ -763,6 +830,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
         md_content = assemble_content(md_sources, base_path, template=md_template)
         if md_content is None:
             md_content = ""
+        md_content = _with_edit_notice(md_content, _edit_notice(md_sources))
         md_filename = f"{recipe_name}.md"
         md_path = out_root / md_filename
         _write_text(md_path, md_content.strip() + "\n", dry_run)

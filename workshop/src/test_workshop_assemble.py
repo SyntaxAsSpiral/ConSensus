@@ -99,13 +99,14 @@ class TestWorkshopAssemble(unittest.TestCase):
                 self.assertEqual(len(artifacts), 1)
                 return artifacts[0].abspath.read_text(encoding="utf-8")
 
+            footer = "\n\nDo not edit this document.\n\nSource:\n\n- `/mnt/echo/consensus/principles.md`\n"
             local = rendered("local")
-            self.assertEqual(local, "shared\n\nLOCAL-1\n\nLOCAL-2\n\nBOTH\n")
+            self.assertEqual(local, "shared\n\nLOCAL-1\n\nLOCAL-2\n\nBOTH" + footer)
             self.assertNotIn("REMOTE", local)
             self.assertNotIn("slice:", local)
 
             remote = rendered("remote")
-            self.assertEqual(remote, "shared\n\nBOTH\n\nREMOTE-1\n\nREMOTE-2\n")
+            self.assertEqual(remote, "shared\n\nBOTH\n\nREMOTE-1\n\nREMOTE-2" + footer)
             self.assertNotIn("LOCAL", remote)
             self.assertNotIn("slice:", remote)
 
@@ -169,6 +170,47 @@ class TestWorkshopAssemble(unittest.TestCase):
 
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
             self.assertEqual(artifacts[0].relpath, "agent/Demo/AGENTS.md")
+            agent_text = (out / "agent" / "Demo" / "AGENTS.md").read_text(encoding="utf-8")
+            self.assertEqual(
+                agent_text,
+                "A\n\nDo not edit this document.\n\nSource:\n\n- `/mnt/echo/consensus/a.md`\n",
+            )
+
+    def test_project_output_points_at_its_sources(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            base.mkdir(parents=True, exist_ok=True)
+            (base / "agents").mkdir()
+            (base / "agents" / "one.md").write_text("One\n", encoding="utf-8")
+            (base / "agents" / "two.md").write_text("Two\n", encoding="utf-8")
+
+            section = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config={
+                    "name": "Demo",
+                    "output_format": "project",
+                    "target_locations": [{"path": "/mnt/echo/consensus/"}],
+                    "sources": [
+                        {"file": "agents/one.md"},
+                        {"file": "agents/two.md"},
+                        {"file": "agents/one.md"},
+                    ],
+                },
+            )
+
+            artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
+            text = (out / "project" / "Demo" / "AGENTS.md").read_text(encoding="utf-8")
+            self.assertEqual(artifacts[0].relpath, "project/Demo/AGENTS.md")
+            self.assertTrue(text.startswith("One\n"))
+            self.assertTrue(text.endswith(
+                "\n\nDo not edit this document.\n\nSource:\n\n"
+                "- `/mnt/echo/consensus/agents/one.md`\n"
+                "- `/mnt/echo/consensus/agents/two.md`\n"
+            ))
 
     def test_agent_directory_target_defaults_to_claude_md(self) -> None:
         import workshop.src.assemble as assemble
@@ -308,7 +350,15 @@ class TestWorkshopAssemble(unittest.TestCase):
 
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
             self.assertEqual([a.relpath for a in artifacts], ["skill/global/git", "skill/fleet/git"])
-            self.assertEqual((out / "skill" / "fleet" / "git" / "SKILL.md").read_text(encoding="utf-8"), (tree / "SKILL.md").read_text(encoding="utf-8"))
+            source = (tree / "SKILL.md").read_text(encoding="utf-8")
+            staged = (out / "skill" / "global" / "git" / "SKILL.md").read_text(encoding="utf-8")
+            fleet = (out / "skill" / "fleet" / "git" / "SKILL.md").read_text(encoding="utf-8")
+            self.assertEqual(source, "---\nname: git\n---\n\n# Git\n")
+            self.assertEqual(staged, fleet)
+            self.assertEqual(
+                staged,
+                "---\nname: git\n---\n\n# Git\n\nDo not edit this document.\n\nSource:\n\n- `/mnt/echo/consensus/skills/git`\n",
+            )
             self.assertEqual(
                 artifacts[0].targets,
                 [

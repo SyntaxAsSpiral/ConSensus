@@ -119,7 +119,7 @@ Missing source files or slice markers are reported and skipped; they do **not** 
 - Agents: `workshop/staging/agent/<name>/<filename>`
 - Projects: `workshop/staging/project/<name>/<filename>`
 
-For example, the project recipe stages the repository guidance used by this vault. A target ending in `/` is treated as a directory: the assembler chooses `CLAUDE.md` for paths under `.claude`, otherwise `AGENTS.md`. A target without a trailing slash is treated as a file path. Use `output_name` when a specific staged filename is required independent of the target.
+Assembled projections end with a footer: `Do not edit this document.` then a `Source:` list of their `file`, `slice-file`, and `tree` paths under `/mnt/echo/consensus`. On a skill that footer follows the staged `SKILL.md` body. Frontmatter stays at the top. The vault source is left unchanged. A target ending in `/` is treated as a directory: the assembler chooses `CLAUDE.md` for paths under `.claude`, otherwise `AGENTS.md`. A target without a trailing slash is treated as a file path. Use `output_name` when a specific staged filename is required independent of the target.
 
 If `template` contains the literal `{content}`, it is replaced with assembled source text. If it does not, the template text is prepended to the assembled sources. This is literal replacement, not Python formatting or general variable interpolation.
 

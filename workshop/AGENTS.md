@@ -1,6 +1,6 @@
 # Workshop
 
-Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root. `output_format: skill` deploys a vault skill to the house agent directories and to `fleet:/home/box/agent-data/workflows/<name>/`. A project-local skill keeps only the targets in its recipe. OpenRGB is the zrrh checkout. Knap is the esocortex project. The other deployed upstream skills use the house paths and `fleet:/home/box/agent-data/workflows/<name>/`.
+Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root. `output_format: skill` deploys a vault skill to the house agent directories and to `fleet:/home/box/agent-data/workflows/<name>/`. A project-local skill keeps only the targets in its recipe. OpenRGB is the zrrh checkout. Knap is the esocortex project. `agents-best-practices` is this vault's `.agents/`. The other deployed upstream skills use the house paths and `fleet:/home/box/agent-data/workflows/<name>/`.
 
 ```bash
 python workshop/src/assemble.py --dry-run
