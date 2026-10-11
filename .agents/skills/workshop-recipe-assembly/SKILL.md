@@ -70,10 +70,11 @@ These are the fleet targets:
 | What | Path | Recipe |
 |---|---|---|
 | Fleet steering | `/workspace/AGENTS.md` | `recipe-project-fleet` |
+| Fleet memory | `/workspace/memory-seed.md` | `recipe-project-fleet` |
 | Bot instructions | `/workspace/ROLES.md` | `recipe-agent-fleet` |
 | One skill | `/home/box/agent-data/workflows/<skill-name>/` | that skill's recipe |
 
-`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. There is no memory recipe. Big W reads `agents/steering-fleet.md` from the repo when it is pushed. A skill target is one folder, and that folder has a `SKILL.md`.
+`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. `memory-seed.md` is the second section of `recipe-project-fleet`. It stages beside `AGENTS.md` at `workshop/staging/project/Fleet/memory-seed.md`. Its source is `agents/steering-fleet.md`. A skill target is one folder, and that folder has a `SKILL.md`.
 
 ```yaml
 target_locations:

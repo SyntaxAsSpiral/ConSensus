@@ -62,6 +62,7 @@ Path exists on the host named in the table. Other hosts reach the tree through T
 |---|---|
 | `/workspace` | Bot workspace |
 | `/workspace/AGENTS.md` | Fleet steering |
+| `/workspace/memory-seed.md` | Fleet bot memory facts |
 | `/workspace/ROLES.md` | Bot instructions |
 | `/home/box/agent-data/workflows/` | Skill workflows. `agent-data` links to `/home/box/sand-data`. |
 
