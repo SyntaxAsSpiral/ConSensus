@@ -1,6 +1,6 @@
 ---
 name: cli-coding
-description: Use when choosing which coding CLI runs the work. Frontline is Pi on the local gateway. The cloud primary is Grok. Last resort is Pi on OpenRouter. Model dials stay in local-inference.
+description: Use when orchestrating cli coding agents. Roster, model routing, granularity, pi, grok build, hand offs, prompting. 
 metadata:
   author: zk
   version: "0.11"
@@ -9,7 +9,7 @@ metadata:
 
 # cli-coding
 
-Who runs the work. Model quirks, the JIT table, and the GPU check are `local-inference`. Stream counts live only there.
+Who runs the work. Model quirks, the JIT table, and the GPU check are the mesh-ops inference leaf. Stream counts live only there.
 
 Playbooks are not here yet. Read the leaf for the CLI you are about to launch.
 
@@ -31,7 +31,7 @@ Other coding agents are logged under `Coding Agents` in `agents/agent-roles.md` 
 |---|---|---|
 | Frontline | one `pi` session, provider `local`, `qwen/qwen3.8-27b`, thinking `high` | Read, narrow edit, local repro, one context. |
 | Local alternate | `pi --provider local --model meta/muse-glimmer` | Qwen is the wrong local model. Loading it replaces the other large model. |
-| Local fan-out | up to that model's JIT `parallel` | Independent slices, after `lms ps` shows a single instance. The number is in `local-inference`. |
+| Local fan-out | up to that model's JIT `parallel` | Independent slices, after `lms ps` shows a single instance. The number is in the mesh-ops inference leaf. |
 | Escalation | the primary cloud coder | Free steps missed, or wider than the loaded streams. The launch line is in Roster. |
 | Last resort | `pi --provider openrouter --model <id>` | The primary is at limit. Take `<id>` from `pi --list-models openrouter`. `--provider` requires `--model`. |
 

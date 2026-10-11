@@ -19,6 +19,5 @@ sources:
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-principles.md
     audience: remote
-  - file: agents/steering-global-mesh.md
 ```
 !!!!! THIS RECIPE IS A PLACEHOLDER !!!!!!!

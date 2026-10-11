@@ -23,5 +23,4 @@ sources:
   - file: agents/steering-global-operator.md
   - file: agents/steering-global-principles.md
     audience: local
-  - file: agents/steering-global-mesh.md
 ```

@@ -21,8 +21,6 @@ sources:
     slice-file: agents/agent-roles.md
   - slice: agent=fleet-design
     slice-file: agents/agent-roles.md
-  - slice: agent=fleet-comms
-    slice-file: agents/agent-roles.md
   - slice: agent=fleet-capital
     slice-file: agents/agent-roles.md
 ```

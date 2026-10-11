@@ -1,6 +1,6 @@
 # Pi
 
-The local frontline. Read this before launching it. Models, JIT presets, prediction-stream counts, and the GPU check are `local-inference`. This file is the CLI.
+The local frontline. Read this before launching it. Models, JIT presets, prediction-stream counts, and the GPU check are the mesh-ops inference leaf. This file is the CLI.
 
 ## Launch
 
@@ -10,7 +10,7 @@ pi
 
 That is one session, provider `local`, model `qwen/qwen3.8-27b`, thinking at `defaultThinkingLevel` (`high`). The reason that level stays on is in `SKILL.md`.
 
-Granularity on this CLI is `--thinking` (`off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`) and `--model`. The model id may carry the level (`id:high`). Which step to run is [routing.md](routing.md). Another large local model replaces the one on the GPU. The model cards are in `local-inference`.
+Granularity on this CLI is `--thinking` (`off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`) and `--model`. The model id may carry the level (`id:high`). Which step to run is [routing.md](routing.md). Another large local model replaces the one on the GPU. The model cards are in the mesh-ops inference leaf.
 
 `--thinking` is Pi's level, not the gateway's `reasoning_effort`. An invalid level only warns and runs at the default; it doesn't fail.
 

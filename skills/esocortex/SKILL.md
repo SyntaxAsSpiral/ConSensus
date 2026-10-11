@@ -73,4 +73,4 @@ curl -fsS --get 'http://127.0.0.1:8880/symbol/Antimony' \
 
 `400` bad request, symbol, or id. `404` missing. `405` anything besides GET or HEAD. `414` request line or query over the cap. `429` rate limit, `Retry-After: 1` (bucket 30, refill 15/s; loopback keys off the first `X-Forwarded-For` hop). `503` the query passed 3 seconds.
 
-Model calls belong to `local-inference`. Corpus writes belong in `/mnt/echo/esocortex`.
+Model calls belong to the mesh-ops inference leaf. Corpus writes belong in `/mnt/echo/esocortex`.

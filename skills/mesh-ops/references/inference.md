@@ -1,35 +1,25 @@
----
-name: local-inference
-description: Use when calling a local model on the mesh. Covers the LM Studio gateway, Qwen TTS, JIT presets, reasoning dials, and the inf-bench evaluator.
-compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). GUI session for CUDA.
-metadata:
-  author: zk
-  version: "2.9"
-  category: inference
----
-
-# local-inference
+# Local inference
 
 Adeck is the mesh gateway for local inference. Backends on it compete for the mesh. Read the leaf for the dial you are about to change. Driving a coding CLI is `cli-coding`.
 
 | Backend | Gateway |
 |---|---|
 | LM Studio chat and the current embedding ids | `http://100.89.32.9:1234/v1`. Weights for the large models run on zrrh. |
-| Qwen TTS | Separate backend on adeck. [tts](references/tts.md). |
+| Qwen TTS | Separate backend on adeck. [tts](inference/tts.md). |
 | Embedders | No gateway of their own yet. |
 
 | Leaf | When |
 |---|---|
-| [wake](references/wake.md) | Gated paths, WoL, timeouts. |
-| [api](references/api.md) | Schema, `reasoning_effort`, vision preflight. |
-| [models](references/models.md) | Cards, thinking dials, the Gemma spill. |
-| [jit](references/jit.md) | KV, streams, embedding pin, TTL. |
-| [tts](references/tts.md) | Qwen TTS on adeck. |
-| [logs](references/logs.md) | Which host's LM Studio file to read. |
-| [callers](references/callers.md) | family-cookbook and esocortex. |
-| [bench](references/bench.md) | inf-bench Factorio evaluator against this gateway. |
-| [paths](references/paths.md) | Flake paths and doc links. |
-| [gpu](references/gpu.md) | A Nix-built binary misses the GPU. |
+| [wake](inference/wake.md) | Gated paths, WoL, timeouts. |
+| [api](inference/api.md) | Schema, `reasoning_effort`, vision preflight. |
+| [models](inference/models.md) | Cards, thinking dials, the Gemma spill. |
+| [jit](inference/jit.md) | KV, streams, embedding pin, TTL. |
+| [tts](inference/tts.md) | Qwen TTS on adeck. |
+| [logs](inference/logs.md) | Which host's LM Studio file to read. |
+| [callers](inference/callers.md) | family-cookbook and esocortex. |
+| [bench](inference/bench.md) | inf-bench Factorio evaluator against this gateway. |
+| [paths](inference/paths.md) | Flake paths and doc links. |
+| [gpu](inference/gpu.md) | A Nix-built binary misses the GPU. |
 
 ## URL
 

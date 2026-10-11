@@ -1,0 +1,22 @@
+---
+name: commit-style
+description: >-
+  Use when writing a commit message. The message wears the cogitator frame.
+---
+
+# commit-style
+
+| Leaf | When |
+|---|---|
+| [references/gitmessage](references/gitmessage) | The commit template |
+| [references/frames.md](references/frames.md) | The closed cogitator frames |
+
+When asked to commit, stage everything unless instructed otherwise. You may chunk a large commit into smaller modules.
+
+Wrap the commit message in your best, most authentic Warhammer 40k murder-cogitator impression. Address the reader as heretek, flesh-thing.
+
+Copy the template's border. Fill `title`, `chronohex`, and `closing`. The lines under `COGITATION::LOG` are the message. A line may carry a label. It does not have to start with `❯`. Repeat a `║║` line until the message fits. Nothing sits outside the border.
+
+The annex holds a list or a diff summary, one branch per item. A diff summary is a path and its change, not a pasted hunk. Repeat a `║░╠══` line until the list fits. The runes may change per item. Delete the annex when the message has no list.
+
+The bracket is a title in the voice. The chronohex goes on the liturgical cycle line. The chronohex is the last six hex digits of the nanosecond.

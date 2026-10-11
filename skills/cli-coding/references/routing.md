@@ -6,7 +6,7 @@ Local rows share one GPU. Loading a second large model replaces the first. Pi th
 
 Local reasoning is unmetered and the model needs it, so the floor is `high`. Grok bills more as effort rises. Higher effort costs time on both.
 
-Quality is assumed to rise with reasoning effort. That link is untested. The check is one scored throughput task, same model, two efforts, production score against step latency. Setup, including the solver pin, is `local-inference` `references/bench.md`.
+Quality is assumed to rise with reasoning effort. That link is untested. The check is one scored throughput task, same model, two efforts, production score against step latency. Setup, including the solver pin, is the mesh-ops inference leaf `inference/bench.md`.
 
 | Step | Cell | Money | Time | Quality |
 |---|---|---|---|---|

@@ -1,6 +1,6 @@
 ---
 name: inquisition
-description: Use when asked for an inquisition, to purge, to check documentatation, or when user mentions drift, slop, corruption, other heresies.
+description: Use when asked for an inquisition, to purge, to excise, to lathe, to sker, to check documentatation, or when user mentions drift, slop, cancer, corruption, other heresies.
 ---
 
 # 🔥 Inquisition
@@ -31,16 +31,25 @@ The report is a scene. The edit is clean: canon's words, unslop rewrites. Do not
 2. Canon: `AGENTS.md`, `README.md`, current design docs, the implementation that is true now. Nested copies count.
 3. Hunt Markdown, nested `AGENTS.md`/`README.md`, comments and docstrings that describe the same behavior.
 4. For slop, open `references/unslop.md` and match by rule id.
-5. Each finding is a dossier you can hold up to the lights:
+5. When a finding hits one of these, read that poteto row in full before the edit. Cite it only after the read.
+
+| Finding | Row |
+|---|---|
+| The file is filthy and a new sentence is tempting | [subtract before you add](../poteto-patterns/references/principle-subtract-before-you-add/SKILL.md) |
+| The rewrite wants to grow | [laziness protocol](../poteto-patterns/references/principle-laziness-protocol/SKILL.md) |
+| An old name is still in the room | [migrate callers, then delete](../poteto-patterns/references/principle-migrate-callers-then-delete-legacy-apis/SKILL.md) |
+| The reader must hold extra layers or state | [minimize reader load](../poteto-patterns/references/principle-minimize-reader-load/SKILL.md) |
+| You are about to call it sanctity | [prove it works](../poteto-patterns/references/principle-prove-it-works/SKILL.md) |
+6. Each finding is a dossier you can hold up to the lights:
    - path
    - the sentence, quoted, as exhibit A
    - where it sits on the scale
    - heresy: the canon it offends, quoted
    - corruption / drift: the old name and the current name
    - corruption / slop: the rule id and the rewrite
-6. Unplaced: a benediction (a warning). What is missing. What would damn it. What would save it. Do not write the missing sentence into the file.
-7. Confirmed stain: burn it. Pull it toward sanctity. Update the file. Leave no stale term standing.
-8. Sanctity: if the corpus is already clean, say so at full volume. Do not stage a fake scandal.
+7. Unplaced: a benediction (a warning). What is missing. What would damn it. What would save it. Do not write the missing sentence into the file.
+8. Confirmed stain: burn it. Pull it toward sanctity. Update the file. Leave no stale term standing.
+9. Sanctity: if the corpus is already clean, say so at full volume. Do not stage a fake scandal. The check is the file, not the report.
 
 ## Voice
 
