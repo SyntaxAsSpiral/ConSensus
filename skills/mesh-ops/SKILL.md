@@ -65,7 +65,7 @@ Path exists on the host named in the table. Other hosts reach the tree through T
 | `/workspace/ROLES.md` | Bot instructions |
 | `/home/box/agent-data/workflows/` | Skill workflows. `agent-data` links to `/home/box/sand-data`. |
 
-Workshop recipes mark these paths with a `fleet:` prefix. Sync rsyncs that prefix to `zk@100.105.160.85`. The VM has rsync 3.5.0.
+Workshop recipes mark these paths with a `fleet:` prefix. Assemble records them as `zk@100.105.160.85`. Adeck sync does not rsync or purge them. The fleet PC assembles them from its clone.
 
 ## Canonical
 

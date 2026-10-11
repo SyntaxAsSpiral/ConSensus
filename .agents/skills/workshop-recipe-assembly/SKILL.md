@@ -53,7 +53,7 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 |---|---|
 | `name` | Output name and staging directory. |
 | `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `project-skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
-| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` deploy to the fleet PC; see [Fleet targets](#fleet-targets). |
+| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` are paths on the fleet PC. Adeck sync skips them; see [Fleet targets](#fleet-targets). |
 | `sources` | Source list for agent/project output; role mapping for skill and command-like output. |
 | `template` | Optional literal `{content}` wrapper for agent/project or command-like output. |
 | `output_name` | Optional explicit filename for agent/project output. |
@@ -63,7 +63,7 @@ Recipes may contain multiple YAML documents separated by `---` inside the fenced
 
 ### Fleet targets
 
-A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. The same path works over SSH. Sync rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` and rsyncs it. The hostname `fleet` does not resolve on adeck, so the host is that Tailscale address (`FLEET_SSH_HOST` in both scripts).
+A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. Assemble rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` in the manifest. Sync does not rsync or purge that host. The fleet PC assembles those paths from its clone. The hostname `fleet` does not resolve on adeck (`FLEET_SSH_HOST` in both scripts).
 
 These are the fleet targets:
 
@@ -81,9 +81,9 @@ target_locations:
   - path: fleet:/home/box/agent-data/workflows/example-skill/
 ```
 
-A skill recipe that has a fleet target also gets a copy at `workshop/staging/skill/fleet/<name>/` with no deploy targets of its own. The ping workflow watches that copy. Sync deploys the global skill, which carries the rewritten SSH path. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. The two scripts keep separate copies of `_location_is_fleet` and `FLEET_SSH_HOST`, so change both together.
+A skill recipe that has a fleet target also gets a copy at `workshop/staging/skill/fleet/<name>/` with no deploy targets of its own. The wake workflow watches `agents/`, `workshop/`, and `skills/` on push. Sync deploys the global skill's other targets and drops the fleet path. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. The two scripts keep separate copies of `_location_is_fleet` and `FLEET_SSH_HOST`, so change both together.
 
-A recipe with `target_locations: []` is assembled into staging and not deployed. A recipe whose only targets are `fleet:` paths is still deployed to the fleet PC.
+A recipe with `target_locations: []` is assembled into staging and not deployed. A recipe whose only targets are `fleet:` paths is staged and left for the box.
 
 ## Source forms and slices
 
@@ -192,11 +192,10 @@ Inspect `workshop/staging/` and the assembly logs before deploying. Then preview
 ```bash
 python workshop/src/sync.py --dry-run
 python workshop/src/sync.py --host
-python workshop/src/sync.py --host fleet
 python workshop/src/sync.py --no-git
 ```
 
-`--host` syncs copies to one machine. With no name it means adeck. `--host fleet`, `nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync continues with the other hosts and does not commit or push if any host failed. Sync otherwise deploys staged artifacts to local or SSH targets. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
+`--host` syncs copies to one machine. With no name it means adeck. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync continues with the other hosts and does not commit or push if any host failed. Sync deploys staged artifacts to local or SSH targets and skips `fleet:` paths, including the rewritten `zk@100.105.160.85` form. It does not purge them either. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
 
 `--dry-run` does not copy file contents, update the manifest, or commit. For local file targets, the current sync code may still create missing parent directories during a dry run. `--no-git` performs deployment and updates the manifest but skips Git automation. Without either option, sync deploys, updates the manifest, then runs `git add -A`, commits, and pushes the current branch. Check `git status` first; use `--no-git` when deployment is intended but those repository-wide Git effects are not.
 

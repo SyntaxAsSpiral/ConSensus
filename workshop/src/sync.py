@@ -272,6 +272,21 @@ def resolve_project_skill_target(raw: str, skill_name: str) -> Optional[str]:
     return f"{project}/.agents/skills/{skill_name}/"
 
 
+def _is_fleet_deploy_target(p: str) -> bool:
+    """fleet: and the SSH form assemble writes. Adeck does not write or purge these.
+
+    Big W assembles them on the box. Keep the host in step with assemble.FLEET_SSH_HOST.
+    """
+    raw = p.strip()
+    if raw.startswith("fleet:"):
+        return True
+    return _expand_target_path(raw).startswith(f"{FLEET_SSH_HOST}:")
+
+
+def _drop_fleet_targets(targets: List[str]) -> List[str]:
+    return [target for target in targets if not _is_fleet_deploy_target(target)]
+
+
 def _location_is_fleet(entry: Any) -> bool:
     """Raw target_locations entry for the fleet PC. Keep in step with assemble.py.
 
@@ -665,6 +680,8 @@ def cleanup_orphaned_deployments(
             canon = _canonical_target(t)
             if canon in current_targets or canon in seen:
                 continue
+            if _is_fleet_deploy_target(t):
+                continue
             if host is not None and not _select_host_targets([t], host):
                 continue
             seen.add(canon)
@@ -953,9 +970,15 @@ def main():
         )
         consume_snapshot_after_purge(previous_manifest, purge_clear, args.dry_run)
 
+    if any(_is_fleet_deploy_target(t) for item in current_items.values() for t in item.targets):
+        print(f"☠☠☠ >>> FLEET·LEFT·TO·THE·BOX ☠☠☠")
+        print(f"Fleet targets are assembled on the fleet PC. This sync does not write or purge them.")
+        print(f"|001101|—|001101|—|111000|— one writer")
+
     down_hosts: set = set()
     for deployment_id, item in current_items.items():
         targets = _select_host_targets(item.targets, args.host) if host_limited else item.targets
+        targets = _drop_fleet_targets(targets)
         if not targets:
             continue
         source = staging_dir / Path(item.source_relpath)

@@ -12,11 +12,10 @@ Assembly replaces `workshop/staging/` and refreshes the active entries in `works
 ```bash
 python workshop/src/sync.py --dry-run
 python workshop/src/sync.py --host
-python workshop/src/sync.py --host fleet
 python workshop/src/sync.py
 ```
 
-`--host` syncs copies to one machine. With no name it means adeck, the paths on this computer. `--host fleet` (or `nxiz`, `zrrh`, `quita`, or an address) retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use the full sync only when those effects are intended. A full sync that hits a failed host does not commit or push.
+`--host` syncs copies to one machine. With no name it means adeck, the paths on this computer. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use the full sync only when those effects are intended. A full sync that hits a failed host does not commit or push. `fleet:` paths are assembled on the fleet PC. Sync does not rsync or purge them.
 
 ## Under construction
 

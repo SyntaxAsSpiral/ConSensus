@@ -339,19 +339,38 @@ class TestWorkshopAssemble(unittest.TestCase):
             sync._select_host_targets(targets, "nxiz"),
             ["zk@100.115.135.104:~/.agents/skills/git/"],
         )
+        retired = {
+            "old": [
+                "zk@100.105.160.85:/home/box/agent-data/workflows/old/",
+                "zk@100.115.135.104:~/.agents/skills/old/",
+            ]
+        }
         cleaned, purge_clear = sync.cleanup_orphaned_deployments(
-            {
-                "old": [
-                    "zk@100.105.160.85:/home/box/agent-data/workflows/old/",
-                    "zk@100.115.135.104:~/.agents/skills/old/",
-                ]
-            },
-            {},
-            dry_run=True,
-            host="fleet",
+            retired, {}, dry_run=True, host="fleet",
+        )
+        self.assertEqual(cleaned, 0)
+        self.assertTrue(purge_clear)
+        cleaned, purge_clear = sync.cleanup_orphaned_deployments(
+            retired, {}, dry_run=True, host="nxiz",
         )
         self.assertEqual(cleaned, 1)
         self.assertTrue(purge_clear)
+        cleaned, purge_clear = sync.cleanup_orphaned_deployments(retired, {}, dry_run=True)
+        self.assertEqual(cleaned, 1)
+        self.assertTrue(purge_clear)
+
+    def test_sync_drops_fleet_targets(self) -> None:
+        import workshop.src.sync as sync
+
+        self.assertEqual(
+            sync._drop_fleet_targets([
+                "~/.agents/skills/git/",
+                "fleet:/home/box/agent-data/workflows/git/",
+                "zk@100.105.160.85:/workspace/AGENTS.md",
+                "zk@100.115.135.104:~/.agents/skills/git/",
+            ]),
+            ["~/.agents/skills/git/", "zk@100.115.135.104:~/.agents/skills/git/"],
+        )
 
     def test_repeated_assemble_keeps_unconsumed_snapshot(self) -> None:
         import workshop.src.assemble as assemble
