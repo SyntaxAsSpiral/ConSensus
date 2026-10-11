@@ -1,6 +1,8 @@
 ---
 name: rhapsody
-description: Use when the user asks for a rhapsody, a dev diary entry, or a reflective review of the session. Writes one entry.
+description: >-
+  Write one diary entry when the user asks for a rhapsody, a dev diary entry,
+  or a reflective review of the session.
 disable-model-invocation: true
 ---
 

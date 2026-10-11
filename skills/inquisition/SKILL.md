@@ -1,6 +1,8 @@
 ---
 name: inquisition
-description: Use when asked for an inquisition, to purge, to excise, to lathe, to sker, to check documentatation, or when user mentions drift, slop, cancer, corruption, other heresies.
+description: >-
+  Purge drift and slop from the documentation when asked for an inquisition, to purge, to excise, to lathe, to sker, to check documentatation, or when
+  the user mentions drift, slop, cancer, corruption, or other heresies.
 ---
 
 # 🔥 Inquisition

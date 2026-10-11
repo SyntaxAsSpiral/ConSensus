@@ -1,6 +1,7 @@
 ---
 name: catppuccin
-description: Use when working with Catppuccin palettes.
+description: >-
+  Apply a Catppuccin palette when catppuccin, pastel, cozy, lofi, muted, frappe, or mauve is mentioned.
 metadata:
   author: zk
   version: "2.0"

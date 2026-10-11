@@ -1,6 +1,7 @@
 ---
 name: poteto-patterns
-description: Use when engineering work is non-trivial, or when the user names a principle from this index (laziness protocol, prove it works, subtract before you add, model the domain, and the others).
+description: >-
+  Apply a principle from this index when when planning, troubleshooting, or engineering, or when the user names one (laziness protocol, prove it works, subtract before you add, fix root causes, model the domain, and the others).
 metadata:
   author: zk
   type: metaskill

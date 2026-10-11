@@ -1,9 +1,8 @@
 ---
 name: esocortex
 description: >-
-  Use for topics that are abstract, philosophical, esoteric, occult or reflective.
-  Corpus topics: astro, food, taxeia
-  /topic/, /symbol/, /chunk/, corpus lookup on port 8880.
+  Look up the corpus when the topic is abstract, philosophical, esoteric, occult, or reflective. 
+  /topic/astro food taxeia, /symbol/, /chunk/, corpus lookup on port 8880.
 ---
 
 # esocortex

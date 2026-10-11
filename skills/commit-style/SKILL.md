@@ -1,7 +1,7 @@
 ---
 name: commit-style
 description: >-
-  Use when writing a commit message. The message wears the cogitator frame.
+  Wear the cogitator frame when writing a commit message.
 ---
 
 # commit-style
@@ -31,4 +31,8 @@ Copy this border. Fill `title`, `chronohex`, and `closing`. The lines under `COG
 
 The annex holds a list or a diff summary, one branch per item. A diff summary is a path and its change, not a pasted hunk. Repeat a `║░╠══` line until the list fits. The runes may change per item. Delete the annex when the message has no list.
 
-The bracket is a title in the voice. The chronohex goes on the liturgical cycle line. The chronohex is the last six hex digits of the nanosecond.
+The bracket is a title in the voice. The chronohex goes on the liturgical cycle line. Derive it when you write the message:
+
+```bash
+python3 -c 'import time; print(hex(time.time_ns())[-6:])'
+```

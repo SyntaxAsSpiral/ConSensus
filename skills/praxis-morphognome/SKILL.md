@@ -1,6 +1,9 @@
 ---
 name: praxis-morphognome
-description: Use when the user asks for praxis-morphognome, a taste or design review, a pattern-language pass, a sketch before a piece hardens, or whether a piece is beautiful or slop.
+description: >-
+  Judge the piece in the pattern language when the user asks for
+  praxis-morphognome, a taste or design review, a pattern-language pass, a
+  sketch before a piece hardens, or whether a piece is beautiful or slop.
 ---
 
 # Morphognome

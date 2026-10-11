@@ -1,6 +1,8 @@
 ---
 name: cli-coding
-description: Use when orchestrating cli coding agents. Roster, model routing, granularity, pi, grok build, hand offs, prompting. 
+description: >-
+  Seat a CLI coding agent when orchestrating a roster, a model route,
+  granularity, pi, grok build, a handoff, or a prompt. 
 metadata:
   author: zk
   version: "0.11"

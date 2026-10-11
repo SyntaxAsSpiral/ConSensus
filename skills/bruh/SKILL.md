@@ -1,7 +1,8 @@
 ---
 name: bruh
-description: Use when asked to bruh, reframe, restyle, eli*, simplify, teach, or render data through a creative lens.
-
+description: >-
+  Reframe the material when it fails to land or when asked to restyle, eli*, simplify,
+  teach, or render data through a creative lens.
 ---
 
 # Bruh

@@ -25,8 +25,9 @@ sources:
     frontmatter:
       name: inquisition
       description: >-
-        Use when the user asks for an inquisition, a documentation consistency
-        check, or a purge of drift, slop, and other heresies.
+        Purge drift and slop from the documentation when asked for an inquisition,
+        to purge, to excise, to lathe, to sker, to check documentatation, or when
+        the user mentions drift, slop, cancer, corruption, or other heresies.
       metadata:
         author: zk
         type: skill

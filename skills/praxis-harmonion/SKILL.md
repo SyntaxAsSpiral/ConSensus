@@ -1,6 +1,9 @@
 ---
 name: praxis-harmonion
-description: Use when the user asks for praxis-harmonion, how something works, where it lives, which layer owns it, or for a walkthrough before a change.
+description: >-
+  Explain how it works when the user asks for praxis-harmonion, how something
+  works, where it lives, which layer owns it, or for a walkthrough before a
+  change.
 ---
 
 # Harmonion praxis

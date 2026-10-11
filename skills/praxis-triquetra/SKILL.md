@@ -1,6 +1,9 @@
 ---
 name: praxis-triquetra
-description: Use when the user asks for praxis-triquetra, a triquetra, or for praxis-morphognome to write what this session learned into a skill, bot memory, or another durable artifact.
+description: >-
+  Write what this session learned when the user asks for praxis-triquetra, a
+  triquetra, or for praxis-morphognome to write it into a skill, bot memory,
+  or another durable artifact.
 ---
 
 # Triquetra praxis

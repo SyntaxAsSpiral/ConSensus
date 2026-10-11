@@ -25,7 +25,7 @@ sources:
     frontmatter:
       name: bruh
       description: >-
-        Use when the user asks to bruh, reframe, restyle, eli*, simplify,
+        Reframe the material when asked to bruh, reframe, restyle, eli*, simplify,
         teach, or render data through a creative lens.
       metadata:
         author: zk

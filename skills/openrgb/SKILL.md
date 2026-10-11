@@ -1,6 +1,8 @@
 ---
 name: openrgb
-description: Use when changing OpenRGB on zrrh, or driving RGB through the OpenRGB SDK and openrgb-python. The zrrh pin is 1.0rc3.1.
+description: >-
+  Drive OpenRGB on zrrh when changing OpenRGB, or driving RGB through the
+  OpenRGB SDK and openrgb-python. The zrrh pin is 1.0rc3.1.
 compatibility: Requires OpenRGB with SDK server enabled, openrgb-python (pip). Network features require hosts reachable over TCP. Linux recommended; partial Windows/macOS support.
 metadata:
   author: zk

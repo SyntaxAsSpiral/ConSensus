@@ -1,7 +1,7 @@
 ---
 name: mesh-ops
 description: >-
-  Use for all cross-host infrastructure, host configuration, system
+  REQUIRED: for all cross-host infrastructure, host configuration, system
   administration, and shared platform tasks outside a local project directory.
   Shared platform includes ConSensus at /mnt/echo/consensus and the NixOS flake
   at /mnt/echo/nix-os. Other zk-owned repos under /mnt/echo are echo repos.

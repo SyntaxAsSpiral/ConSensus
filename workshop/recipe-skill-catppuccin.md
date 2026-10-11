@@ -23,7 +23,8 @@ sources:
   skill_md:
     frontmatter:
       name: catppuccin
-      description: Use when working with Catppuccin palettes.
+      description: >-
+        Apply a Catppuccin palette when Catppuccin, pastel, cozy, lofi, muted, or mauve is mentioned.
       license: MIT
       metadata:
         author: zk

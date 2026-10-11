@@ -1,6 +1,9 @@
 ---
 name: praxis-archeoform
-description: "Use when agents keep repeating a mistake in this repo. Make it impossible: architecture, then types, then a lint whose error names the fix, then a test. Docs last. The check must fail on a real past mistake."
+description: >-
+  Make a repeated mistake impossible when agents keep repeating it in this
+  repo. Architecture, then types, then a lint whose error names the fix, then
+  a test. Docs last. The check must fail on a real past mistake.
 disable-model-invocation: true
 ---
 

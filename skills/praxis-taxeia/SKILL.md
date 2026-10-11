@@ -1,6 +1,9 @@
 ---
 name: praxis-taxeia
-description: Use when the user asks for praxis-taxeia, an adversarial review, a falsifier pass, or to stress-test a diff, design, or claim before accepting it.
+description: >-
+  Falsify the claim when the user asks for praxis-taxeia, an adversarial
+  review, a falsifier pass, or to stress-test a diff, design, or claim before
+  accepting it.
 ---
 
 # Taxeia praxis
