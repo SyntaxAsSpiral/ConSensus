@@ -1,7 +1,7 @@
 ---
 id: recipe-catppuccin
 created: 2026-01-15
-modified: 2026-10-09
+modified: 2026-10-11
 status: active
 type:
   - skill
@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/catppuccin/
   - path: zk@100.82.51.63:~/.claude/skills/catppuccin/
   - path: zk@100.82.51.63:~/.agents/skills/catppuccin/
+  - path: fleet:/home/box/agent-data/workflows/catppuccin/
 
 sources:
   skill_md:

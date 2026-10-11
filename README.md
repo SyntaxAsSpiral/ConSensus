@@ -1,12 +1,9 @@
 # ConSensus
 
-ConSensus is ZK's context vault. It holds agent steering, reusable skills, prompt sources, and workshop recipes.
+> Then I opened wide; experience flooded up my inlays and spilled across my parietal cortex in glorious high-density fast forward.
 
-- [Agent steering](agents/) contains shared operator, principle, and mesh context. [ConSensus project steering](agents/steering-project-consensus.md) is an example; other projects keep their own steering locally.
-- [Prompts](prompts/) are canonical prompt sources. Selected prompts have [skill recipes](workshop/) that package them as Agent Skills.
+ConSensus is zk's context vault, named after the shared cognitive interface from Peter Watts' [*Blindsight*](https://rifters.com/real/Blindsight.htm#:~:text=telemetry%20into%20ConSensus,parietal%20cortex). It holds agent steering, reusable skills, prompt sources, and multi-host deployment recipes.
+
+- [Agent steering](agents/) contains shared operator, principle, and agent context.
 - [Skills](skills/) contain skill sources and references.
-- Visual canvases and JSON examples live in [exeglyph](https://github.com/SyntaxAsSpiral/exeglyph) at `/mnt/echo/exeglyph/artifacts/`.
-- [Exocortex](exocortex/) contains design notes and role definitions.
-- [Workshop](workshop/README.md) describes local assembly and deployment.
-
-Agents working in this repository should start with [AGENTS.md](AGENTS.md).
+- [Workshop](workshop/AGENTS.md) describes local assembly and deployment.

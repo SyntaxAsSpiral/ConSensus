@@ -1,7 +1,7 @@
 ---
 id: recipe-agents-best-practices
 created: 2026-09-26
-modified: 2026-09-26
+modified: 2026-10-11
 status: active
 type:
   - "skill"
@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/agents-best-practices/
   - path: zk@100.82.51.63:~/.claude/skills/agents-best-practices/
   - path: zk@100.82.51.63:~/.agents/skills/agents-best-practices/
+  - path: fleet:/home/box/agent-data/workflows/agents-best-practices/
 
 sources:
   tree: skills/upstream/agents-best-practices

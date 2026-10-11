@@ -1,7 +1,7 @@
 ---
 id: recipe-skill-nixos-wiki
 created: 2026-10-05
-modified: 2026-10-05
+modified: 2026-10-11
 status: active
 type:
   - "skill"
@@ -18,6 +18,7 @@ target_locations:
   - path: zk@100.115.135.104:~/.agents/skills/nixos-wiki/
   - path: zk@100.82.51.63:~/.claude/skills/nixos-wiki/
   - path: zk@100.82.51.63:~/.agents/skills/nixos-wiki/
+  - path: fleet:/home/box/agent-data/workflows/nixos-wiki/
 
 sources:
   tree: skills/upstream/nix-skills/skills/nixos-wiki
