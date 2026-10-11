@@ -1,13 +1,14 @@
 # ConSensus Project Steering
 
-ConSensus is ZK's canonical context vault at `/mnt/echo/consensus`. It holds source guidance, skills, prompts, and design artifacts; the workshop assembles selected sources for agents and services. Treat workshop staging as generated output, not source.
+ConSensus is ZK's canonical context vault at `/mnt/echo/consensus`. It holds source guidance, skills, prompts, and design notes; the workshop assembles selected sources for agents and services. Treat workshop staging as generated output, not source.
 
 ## Vault map
 
 - `agents/` — shared and project-specific steering
 - `skills/` — reusable agent capabilities
 - `prompts/` — source prompts, some packaged as skills
-- `artifacts/` and `exocortex/` — visual models and cognitive architecture notes
+- `exocortex/` — cognitive architecture notes
+- Visual models live in exeglyph at `/mnt/echo/exeglyph/artifacts/`, not in this vault.
 - `workshop/` — recipes, assembly, deployment, and the deployment manifest
 
 ## Working here
