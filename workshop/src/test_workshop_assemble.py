@@ -51,6 +51,76 @@ class TestWorkshopAssemble(unittest.TestCase):
             self.assertIn("SLICED", text)
             self.assertIn("before", text)
 
+    def test_audience_keeps_unsliced_text_and_each_matching_slice(self) -> None:
+        import workshop.src.assemble as assemble
+
+        with TemporaryDirectory() as td:
+            base = Path(td) / "base"
+            out = Path(td) / "out"
+            base.mkdir(parents=True, exist_ok=True)
+            src = base / "principles.md"
+            src.write_text(
+                "\n".join(
+                    [
+                        "shared",
+                        "<!-- slice:local -->",
+                        "LOCAL-1",
+                        "<!-- /slice -->",
+                        "<!-- slice:local -->",
+                        "LOCAL-2",
+                        "<!-- /slice -->",
+                        "<!-- slice:both -->",
+                        "BOTH",
+                        "<!-- /slice -->",
+                        "<!-- slice:remote -->",
+                        "REMOTE-1",
+                        "<!-- /slice -->",
+                        "<!-- slice:remote -->",
+                        "REMOTE-2",
+                        "<!-- /slice -->",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            def rendered(audience: str) -> str:
+                section = assemble.RecipeSection(
+                    recipe_file=Path(td) / "recipe.md",
+                    index=0,
+                    config={
+                        "name": "Demo",
+                        "output_format": "agent",
+                        "target_locations": [{"path": "~/Demo/AGENTS.md"}],
+                        "sources": [{"file": "principles.md", "audience": audience}],
+                    },
+                )
+                artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
+                self.assertEqual(len(artifacts), 1)
+                return artifacts[0].abspath.read_text(encoding="utf-8")
+
+            local = rendered("local")
+            self.assertEqual(local, "shared\n\nLOCAL-1\n\nLOCAL-2\n\nBOTH\n")
+            self.assertNotIn("REMOTE", local)
+            self.assertNotIn("slice:", local)
+
+            remote = rendered("remote")
+            self.assertEqual(remote, "shared\n\nBOTH\n\nREMOTE-1\n\nREMOTE-2\n")
+            self.assertNotIn("LOCAL", remote)
+            self.assertNotIn("slice:", remote)
+
+            bad = assemble.RecipeSection(
+                recipe_file=Path(td) / "recipe.md",
+                index=0,
+                config={
+                    "name": "Demo",
+                    "output_format": "agent",
+                    "target_locations": [{"path": "~/Demo/AGENTS.md"}],
+                    "sources": [{"file": "principles.md", "audience": "nix"}],
+                },
+            )
+            self.assertEqual(assemble.build_output_artifacts(bad, base, out, dry_run=False), [])
+
     def test_agent_filename_disambiguation_when_requested(self) -> None:
         import workshop.src.assemble as assemble
 
@@ -364,9 +434,9 @@ class TestWorkshopAssemble(unittest.TestCase):
                 "name": "Demo",
                 "output_format": "agent",
                 "target_locations": [
-                    {"path": "fleet:/workspace/shared/AGENTS.md"},
+                    {"path": "fleet:/workspace/AGENTS.md"},
                     {"path": "~/Demo/AGENTS.md"},
-                    "fleet:/workspace/shared/ROLES.md",
+                    "fleet:/workspace/ROLES.md",
                 ],
                 "sources": [{"file": "a.md"}],
             }
@@ -377,9 +447,9 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
             expected = [
-                f"{assemble.FLEET_SSH_HOST}:/workspace/shared/AGENTS.md",
+                f"{assemble.FLEET_SSH_HOST}:/workspace/AGENTS.md",
                 str(Path.home() / "Demo" / "AGENTS.md"),
-                f"{assemble.FLEET_SSH_HOST}:/workspace/shared/ROLES.md",
+                f"{assemble.FLEET_SSH_HOST}:/workspace/ROLES.md",
             ]
             self.assertEqual(assemble.FLEET_SSH_HOST, sync.FLEET_SSH_HOST)
             self.assertEqual(len(artifacts), 1)
@@ -403,8 +473,8 @@ class TestWorkshopAssemble(unittest.TestCase):
             base.mkdir()
             (base / "a.md").write_text("A\n", encoding="utf-8")
             for locations in (
-                [{"path": "fleet:/workspace/shared/AGENTS.md"}],
-                ["fleet:/workspace/shared/AGENTS.md"],
+                [{"path": "fleet:/workspace/AGENTS.md"}],
+                ["fleet:/workspace/AGENTS.md"],
             ):
                 config = {
                     "name": "Demo",
@@ -418,7 +488,7 @@ class TestWorkshopAssemble(unittest.TestCase):
                     config=config,
                 )
                 artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
-                expected = [f"{assemble.FLEET_SSH_HOST}:/workspace/shared/AGENTS.md"]
+                expected = [f"{assemble.FLEET_SSH_HOST}:/workspace/AGENTS.md"]
                 self.assertEqual(len(artifacts), 1)
                 self.assertEqual(artifacts[0].relpath, "agent/Demo/Demo.md")
                 self.assertEqual(artifacts[0].targets, expected)

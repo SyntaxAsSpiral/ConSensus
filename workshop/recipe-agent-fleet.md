@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-fleet
 created: 2026-10-07
-modified: 2026-10-07
+modified: 2026-10-10
 status: active
 type:
   - agent
@@ -12,7 +12,7 @@ output_format: agent
 output_name: ROLES.md
 
 target_locations:
-  - path: fleet:/workspace/shared/ROLES.md
+  - path: fleet:/workspace/ROLES.md
 
 sources:
   - slice: agent=fleet-lead

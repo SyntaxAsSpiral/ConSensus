@@ -1,9 +1,9 @@
 ---
 name: esocortex
 description: >-
-  Use when querying the esocortex corpus through its read-only HTTP API:
-  symbol hits, co-occurrence, or one chunk's text. Triggers: esocortex API,
-  /symbol/, /chunk/, corpus lookup on port 8880.
+  Use for topics that are abstract, philosophical, esoteric, occult or reflective.
+  Corpus topics: astro, food, taxeia
+  /topic/, /symbol/, /chunk/, corpus lookup on port 8880.
 ---
 
 # esocortex
@@ -26,6 +26,8 @@ On adeck, use loopback. Hostnames do not resolve there. User service `esocortex-
 | GET | Params | Body |
 |---|---|---|
 | `/` or `/health` | — | status, caps, routes |
+| `/topic` | — | `{topics:[{topic, count}]}` |
+| `/topic/{topic}` | `limit` default 20, max 100; `offset` max 2000 | `{topic, count, limit, offset, hits}` |
 | `/symbol/{symbol}` | `limit` default 20, max 100; `offset` max 2000; `topic` | `{symbol, count, limit, offset, topic, hits}` |
 | `/symbol/{symbol}/co` | `limit` default 20, max 50; `topic` | `{symbol, limit, topic, co:[{symbol, count}]}` |
 | `/chunk/{id}` | — | `{chunk, text_truncated}` |
@@ -34,9 +36,19 @@ Percent-encode the symbol (`Basil Valentine` → `Basil%20Valentine`). A chunk i
 
 `limit` above the max is clamped. `offset` above 2000, `limit` below 1, and a topic outside `^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$` are `400`.
 
-Omit `topic` to search every label. Set it to keep chunks whose `topic` array contains that label.
+Omit `topic` on a symbol search to search every label. Set it to keep chunks whose `topic` array contains that label.
 
-Symbol match is case-insensitive. An unknown symbol or chunk id is `404`.
+## Topics
+
+| topic | holds |
+|---|---|
+| `astro` | ista, carey-salts, zachary-reading |
+| `food` | ista |
+| `taxeia` | A Pattern Language (`source` `pattern-language`) |
+
+`GET /topic` returns the live labels and counts. `GET /topic/taxeia` lists the pattern language. A symbol search inside that book sets `topic=taxeia`.
+
+Symbol match is case-insensitive. An unknown symbol, topic, or chunk id is `404`.
 
 ## Rows
 
@@ -46,6 +58,8 @@ Symbol match is case-insensitive. An unknown symbol or chunk id is `404`.
 
 ```bash
 # adeck. From the tailnet, swap in the https origin.
+curl -fsS 'http://127.0.0.1:8880/topic'
+curl -fsS 'http://127.0.0.1:8880/topic/taxeia?limit=5'
 curl -fsS 'http://127.0.0.1:8880/symbol/Ethnography?limit=5'
 curl -fsS 'http://127.0.0.1:8880/symbol/Ethnography/co?limit=10'
 curl -fsS 'http://127.0.0.1:8880/chunk/ista:alc/antimony.htm:c1'

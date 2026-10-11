@@ -1,7 +1,7 @@
 ---
 name: local-inference
 description: Use when calling a local model on the mesh. Covers the LM Studio gateway, Qwen TTS, JIT presets, reasoning dials, and the inf-bench evaluator.
-compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). Tailscale required. zrrh needs its GUI session for CUDA.
+compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). GUI session for CUDA.
 metadata:
   author: zk
   version: "2.9"

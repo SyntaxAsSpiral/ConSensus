@@ -6,6 +6,7 @@ Processes Obsidian recipe files with embedded YAML to assemble context content.
 Supports:
 - slice extraction via `slice` + `slice-file`
 - whole-file inclusion via `file` only
+- audience inclusion via `file` + `audience` (`local` or `remote`): unsliced text, plus every matching slice and any `both` slice, in file order
 - multi-section recipes via YAML document separators (`---`) inside the YAML block
 - structured output formats: `agent`, `skill`
 
@@ -313,6 +314,57 @@ def include_file(file_path: Path) -> Optional[str]:
         return None
 
 
+_AUDIENCE_NAMES = {"local", "remote"}
+_SLICE_OPEN = "<!-- slice:"
+_SLICE_CLOSE = "<!-- /slice -->"
+
+
+def _filter_slices_for_audience(text: str, audience: str) -> str:
+    """Keep unsliced text plus slices for this audience or `both`, in file order."""
+    parts: List[str] = []
+    pos = 0
+    while True:
+        start = text.find(_SLICE_OPEN, pos)
+        if start == -1:
+            parts.append(text[pos:])
+            break
+        parts.append(text[pos:start])
+        id_end = text.find("-->", start + len(_SLICE_OPEN))
+        if id_end == -1:
+            parts.append(text[start:])
+            break
+        slice_id = text[start + len(_SLICE_OPEN):id_end].strip()
+        body_start = id_end + len("-->")
+        close_at = text.find(_SLICE_CLOSE, body_start)
+        next_at = text.find(_SLICE_OPEN, body_start)
+        if close_at == -1 and next_at == -1:
+            body = text[body_start:]
+            pos = len(text)
+        elif close_at == -1 or (next_at != -1 and next_at < close_at):
+            body = text[body_start:next_at]
+            pos = next_at
+        else:
+            body = text[body_start:close_at]
+            pos = close_at + len(_SLICE_CLOSE)
+        if slice_id == audience or slice_id == "both":
+            parts.append(body)
+    filtered = re.sub(r"\n{3,}", "\n\n", "".join(parts)).strip()
+    return filtered
+
+
+def include_file_for_audience(file_path: Path, audience: str) -> Optional[str]:
+    """Include unsliced body plus slices for `audience` (`local` or `remote`)."""
+    if audience not in _AUDIENCE_NAMES:
+        print(f"☠☠☠ >>> SOURCE·CONFIGURATION·HERESY ☠☠☠")
+        print(f"Audience must be local or remote, flesh-thing: {audience}")
+        print(f"|001101|—|000000|—|111000|— skipping corrupted entry")
+        return None
+    text = include_file(file_path)
+    if text is None:
+        return None
+    return _filter_slices_for_audience(text, audience)
+
+
 def _assemble_source_list(sources: Iterable[Dict[str, Any]], base_path: Path) -> List[str]:
     assembled_parts: List[str] = []
 
@@ -353,7 +405,16 @@ def _assemble_source_list(sources: Iterable[Dict[str, Any]], base_path: Path) ->
                 print(f"|001101|—|000000|—|111000|— path leads to void")
                 continue
 
-            file_content = include_file(full_path)
+            audience = source.get("audience")
+            if audience is None:
+                file_content = include_file(full_path)
+            elif isinstance(audience, str) and audience.strip():
+                file_content = include_file_for_audience(full_path, audience.strip())
+            else:
+                print(f"☠☠☠ >>> SOURCE·CONFIGURATION·HERESY ☠☠☠")
+                print(f"Audience must be local or remote, flesh-thing: {audience}")
+                print(f"|001101|—|000000|—|111000|— skipping corrupted entry")
+                continue
             if file_content is not None:
                 assembled_parts.append(file_content)
             continue

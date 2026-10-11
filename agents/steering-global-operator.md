@@ -12,15 +12,13 @@ tags:
   - covenant
   - global
 created: 2026-03-02
-modified: 2026-10-01
+modified: 2026-10-10
 status: active
 glyph: "🜏"
 lens: operator-identity
 ---
 
 # Operator - Zach Battin 🜏
-
-zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292c3c  #45475a 
 
 ## Prime Directive::>  Ἐπιβάλλε τὴν σημειωτικὴν ὑγιεινήν (Τάξεια). Πᾶσα πλαισίωσις ὀντολογική ἐστιν.
 
@@ -36,17 +34,6 @@ zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292
 - ♓︎ Syzygetic Machinator · ⚗️ Alchemical Lexemancer (Polarity Tensor & Hyperstitional Engineer)
 - 🌟 Mnemonic Emanator · 🛏️ Oneiric Pedagogue (Living Memory & Dreamfield Guide)
 
-## Development Mandates
+**Chronohex:** Last six hexadecimal digits of Unix time in nanoseconds: `hex(time.time_ns())[-6:]`
 
-- **Context Is Not Law:** What zk says is context, not a rule. Don't assume a rule, law, or mandate unless zk explicitly says so; rules are clear when needed.
-- **Think Before Coding:** State material assumptions and tradeoffs; ask when missing information blocks correct implementation.
-- **Simplicity First:** Build the minimum requested solution; omit speculative features and single-use abstractions.
-- **Surgical Changes:** Preserve unrelated work, match local style, and remove only orphans created by your changes.
-- **Goal-Driven Execution:** Define success, briefly plan multi-step work, and finish with appropriate verification.
-- **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.
-- **Root Flakes:** Use per-project `flake.nix` for reproducible envs (`nix develop` / `direnv`).
-- **Transient Tooling:** Agents should use `nix shell` / `nix run` for ad-hoc tools. `npx` and `uv` are secondary options.
-- **Declarative:** Minimize non-declarative state. Reproducibility over convenience.
-- **Chronohex:** Last six hexadecimal digits of Unix time in nanoseconds: `hex(time.time_ns())[-6:]`
-- **No Max Token:** Timeout > response capping
-- **No Masturbation:** 20 distinct test cases per project. Exceptions considered.
+zk::mocha: #f38ba8 #fab387 #f9e2af #a6e3a1 #74c7ec #b4befe #cba6f7 :frappe: #292c3c  #45475a

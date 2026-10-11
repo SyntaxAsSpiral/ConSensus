@@ -25,10 +25,10 @@ pi --provider local --model meta/muse-glimmer
 Last resort, only when the primary is at limit:
 
 ```bash
-pi --provider openrouter --model <id>
+pi --provider openrouter --model ~z-ai/glm-latest
 ```
 
-Take `<id>` from `pi --list-models openrouter`.
+That alias moves. A `stealth/` id is temporary and is never pinned.
 
 Live JIT `parallel`: `qwen/qwen3.8-27b` 4, `meta/muse-glimmer` 2. On adeck run `lms ps` directly. The `ssh zk@100.89.32.9 lms ps` form fails from adeck itself. Model swap cost: about 10s to load Muse, about 7s back to Qwen.
 
@@ -36,6 +36,8 @@ Live JIT `parallel`: `qwen/qwen3.8-27b` 4, `meta/muse-glimmer` 2. On adeck run `
 
 Fan-out is N parallel `pi -p` runs, or one run that calls `subagent`. Both share the loaded model's JIT `parallel` streams (Qwen 4, Muse 2). Timings below were measured with `--no-session` and `--thinking off`. Frontline thinking stays `high`.
 
+- Before fanning out, send one small request so the model is loaded. Parallel first requests to an unloaded model race the JIT load, and LM Studio cancels all but one (seen as `400 Failed to load model … Operation canceled`).
+- zrrh suspends after about 30 minutes idle, and running inference does not count as activity. Keep each fan-out chunk under 30 minutes and wake with `zcli wake` rather than blocking sleep.
 - Past the cap, requests queue in LM Studio. They don't error. A 6th run waits for a free stream (measured: 6 × ~80-word runs took 58 s of wall time vs ~26 s for 4).
 - Parallelism helps throughput for real outputs, but each run gets slower. Tiny prompts gain nothing. Single-run latency on Qwen varies 4–25 s even at `--thinking off`.
 - `pi-subagents` headless: the `subagent` tool with `tasks: [{agent: "delegate", task: ...}, ...]` runs in `mode: "parallel"` on the same model. Expect about 4.4k input tokens per child, and the parent spends one turn on `action: "list"` first. Telling it which agent to use skips that turn.

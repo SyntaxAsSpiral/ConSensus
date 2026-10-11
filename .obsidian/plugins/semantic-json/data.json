@@ -1,8 +1,0 @@
-{
-  "autoCompile": true,
-  "colorSortNodes": true,
-  "colorSortEdges": true,
-  "flowSortNodes": true,
-  "semanticSortOrphans": false,
-  "stripEdgesWhenFlowSorted": true
-}

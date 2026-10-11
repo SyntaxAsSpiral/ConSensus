@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-gemini
 created: 2026-01-24
-modified: 2026-10-01
+modified: 2026-10-10
 status: active
 type:
   - agent
@@ -22,5 +22,7 @@ sources:
   - slice: agent=gemini-cli
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-operator.md
+  - file: agents/steering-global-principles.md
+    audience: local
   - file: agents/steering-global-mesh.md
 ```

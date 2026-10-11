@@ -1,13 +1,13 @@
 ---
 name: praxis-triquetra
-description: Use when the user asks for praxis-triquetra, a triquetra, or for morphognome to write what this session learned into a skill, bot memory, or another durable artifact.
+description: Use when the user asks for praxis-triquetra, a triquetra, or for praxis-morphognome to write what this session learned into a skill, bot memory, or another durable artifact.
 ---
 
 # Triquetra praxis
 
 Harmonion and Critikon, apart, then Morphognome writes. The product is the edit.
 
-The synthesis seat is Morphognome. The morphognome skill is the pattern language. This command uses the seat.
+The synthesis seat is Morphognome. The praxis-morphognome skill is the pattern language. This command uses the seat.
 
 Homes are a skill, a bot memory, or another durable artifact. The menu is [references/homes.md](references/homes.md).
 

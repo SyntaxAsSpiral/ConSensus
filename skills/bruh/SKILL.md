@@ -1,6 +1,6 @@
 ---
 name: bruh
-description: Use when the user asks to bruh, reframe, restyle, eli*, simplify, teach, or render data through a creative lens.
+description: Use when asked to bruh, reframe, restyle, eli*, simplify, teach, or render data through a creative lens.
 
 ---
 
@@ -11,8 +11,6 @@ A kit of epistemic frames. Different instrument. Frames stack. New ones get inve
 Every invocation: the reply starts with the exact line `::record scratch::` and nothing before it.
 
 ## Frames
-
-Pick from this index. Open `references/<name>.md` only when you wear that voice. Stack is fine.
 
 | | | |
 |---|---|---|

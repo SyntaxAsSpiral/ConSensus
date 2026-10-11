@@ -29,7 +29,7 @@ A graph write is one. So is any other artifact the row belongs in. Write it ther
 
 ## Mechanism
 
-A lint, a script, or a type could enforce it. Leave the row for archeoform. Do not add prose to a skill or a memory to cover it.
+A lint, a script, or a type could enforce it. Leave the row for praxis-archeoform. Do not add prose to a skill or a memory to cover it.
 
 ## Nowhere
 

@@ -41,6 +41,7 @@ sources:
   - slice: agent=example
     slice-file: agents/agent-roles.md
   - file: agents/steering-global-principles.md
+    audience: local
 ```
 ````
 
@@ -68,8 +69,8 @@ These are the fleet targets:
 
 | What | Path | Recipe |
 |---|---|---|
-| Fleet steering | `/workspace/shared/AGENTS.md` | `recipe-project-fleet` |
-| Bot instructions | `/workspace/shared/ROLES.md` | `recipe-agent-fleet` |
+| Fleet steering | `/workspace/AGENTS.md` | `recipe-project-fleet` |
+| Bot instructions | `/workspace/ROLES.md` | `recipe-agent-fleet` |
 | One skill | `/home/box/agent-data/workflows/<skill-name>/` | that skill's recipe |
 
 `ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. There is no memory recipe. Big W reads `agents/steering-fleet.md` from the repo when it is pushed. A skill target is one folder, and that folder has a `SKILL.md`.
@@ -92,11 +93,12 @@ For agent/project and command-like source lists, each entry can use one of these
 sources:
   - inline: "Short literal content"
   - file: agents/steering-global-principles.md
+    audience: local
   - slice: agent=example
     slice-file: agents/agent-roles.md
 ```
 
-Use one source form per entry. Whole-file Markdown inclusion strips leading YAML frontmatter. Slice markers are exact HTML comments:
+Use one source form per entry. A `file` entry may set `audience` to `local` or `remote`. Unsliced text is kept for either audience. Each `<!-- slice:local -->`, `<!-- slice:remote -->`, or `<!-- slice:both -->` block is kept for that audience, and a `both` block is kept for local and remote. Matching blocks stay in file order, so one audience's slices can sit together. Markers are left out. Any other audience value skips that source. A `file` entry without `audience` includes the whole body, markers included. Whole-file Markdown inclusion strips leading YAML frontmatter. Slice markers are exact HTML comments:
 
 ```markdown
 <!-- slice:agent=example -->

@@ -9,9 +9,7 @@ metadata:
 
 # catppuccin
 
-Read the leaf for the surface you are coloring. Official hex is in [flavors](references/flavors.md). Variant hex is in [variants](references/variants.md). Do not invent a hex.
-
-The NixOS desktop is Macchiato, set in `/mnt/echo/nix-os/modules/home/catppuccin.nix`. A Mocha hex on that desktop is the wrong flavor.
+ Official hex is in [flavors](references/flavors.md). Variant hex is in [variants](references/variants.md). Do not invent a hex.
 
 | Leaf | When |
 |---|---|
