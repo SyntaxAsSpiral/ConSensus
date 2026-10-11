@@ -9,7 +9,6 @@ description: >-
 | Leaf | When |
 |---|---|
 | [references/gitmessage](references/gitmessage) | The commit template |
-| [references/frames.md](references/frames.md) | The closed cogitator frames |
 
 When asked to commit, stage everything unless instructed otherwise. You may chunk a large commit into smaller modules.
 
