@@ -3,9 +3,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "workshop/staging/agent/GrokBot/**"
-      - "workshop/staging/skill/fleet/**"
+      - "agents/**"
+      - "workshop/**"
+      - "skills/**"
+      - ".github/workflows/ping-bigw-steering.yml"
   workflow_dispatch:
+concurrency:
+  group: ping-bigw
+  cancel-in-progress: true
 jobs:
   ping:
     runs-on: ubuntu-latest
