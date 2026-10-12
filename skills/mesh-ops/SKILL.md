@@ -8,9 +8,7 @@ description: >-
   Use this when interacting with system files, mounting storage, adjusting
   network parameters, modifying NixOS profiles, updating shared skill workflows,
   managing remote fleet paths, executing operations over SSH, calling the
-  local inference gateway, or working with Tailscale or the tailnet. Do not invoke
-  for other self-contained development tasks isolated entirely within a local
-  project's current working directory.
+  local inference gateway, or working with Tailscale or the tailnet.
 ---
 
 # mesh-ops
@@ -24,7 +22,7 @@ description: >-
 | zrrh | 100.77.90.79 | Compute Node | NixOS | RTX 4090 |
 | quita | 100.82.51.63 | Laptop | Linux Mint | — |
 | tm20 | 100.123.184.5 | Mesh print host (Pi 3B+) | NixOS 26.11 aarch64 | — |
-| fleet | 100.105.160.85 | Grok bot VM, outside the home LAN and the NixOS flake | Debian 13 | — |
+| fleet | unstable, see below | Grok bot VM, outside the home LAN and the NixOS flake | Debian 13 | — |
 
 ## Local host check
 
@@ -66,7 +64,13 @@ Path exists on the host named in the table. Other hosts reach the tree through T
 | `/workspace/ROLES.md` | Bot instructions |
 | `/home/box/agent-data/workflows/` | Skill workflows. `agent-data` links to `/home/box/sand-data`. |
 
-Workshop recipes mark these paths with a `fleet:` prefix. Assemble records them as `zk@100.105.160.85`. Adeck sync does not rsync or purge them. The fleet PC assembles them from its clone.
+Workshop recipes mark these paths with a `fleet:` prefix. Assemble still records them as `zk@100.105.160.85`. That address is a previous node. Adeck sync does not rsync or purge these paths. The fleet PC assembles them from its clone.
+
+The tailnet node is named `fleet` (`fleet.tail293e98.ts.net`). Adeck does not resolve that name. SSH needs the current 100.x address.
+
+Tailscale here is userspace `tailscaled` run as `box`, state in `/home/box/.local/share/tailscale/tailscaled.state`, socket beside it. It is not a system service. The sandbox sleeps when the agent is idle. A wake on 2026-10-11 21:54 PDT logged a 4m56s time jump, then `tailscaled` got SIGTERM. `/home/box/.local/bin/ts-ensure` starts it again with the same state, so the node key and address stay. A new browser login throws the key away and mints a new address. The node from the 2026-10-12 04:45 UTC login is `100.88.86.114`, id `naefaJhdW321CNTRL`, key expiry 2027-04-10.
+
+SSH as `zk` is what these notes and `FLEET_SSH_HOST` expect. The account is `zk` uid 1001, home `/home/zk`. `tailscaled` has to run as root or it cannot switch user and `ssh zk@…` returns `can't switch user`. As of 2026-10-11 22:05 PDT it is root and `ssh zk@100.88.86.114` works. Do not copy the latest address into the workshop constants.
 
 ## Canonical
 

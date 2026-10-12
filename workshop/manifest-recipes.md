@@ -1,7 +1,7 @@
 ---
 created: 2026-01-11 09:52:44.314556
 id: recipe-manifest
-modified: '2026-10-11T03:42:05.857372'
+modified: '2026-10-12T02:05:30.476848'
 status: log
 type:
 - log
@@ -10,7 +10,7 @@ type:
 # Recipe Assembly Log
 
 ## Active Recipes
-- **agent/Claudi/CLAUDE**: Last run 2026-10-11T03:42:05.857372
+- **agent/Claudi/CLAUDE**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Claudi/CLAUDE.md`
   - Target: `~/.claude/CLAUDE.md`
   - Target: `zk@100.115.135.104:~/.claude/CLAUDE.md`
@@ -18,7 +18,7 @@ type:
   - Target: `zk@100.82.51.63:~/.claude/CLAUDE.md`
   - Status: ✓ assembled
 
-- **agent/Codex/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **agent/Codex/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Codex/AGENTS.md`
   - Target: `~/.codex/AGENTS.md`
   - Target: `zk@100.115.135.104:~/.codex/AGENTS.md`
@@ -26,7 +26,7 @@ type:
   - Target: `zk@100.82.51.63:~/.codex/AGENTS.md`
   - Status: ✓ assembled
 
-- **agent/Gemini/GEMINI**: Last run 2026-10-11T03:42:05.857372
+- **agent/Gemini/GEMINI**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Gemini/GEMINI.md`
   - Target: `~/.gemini/GEMINI.md`
   - Target: `zk@100.115.135.104:~/.gemini/GEMINI.md`
@@ -34,7 +34,7 @@ type:
   - Target: `zk@100.82.51.63:~/.gemini/GEMINI.md`
   - Status: ✓ assembled
 
-- **agent/Grok/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **agent/Grok/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Grok/AGENTS.md`
   - Target: `~/.grok/AGENTS.md`
   - Target: `zk@100.115.135.104:~/.grok/AGENTS.md`
@@ -42,7 +42,7 @@ type:
   - Target: `zk@100.82.51.63:~/.grok/AGENTS.md`
   - Status: ✓ assembled
 
-- **agent/Pi/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **agent/Pi/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Pi/AGENTS.md`
   - Target: `~/.pi/agent/AGENTS.md`
   - Target: `zk@100.115.135.104:~/.pi/agent/AGENTS.md`
@@ -50,7 +50,7 @@ type:
   - Target: `zk@100.82.51.63:~/.pi/agent/AGENTS.md`
   - Status: ✓ assembled
 
-- **skill/global/tm20**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/tm20**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/tm20/`
   - Target: `~/.claude/skills/tm20/`
   - Target: `~/.agents/skills/tm20/`
@@ -61,16 +61,16 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/tm20/`
   - Status: ✓ assembled
 
-- **skill/fleet/tm20**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/tm20**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/tm20/`
   - Status: ✓ assembled
 
-- **project/ConSensus/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **project/ConSensus/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `project/ConSensus/AGENTS.md`
   - Target: `/mnt/echo/consensus/AGENTS.md`
   - Status: ✓ assembled
 
-- **agent/Zed/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **agent/Zed/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/Zed/AGENTS.md`
   - Target: `~/.config/zed/AGENTS.md`
   - Target: `zk@100.115.135.104:~/.config/zed/AGENTS.md`
@@ -78,17 +78,17 @@ type:
   - Target: `zk@100.82.51.63:~/.config/zed/AGENTS.md`
   - Status: ✓ assembled
 
-- **skill/project/knap**: Last run 2026-10-11T03:42:05.857372
+- **skill/project/knap**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/project/knap/`
   - Target: `/mnt/echo/esocortex/.agents/skills/knap/`
   - Status: ✓ assembled
 
-- **skill/project/agents-best-practices**: Last run 2026-10-11T03:42:05.857372
+- **skill/project/agents-best-practices**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/project/agents-best-practices/`
   - Target: `/mnt/echo/consensus/.agents/skills/agents-best-practices/`
   - Status: ✓ assembled
 
-- **skill/global/build-mcpb**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/build-mcpb**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/build-mcpb/`
   - Target: `~/.claude/skills/build-mcpb/`
   - Target: `~/.agents/skills/build-mcpb/`
@@ -99,11 +99,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/build-mcpb/`
   - Status: ✓ assembled
 
-- **skill/fleet/build-mcpb**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/build-mcpb**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/build-mcpb/`
   - Status: ✓ assembled
 
-- **skill/global/build-mcp-server**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/build-mcp-server**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/build-mcp-server/`
   - Target: `~/.claude/skills/build-mcp-server/`
   - Target: `~/.agents/skills/build-mcp-server/`
@@ -114,11 +114,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/build-mcp-server/`
   - Status: ✓ assembled
 
-- **skill/fleet/build-mcp-server**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/build-mcp-server**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/build-mcp-server/`
   - Status: ✓ assembled
 
-- **skill/global/build-mcp-app**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/build-mcp-app**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/build-mcp-app/`
   - Target: `~/.claude/skills/build-mcp-app/`
   - Target: `~/.agents/skills/build-mcp-app/`
@@ -129,11 +129,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/build-mcp-app/`
   - Status: ✓ assembled
 
-- **skill/fleet/build-mcp-app**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/build-mcp-app**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/build-mcp-app/`
   - Status: ✓ assembled
 
-- **skill/global/hue**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/hue**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/hue/`
   - Target: `~/.claude/skills/hue/`
   - Target: `~/.agents/skills/hue/`
@@ -144,16 +144,16 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/hue/`
   - Status: ✓ assembled
 
-- **skill/fleet/hue**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/hue**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/hue/`
   - Status: ✓ assembled
 
-- **project/Echo/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **project/Echo/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `project/Echo/AGENTS.md`
   - Target: `/mnt/echo/AGENTS.md`
   - Status: ✓ assembled
 
-- **skill/global/nix-language**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/nix-language**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/nix-language/`
   - Target: `~/.claude/skills/nix-language/`
   - Target: `~/.agents/skills/nix-language/`
@@ -164,11 +164,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/nix-language/`
   - Status: ✓ assembled
 
-- **skill/fleet/nix-language**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/nix-language**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/nix-language/`
   - Status: ✓ assembled
 
-- **skill/global/nixpkgs-development**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/nixpkgs-development**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/nixpkgs-development/`
   - Target: `~/.claude/skills/nixpkgs-development/`
   - Target: `~/.agents/skills/nixpkgs-development/`
@@ -179,11 +179,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/nixpkgs-development/`
   - Status: ✓ assembled
 
-- **skill/fleet/nixpkgs-development**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/nixpkgs-development**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/nixpkgs-development/`
   - Status: ✓ assembled
 
-- **skill/global/devenv-project**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/devenv-project**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/devenv-project/`
   - Target: `~/.claude/skills/devenv-project/`
   - Target: `~/.agents/skills/devenv-project/`
@@ -194,11 +194,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/devenv-project/`
   - Status: ✓ assembled
 
-- **skill/fleet/devenv-project**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/devenv-project**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/devenv-project/`
   - Status: ✓ assembled
 
-- **skill/global/nixos-wiki**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/nixos-wiki**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/nixos-wiki/`
   - Target: `~/.claude/skills/nixos-wiki/`
   - Target: `~/.agents/skills/nixos-wiki/`
@@ -209,26 +209,31 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/nixos-wiki/`
   - Status: ✓ assembled
 
-- **skill/fleet/nixos-wiki**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/nixos-wiki**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/nixos-wiki/`
   - Status: ✓ assembled
 
-- **skill/project/openrgb**: Last run 2026-10-11T03:42:05.857372
+- **skill/project/openrgb**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/project/openrgb/`
   - Target: `zk@100.77.90.79:~/.config/OpenRGB/.agents/skills/openrgb/`
   - Status: ✓ assembled
 
-- **agent/FleetRoles/ROLES**: Last run 2026-10-11T03:42:05.857372
+- **agent/FleetRoles/ROLES**: Last run 2026-10-12T02:05:30.476848
   - Output: `agent/FleetRoles/ROLES.md`
   - Target: `zk@100.105.160.85:/workspace/ROLES.md`
   - Status: ✓ assembled
 
-- **project/Fleet/AGENTS**: Last run 2026-10-11T03:42:05.857372
+- **project/Fleet/AGENTS**: Last run 2026-10-12T02:05:30.476848
   - Output: `project/Fleet/AGENTS.md`
   - Target: `zk@100.105.160.85:/workspace/AGENTS.md`
   - Status: ✓ assembled
 
-- **skill/global/bruh**: Last run 2026-10-11T03:42:05.857372
+- **project/Fleet/memory-seed**: Last run 2026-10-12T02:05:30.476848
+  - Output: `project/Fleet/memory-seed.md`
+  - Target: `zk@100.105.160.85:/workspace/memory-seed.md`
+  - Status: ✓ assembled
+
+- **skill/global/bruh**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/bruh/`
   - Target: `~/.claude/skills/bruh/`
   - Target: `~/.agents/skills/bruh/`
@@ -239,11 +244,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/bruh/`
   - Status: ✓ assembled
 
-- **skill/fleet/bruh**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/bruh**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/bruh/`
   - Status: ✓ assembled
 
-- **skill/global/inquisition**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/inquisition**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/inquisition/`
   - Target: `~/.claude/skills/inquisition/`
   - Target: `~/.agents/skills/inquisition/`
@@ -254,11 +259,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/inquisition/`
   - Status: ✓ assembled
 
-- **skill/fleet/inquisition**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/inquisition**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/inquisition/`
   - Status: ✓ assembled
 
-- **skill/global/poteto-patterns**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/poteto-patterns**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/poteto-patterns/`
   - Target: `~/.claude/skills/poteto-patterns/`
   - Target: `~/.agents/skills/poteto-patterns/`
@@ -269,11 +274,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/poteto-patterns/`
   - Status: ✓ assembled
 
-- **skill/fleet/poteto-patterns**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/poteto-patterns**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/poteto-patterns/`
   - Status: ✓ assembled
 
-- **skill/global/catppuccin**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/catppuccin**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/catppuccin/`
   - Target: `~/.claude/skills/catppuccin/`
   - Target: `~/.agents/skills/catppuccin/`
@@ -284,11 +289,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/catppuccin/`
   - Status: ✓ assembled
 
-- **skill/fleet/catppuccin**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/catppuccin**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/catppuccin/`
   - Status: ✓ assembled
 
-- **skill/global/esocortex**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/esocortex**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/esocortex/`
   - Target: `~/.claude/skills/esocortex/`
   - Target: `~/.agents/skills/esocortex/`
@@ -301,11 +306,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/esocortex/`
   - Status: ✓ assembled
 
-- **skill/fleet/esocortex**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/esocortex**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/esocortex/`
   - Status: ✓ assembled
 
-- **skill/global/neuralyzer**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/neuralyzer**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/neuralyzer/`
   - Target: `~/.claude/skills/neuralyzer/`
   - Target: `~/.agents/skills/neuralyzer/`
@@ -316,11 +321,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/neuralyzer/`
   - Status: ✓ assembled
 
-- **skill/fleet/neuralyzer**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/neuralyzer**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/neuralyzer/`
   - Status: ✓ assembled
 
-- **skill/global/mesh-ops**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/mesh-ops**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/mesh-ops/`
   - Target: `~/.claude/skills/mesh-ops/`
   - Target: `~/.agents/skills/mesh-ops/`
@@ -333,11 +338,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/mesh-ops/`
   - Status: ✓ assembled
 
-- **skill/fleet/mesh-ops**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/mesh-ops**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/mesh-ops/`
   - Status: ✓ assembled
 
-- **skill/global/commit-style**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/commit-style**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/commit-style/`
   - Target: `~/.claude/skills/commit-style/`
   - Target: `~/.agents/skills/commit-style/`
@@ -348,11 +353,11 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/commit-style/`
   - Status: ✓ assembled
 
-- **skill/fleet/commit-style**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/commit-style**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/commit-style/`
   - Status: ✓ assembled
 
-- **skill/global/rhapsody**: Last run 2026-10-11T03:42:05.857372
+- **skill/global/rhapsody**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/global/rhapsody/`
   - Target: `~/.claude/skills/rhapsody/`
   - Target: `~/.agents/skills/rhapsody/`
@@ -363,8 +368,53 @@ type:
   - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/rhapsody/`
   - Status: ✓ assembled
 
-- **skill/fleet/rhapsody**: Last run 2026-10-11T03:42:05.857372
+- **skill/fleet/rhapsody**: Last run 2026-10-12T02:05:30.476848
   - Output: `skill/fleet/rhapsody/`
+  - Status: ✓ assembled
+
+- **skill/global/science-search**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/global/science-search/`
+  - Target: `~/.claude/skills/science-search/`
+  - Target: `~/.agents/skills/science-search/`
+  - Target: `zk@100.115.135.104:~/.claude/skills/science-search/`
+  - Target: `zk@100.115.135.104:~/.agents/skills/science-search/`
+  - Target: `zk@100.82.51.63:~/.claude/skills/science-search/`
+  - Target: `zk@100.82.51.63:~/.agents/skills/science-search/`
+  - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/science-search/`
+  - Status: ✓ assembled
+
+- **skill/fleet/science-search**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/fleet/science-search/`
+  - Status: ✓ assembled
+
+- **skill/global/herdr**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/global/herdr/`
+  - Target: `~/.claude/skills/herdr/`
+  - Target: `~/.agents/skills/herdr/`
+  - Target: `zk@100.115.135.104:~/.claude/skills/herdr/`
+  - Target: `zk@100.115.135.104:~/.agents/skills/herdr/`
+  - Target: `zk@100.82.51.63:~/.claude/skills/herdr/`
+  - Target: `zk@100.82.51.63:~/.agents/skills/herdr/`
+  - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/herdr/`
+  - Status: ✓ assembled
+
+- **skill/fleet/herdr**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/fleet/herdr/`
+  - Status: ✓ assembled
+
+- **skill/global/explore-unknowns**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/global/explore-unknowns/`
+  - Target: `~/.claude/skills/explore-unknowns/`
+  - Target: `~/.agents/skills/explore-unknowns/`
+  - Target: `zk@100.115.135.104:~/.claude/skills/explore-unknowns/`
+  - Target: `zk@100.115.135.104:~/.agents/skills/explore-unknowns/`
+  - Target: `zk@100.82.51.63:~/.claude/skills/explore-unknowns/`
+  - Target: `zk@100.82.51.63:~/.agents/skills/explore-unknowns/`
+  - Target: `zk@100.105.160.85:/home/box/agent-data/workflows/explore-unknowns/`
+  - Status: ✓ assembled
+
+- **skill/fleet/explore-unknowns**: Last run 2026-10-12T02:05:30.476848
+  - Output: `skill/fleet/explore-unknowns/`
   - Status: ✓ assembled
 
 ## Deployment Log
