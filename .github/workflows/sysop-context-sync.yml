@@ -1,0 +1,27 @@
+name: Wake Sysop context sync
+on:
+  push:
+    branches: [main]
+    paths:
+      - "agents/**"
+      - "workshop/**"
+      - "skills/**"
+      - ".github/workflows/sysop-context-sync.yml"
+  workflow_dispatch:
+concurrency:
+  group: sysop-context-sync
+  cancel-in-progress: true
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: POST Sysop webhook
+        env:
+          URL: ${{ secrets.SYSOP_WEBHOOK_URL }}
+          KEY: ${{ secrets.SYSOP_WEBHOOK_KEY }}
+        run: |
+          curl -fsS -m 8 -X POST "$URL" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $KEY" \
+            -d "{\"event\":\"push\",\"repo\":\"${GITHUB_REPOSITORY}\",\"sha\":\"${GITHUB_SHA}\",\"ref\":\"${GITHUB_REF}\"}"
