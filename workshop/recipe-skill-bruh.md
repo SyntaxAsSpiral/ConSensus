@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/bruh/
   - path: zk@100.82.51.63:~/.agents/skills/bruh/
 
+  - path: fleet:/home/box/agent-data/workflows/bruh/
 sources:
   skill_md:
     frontmatter:

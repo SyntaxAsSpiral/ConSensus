@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/rhapsody/
   - path: zk@100.82.51.63:~/.agents/skills/rhapsody/
 
+  - path: fleet:/home/box/agent-data/workflows/rhapsody/
 sources:
   tree: skills/rhapsody
 ```

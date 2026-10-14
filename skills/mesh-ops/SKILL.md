@@ -55,6 +55,8 @@ Path exists on the host named in the table. Other hosts reach the tree through T
 
 Bots live in the fleet VM and execute through the desktop app's runner on adeck. They are not CLI agents. `agents/bot-roles.md` holds that distinction. Their workspace is synced with the `/mnt/echo/exeglyph`.
 
+A skill recipe marked `fleet:/home/box/agent-data/workflows/<name>/` is one the bots should take. The copy is `workshop/staging/skill/fleet/<name>/` in the consensus checkout on adeck. Sync does not write or purge that `fleet:` path.
+
 ## Canonical
 
 - ConSensus

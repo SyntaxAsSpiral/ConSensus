@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/create-verification-skill/
   - path: zk@100.82.51.63:~/.agents/skills/create-verification-skill/
 
+  - path: fleet:/home/box/agent-data/workflows/create-verification-skill/
 sources:
   tree: skills/create-verification-skill
 ```

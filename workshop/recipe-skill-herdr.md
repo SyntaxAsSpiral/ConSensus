@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/herdr/
   - path: zk@100.82.51.63:~/.agents/skills/herdr/
 
+  - path: fleet:/home/box/agent-data/workflows/herdr/
 sources:
   tree: skills/upstream/herdr/skills/herdr
 ```

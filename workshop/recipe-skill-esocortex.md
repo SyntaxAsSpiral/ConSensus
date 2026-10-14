@@ -21,6 +21,7 @@ target_locations:
   - path: zk@100.77.90.79:~/.claude/skills/esocortex/
   - path: zk@100.77.90.79:~/.agents/skills/esocortex/
 
+  - path: fleet:/home/box/agent-data/workflows/esocortex/
 sources:
   tree: skills/esocortex
 ```

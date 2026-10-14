@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/show-me-your-work/
   - path: zk@100.82.51.63:~/.agents/skills/show-me-your-work/
 
+  - path: fleet:/home/box/agent-data/workflows/show-me-your-work/
 sources:
   tree: skills/show-me-your-work
 ```

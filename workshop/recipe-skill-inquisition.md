@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/inquisition/
   - path: zk@100.82.51.63:~/.agents/skills/inquisition/
 
+  - path: fleet:/home/box/agent-data/workflows/inquisition/
 sources:
   skill_md:
     frontmatter:

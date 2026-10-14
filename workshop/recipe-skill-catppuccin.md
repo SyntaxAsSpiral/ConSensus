@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/catppuccin/
   - path: zk@100.82.51.63:~/.agents/skills/catppuccin/
 
+  - path: fleet:/home/box/agent-data/workflows/catppuccin/
 sources:
   skill_md:
     frontmatter:

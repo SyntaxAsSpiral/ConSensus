@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/build-mcpb/
   - path: zk@100.82.51.63:~/.agents/skills/build-mcpb/
 
+  - path: fleet:/home/box/agent-data/workflows/build-mcpb/
 sources:
   tree: skills/upstream/claude-plugins-official/plugins/mcp-server-dev/skills/build-mcpb
 ```

@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/ketchup/
   - path: zk@100.82.51.63:~/.agents/skills/ketchup/
 
+  - path: fleet:/home/box/agent-data/workflows/ketchup/
 sources:
   tree: skills/ketchup
 ```

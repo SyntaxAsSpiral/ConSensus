@@ -68,12 +68,16 @@ Bots live in their VM and execute through the desktop app's runner on adeck. The
 | What | Path | Recipe |
 |---|---|---|
 | Fleet steering | `/mnt/echo/exeglyph/AGENTS.md` | `recipe-project-fleet`: `agents/steering-global-principles.md` with audience `exeglyph`, then `agents/steering-project-exeglyph.md` |
-| Fleet memory | `/mnt/echo/exeglyph/memory-seed.md` | `recipe-project-fleet` |
-| Bot instructions | `/mnt/echo/exeglyph/ROLES.md` | `recipe-agent-fleet` |
 
-`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. `memory-seed.md` is the second section of `recipe-project-fleet`. It stages beside `AGENTS.md` at `workshop/staging/project/Fleet/memory-seed.md`. Its source is `agents/steering-fleet.md`. Set `output_name` on that section. A later section inherits `name` and `output_format` only.
+Bot instructions are one file per role from `agents/bot-roles.md`, staged at `workshop/staging/agent/Fleet/<role>.md` by `recipe-agent-fleet`. Those files have no deploy targets.
 
-Skill workflows have no bot target. Do not add a skill path on the old bot VM. The skill location for bots is unset. `zk@100.105.160.85` is a retired node. Sync does not write those paths and does not purge them.
+A house skill the bots should take carries one more target:
+
+```yaml
+  - path: fleet:/home/box/agent-data/workflows/example-skill/
+```
+
+That path is a mark. Sync does not write it and does not purge it. Assemble also copies the skill to `workshop/staging/skill/fleet/<name>/` with no deploy targets of its own. That directory is the set the bots grab. `zk@100.105.160.85` stays a retired node. Sync does not contact it.
 
 A recipe with `target_locations: []` is assembled into staging and not deployed.
 

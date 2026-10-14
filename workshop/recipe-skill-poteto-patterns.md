@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/poteto-patterns/
   - path: zk@100.82.51.63:~/.agents/skills/poteto-patterns/
 
+  - path: fleet:/home/box/agent-data/workflows/poteto-patterns/
 sources:
   tree: skills/poteto-patterns
 ```

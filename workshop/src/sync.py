@@ -119,11 +119,17 @@ def _is_ssh_target(p: str) -> bool:
     return bool(re.match(r"^[^@]+@[^:]+:.+$", p))
 
 
+def _is_fleet_deploy_target(p: str) -> bool:
+    """A fleet: mark. Sync does not write it and does not purge it."""
+    return p.strip().startswith("fleet:")
+
+
 def _select_local_targets(targets: List[str]) -> List[str]:
-    """Keep paths on this machine. SSH targets are remote."""
+    """Keep paths on this machine. SSH targets are remote. fleet: is not local."""
     kept = []
     for target in targets:
-        if _is_ssh_target(_expand_target_path(target)):
+        expanded = _expand_target_path(target)
+        if _is_fleet_deploy_target(expanded) or _is_ssh_target(expanded):
             continue
         kept.append(target)
     return kept
@@ -149,7 +155,10 @@ def _select_host_targets(targets: List[str], host: str) -> List[str]:
     needle = SYNC_HOSTS.get(key, host.strip())
     if not needle:
         return []
-    return [target for target in targets if needle in _expand_target_path(target)]
+    return [
+        target for target in targets
+        if not _is_fleet_deploy_target(target) and needle in _expand_target_path(target)
+    ]
 
 
 def _target_host(target: str) -> str:
@@ -174,6 +183,10 @@ def _rsync_rsh() -> str:
 
 
 def _expand_target_path(p: str) -> str:
+    # fleet:/abs/path is a mark, not a deploy. Keep in step with assemble.py.
+    if p.startswith("fleet:"):
+        return p
+
     # SSH targets are returned as-is (handled separately by rsync)
     if _is_ssh_target(p):
         return p
@@ -305,6 +318,8 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
         return str(explicit)
 
     targets = cfg.get("target_locations") or []
+    if isinstance(targets, list):
+        targets = [t for t in targets if not (isinstance(t, str) and t.startswith("fleet:")) and not (isinstance(t, dict) and str(t.get("path") or "").startswith("fleet:"))]
     if isinstance(targets, list) and len(targets) == 1:
         t = targets[0]
         if isinstance(t, dict) and t.get("path"):
@@ -650,9 +665,9 @@ def cleanup_orphaned_deployments(
             canon = _canonical_target(t)
             if canon in current_targets or canon in seen:
                 continue
-            if _is_retired_deploy_target(t):
+            if _is_fleet_deploy_target(t) or _is_retired_deploy_target(t):
                 if not retired_note[0]:
-                    print(f"Retired fleet node is not contacted. Old paths there are left in place.")
+                    print(f"Fleet paths are not contacted. Old paths there are left in place.")
                     retired_note[0] = True
                 continue
             if host is not None and not _select_host_targets([t], host):
@@ -946,7 +961,7 @@ def main():
     down_hosts: set = set()
     for deployment_id, item in current_items.items():
         targets = _select_host_targets(item.targets, args.host) if host_limited else item.targets
-        targets = [t for t in targets if not _is_retired_deploy_target(t)]
+        targets = [t for t in targets if not _is_fleet_deploy_target(t) and not _is_retired_deploy_target(t)]
         if not targets:
             continue
         source = staging_dir / Path(item.source_relpath)

@@ -21,6 +21,7 @@ target_locations:
   - path: zk@100.77.90.79:~/.claude/skills/local-inference/
   - path: zk@100.77.90.79:~/.agents/skills/local-inference/
 
+  - path: fleet:/home/box/agent-data/workflows/local-inference/
 sources:
   skill_md:
     frontmatter:

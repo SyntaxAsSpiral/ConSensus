@@ -21,6 +21,7 @@ target_locations:
   - path: zk@100.77.90.79:~/.claude/skills/taildrop/
   - path: zk@100.77.90.79:~/.agents/skills/taildrop/
 
+  - path: fleet:/home/box/agent-data/workflows/taildrop/
 sources:
   skill_md:
     frontmatter:

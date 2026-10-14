@@ -68,6 +68,10 @@ def _configure_stdio_utf8() -> None:
 
 
 def _expand_target_path(p: str) -> str:
+    # fleet:/abs/path is a mark, not a deploy. Sync skips it. Keep in step with sync.py.
+    if p.startswith("fleet:"):
+        return p
+
     # Expand "~/" while preserving trailing separators (directory targets).
     trailing_sep = p.endswith("/")
     if p.startswith("~/"):
@@ -554,6 +558,16 @@ def _read_source_bytes(source: Dict[str, Any], base_path: Path) -> Optional[byte
     return None
 
 
+def _location_is_fleet(entry: Any) -> bool:
+    """Raw target_locations entry marked fleet:. Sync does not write these."""
+    if isinstance(entry, dict):
+        path = entry.get("path")
+        return bool(path) and str(path).startswith("fleet:")
+    if isinstance(entry, str):
+        return entry.startswith("fleet:")
+    return False
+
+
 def _agent_output_filename(recipe_name: str, section: RecipeSection, total_sections: int) -> str:
     cfg = section.config
     explicit = cfg.get("output_name")
@@ -561,6 +575,8 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
         return str(explicit)
 
     targets = cfg.get("target_locations") or []
+    if isinstance(targets, list):
+        targets = [t for t in targets if not _location_is_fleet(t)]
     if isinstance(targets, list) and len(targets) == 1:
         t = targets[0]
         if isinstance(t, dict) and t.get("path"):
@@ -580,6 +596,36 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
 
     safe_suffix = re.sub(r"[^A-Za-z0-9._-]+", "-", f"section{section.index + 1}").strip("-") or f"section{section.index + 1}"
     return f"{safe_suffix}.md"
+
+
+def _section_has_fleet_target(section: RecipeSection) -> bool:
+    targets = section.config.get("target_locations") or []
+    entries = targets if isinstance(targets, list) else [targets]
+    return any(_location_is_fleet(t) for t in entries)
+
+
+def _fleet_skill_artifact(
+    section: RecipeSection, staging_dir: Path, skill_name: str, out_root: Path, dry_run: bool
+) -> List[OutputArtifact]:
+    """Copy a marked skill to staging/skill/fleet. That directory is what the bots grab.
+
+    The copy has no deploy targets. The fleet: path stays on the global artifact, and sync skips it.
+    """
+    if not _section_has_fleet_target(section):
+        return []
+    fleet_root = staging_dir / "skill" / "fleet" / skill_name
+    if not dry_run and out_root.exists():
+        if fleet_root.exists():
+            shutil.rmtree(fleet_root)
+        shutil.copytree(out_root, fleet_root, ignore=shutil.ignore_patterns(".git"))
+    return [
+        OutputArtifact(
+            relpath=f"skill/fleet/{skill_name}",
+            abspath=fleet_root,
+            targets=[],
+            is_dir=True,
+        )
+    ]
 
 
 def _targets_from_section(section: RecipeSection) -> List[str]:
@@ -695,6 +741,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                 )
             return [
                 OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
+                *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
             ]
 
         # SKILL.md generation
@@ -747,6 +794,7 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
 
         artifacts: List[OutputArtifact] = [
             OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
+            *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
         ]
 
         return artifacts

@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/explore-unknowns/
   - path: zk@100.82.51.63:~/.agents/skills/explore-unknowns/
 
+  - path: fleet:/home/box/agent-data/workflows/explore-unknowns/
 sources:
   tree: skills/upstream/dzhng-skills/skills/engineering/explore-unknowns
 ```

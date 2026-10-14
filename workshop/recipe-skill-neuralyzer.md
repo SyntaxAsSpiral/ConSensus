@@ -19,6 +19,7 @@ target_locations:
   - path: zk@100.82.51.63:~/.claude/skills/neuralyzer/
   - path: zk@100.82.51.63:~/.agents/skills/neuralyzer/
 
+  - path: fleet:/home/box/agent-data/workflows/neuralyzer/
 sources:
   skill_md:
     frontmatter:
