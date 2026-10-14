@@ -47,7 +47,7 @@ A checkout with no remote can be committed locally. `stack-chan`'s origin is `m5
 
 Holliday Table is the kitchen service. `galaxy-tab-a7` opens the tailnet name. Print host is `tm20` at `http://100.123.184.5:8766/print`. Direct USB printing is only on `tm20`.
 
-`inference-wake` proxies to llmster on `127.0.0.1:1235`. An inference POST or WebSocket wakes zrrh and waits until that peer is connected on LM Link. See the **mesh-ops** inference leaf. Esocortex is read-only. See the **esocortex** skill. Bitburner MCP is `http://100.89.32.9:9000`. See the **tm20** skill for print jobs.
+`inference-wake` proxies to llmster on `127.0.0.1:1235`. An inference POST or WebSocket wakes zrrh and waits until that peer is connected on LM Link. See the **local-inference** skill. Esocortex is read-only. See the **esocortex** skill. Bitburner MCP is `http://100.89.32.9:9000`. See the **tm20** skill for print jobs.
 
 Hermes gateway is running and has no listening port. Jolt is running and has no listening port. Docker is running and has no containers. msgvault is not running.
 

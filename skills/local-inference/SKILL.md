@@ -1,64 +1,55 @@
 ---
 name: local-inference
-description: Use when calling a local model on the mesh. Covers the LM Studio gateway, Qwen TTS, JIT presets, reasoning dials, and the inf-bench evaluator.
+description: >-
+  Use when calling a local model on the mesh gateway. The gateway, the wake,
+  JIT, and the 100k context cap.
 compatibility: Daemonturgy mesh (nxiz/zrrh/adeck). GUI session for CUDA.
 metadata:
   author: zk
-  version: "2.9"
+  version: "3.0"
   category: inference
 ---
 
 # local-inference
 
-Adeck is the mesh gateway for local inference. Backends on it compete for the mesh. Read the leaf for the dial you are about to change. Driving a coding CLI is `cli-coding`.
+Adeck is the mesh gateway. Large-model weights run on zrrh. This gateway is LM Studio, LM Link, and the wake proxy.
 
-| Backend | Gateway |
-|---|---|
-| LM Studio chat and the current embedding ids | `http://100.89.32.9:1234/v1`. Weights for the large models run on zrrh. |
-| Qwen TTS | Separate backend on adeck. [tts](references/tts.md). |
-| Embedders | No gateway of their own yet. |
-
-| Leaf | When |
-|---|---|
-| [wake](references/wake.md) | Gated paths, WoL, timeouts. |
-| [api](references/api.md) | Schema, `reasoning_effort`, vision preflight. |
-| [models](references/models.md) | Cards, thinking dials, the Gemma spill. |
-| [jit](references/jit.md) | KV, streams, embedding pin, TTL. |
-| [tts](references/tts.md) | Qwen TTS on adeck. |
-| [logs](references/logs.md) | Which host's LM Studio file to read. |
-| [callers](references/callers.md) | family-cookbook and esocortex. |
-| [bench](references/bench.md) | inf-bench Factorio evaluator against this gateway. |
-| [paths](references/paths.md) | Flake paths and doc links. |
-| [gpu](references/gpu.md) | A Nix-built binary misses the GPU. |
-
-## URL
+## Gateway
 
 `http://100.89.32.9:1234/v1`
 
 On adeck, `http://127.0.0.1:1234/v1` also works. From adeck, SSH by Tailscale IP. Hostnames do not resolve on that box.
 
+## Context
+
+The gateway context cap is 100000. A card that says 262144 or 131072 still stops at 100k. That cap limits a fan-out and it limits a larger task. Both have to fit inside it.
+
+## JIT
+
+Do not load a chat model directly. `POST /api/v1/models/load` or `lms load` skips the JIT preset. The first `/v1/chat/completions` loads it.
+
+adeck `http-server-config.json`: context 100000, `jitModelTTL` 1 h, `unloadPreviousJITModelOnLoad`.
+
+| Model | KV | offload KV | streams (`parallel`) |
+|---|---|---|---|
+| `qwen/qwen3.8-27b` | q8_0 | true | 4 |
+| `meta/muse-glimmer` | f16 | true | 2 |
+| `google/gemma-4-31b` | flash + q4_0 | false | 2 |
+
+`parallel` is not permission to pass the 100k cap. Embeddings are the exception that does load directly: qwen3-embedding-8b's own context is 40k and OOMs the 24 GB card, so pin `context_length: 8192`.
+
+## Wake
+
+Source: `nix-os/modules/home/daemonturgy/lmstudio/adeck/inference-wake.py`.
+
+The proxy binds `0.0.0.0:1234` and forwards to `http://127.0.0.1:1235` (`lms daemon up`). These POSTs, and any WebSocket, wake zrrh before they proceed: `/v1/chat/completions`, `/v1/completions`, `/v1/embeddings`, `/v1/responses`, `/api/v0/chat/completions`, `/api/v0/completions`, `/api/v0/embeddings`, `/api/v1/chat`, `/api/v1/models/load`. A wake check runs before each downstream WebSocket frame.
+
+Ready means zrrh is TCP-reachable at `192.168.0.110:22` and `lms link status --json` shows peer `zrrh` with `status: "connected"`. Otherwise WoL (`60cf8461d800` → `192.168.0.255:9`) every 3 s for 120 s, then 503 `zrrh did not reconnect to LM Link within 120 seconds.`
+
+`GET /v1/models` does not wake. Connect timeout 10 s, read timeout 600 s. Upstream failure is 502 `LM Studio upstream unavailable.` A dead GUI session on zrrh is a 502 or 503.
+
 ## Call
 
-```bash
-curl -s http://100.89.32.9:1234/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{"model":"qwen/qwen3.8-27b","messages":[{"role":"user","content":"Reply with exactly: PONG"}],"reasoning_effort":"none"}'
-```
-
-Cheap work sends `reasoning_effort` `"none"`. `"off"` is a 400. Do not set a small `max_tokens` on a thinking model. Omit it, or set it in the thousands. Structured output uses `json_schema`, `strict: true`, `additionalProperties: false`, and `required` on every object. Read `content` and `reasoning_content`.
-
-Retry HTTP 408, 429, 502, 503, 504, and bodies that contain `LM Link connection closed`. A dead GUI session on zrrh is a 502 or 503.
-
-```bash
-ssh zk@100.89.32.9 lms ps
-ssh zk@100.89.32.9 lms ls
-ssh zk@100.89.32.9 lms link status
-```
+Cheap work sends `reasoning_effort` `"none"`. `"off"` is a 400. Do not set a small `max_tokens` on a thinking model. Retry HTTP 408, 429, 502, 503, 504, and bodies that contain `LM Link connection closed`.
 
 On adeck, run `lms ps` directly. `ssh zk@100.89.32.9 lms ps` fails from adeck itself.
-
-Live JIT `parallel`: `qwen/qwen3.8-27b` 4, `meta/muse-glimmer` 2.
-
-## Gone
-
-This gateway is LM Studio, LM Link, and the wake proxy.

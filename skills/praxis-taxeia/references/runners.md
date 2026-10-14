@@ -2,7 +2,7 @@
 
 The lead does not ablate. Two local CLI agents do.
 
-Read `cli-coding` before a launch. The seat, the flags, and the stream cap live there. Reviewers are the local frontline. Use the escalation seat only when that skill says the review is past the loaded streams.
+Orchestration is the herdr skill. Beads tracks the work. Launch read-only. The 100k context cap is in the local-inference skill.
 
 | Reviewer | Job line |
 |---|---|
@@ -11,9 +11,7 @@ Read `cli-coding` before a launch. The seat, the flags, and the stream cap live 
 
 Each prompt is the filled brief plus that reviewer's job line in `## Job`. Same checkout. No shared transcript.
 
-Launch with the read-only shape in the Pi leaf, section "From another agent". Do not add `edit` or `write`. Inside Pi, the reviewers are `pi-subagents` on the same gateway. From any other agent, shell out.
-
-Start them only after that skill's fan-out condition holds. One stream means the second starts after the first returns. Still do not pass findings across.
+Launch read-only through the herdr skill. Do not add `edit` or `write`. One stream means the second starts after the first returns. Still do not pass findings across.
 
 A reviewer that does not start is a gap. The lead does not write that pass. Zero returns: ELEVATE.
 

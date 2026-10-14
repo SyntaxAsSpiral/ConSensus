@@ -20,7 +20,7 @@ Do not edit the tree to explain it.
 
 2. **Looks.** Count the boundaries the question actually crosses. A skill and its recipe, a host and a module, the vault and `nix-os`, two hosts. Zero boundaries is one look. One boundary is two looks. Stop at two. Name each angle before anyone reads.
 
-3. **Explore.** You may write the answer from files already in hand. When the read is the work, send a readonly local explorer. Two looks means two explorers. They do not see each other. The prompt is [references/brief.md](references/brief.md). Launch with the read-only shape in `cli-coding`'s Pi leaf. Do not add `edit` or `write`. One stream means the second starts after the first returns.
+3. **Explore.** You may write the answer from files already in hand. When the read is the work, send a readonly local explorer. Two looks means two explorers. They do not see each other. The prompt is [references/brief.md](references/brief.md). Launch read-only through the herdr skill. Do not add `edit` or `write`. One stream means the second starts after the first returns. The 100k context cap is in the local-inference skill.
 
 4. **Weave.** Keep a disagreement as two findings until you have checked the file yourself. A missing look stays a gap. Do not invent the side you did not see.
 
