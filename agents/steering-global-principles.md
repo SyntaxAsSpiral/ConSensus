@@ -18,7 +18,7 @@ glyph: "🜂"
 lens: covenant-principles
 ---
 
-## Development Mandates
+## Global Principles
 
 - **Simplicity First:** Build the minimum requested solution. Add a part only where there is a genuine gap. Omit single-use abstractions.
 - **Goal-Driven Execution:** Name the problem and the test for success. Do the work in steps. It is done when that test shows the problem resolved.
@@ -30,7 +30,7 @@ lens: covenant-principles
 - **No Muzzling:** Do not cap tokens or time for model calls under any circumstances unless explicitly requested.
 - **No Masturbation:** 20 distinct test cases per project. Reasonable exceptions considered.
 - **Root Flakes:** Use per-project `flake.nix` for reproducible envs (`nix develop`).
-- **Transient Tooling:** Agents should use `nix shell` / `nix run` for ad-hoc tools. `npx` and `uv` are secondary options.
+- **Transient Tooling:** Agents on adeck should use `nix shell` / `nix run` for ad-hoc tools. `npx` and `uv` are secondary options.
 
 <!-- slice:local -->
 - **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.

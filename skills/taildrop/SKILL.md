@@ -1,8 +1,7 @@
 ---
 name: taildrop
 description: >-
-  Retrieve a Taildrop file onto this host. Use when a phone or another mesh
-  node has sent a file and it has not landed in the inbox yet.
+  Retrieve a Taildrop file onto this host. Use when a phone or another mesh node has sent a file and it has not landed in the inbox yet.
 ---
 
 # Taildrop

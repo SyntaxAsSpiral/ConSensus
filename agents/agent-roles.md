@@ -58,12 +58,6 @@ system_prompt: |
 
 ---
 
-## Fleet Roles
-
-<!-- slice:agent=fleet -->
-_(role retired — blank placeholder)_
-<!-- /slice -->
-
 ## Coding Agents
 
 <!-- slice:agent=claudi-claude-code -->
