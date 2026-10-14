@@ -6,7 +6,7 @@ Processes Obsidian recipe files with embedded YAML to assemble context content.
 Supports:
 - slice extraction via `slice` + `slice-file`
 - whole-file inclusion via `file` only
-- audience inclusion via `file` + `audience` (`local` or `remote`): unsliced text, plus every matching slice and any `both` slice, in file order
+- audience inclusion via `file` + `audience` (`local` or `exeglyph`): unsliced text, plus every matching slice and any `both` slice, in file order
 - multi-section recipes via YAML document separators (`---`) inside the YAML block
 - structured output formats: `agent`, `skill`
 
@@ -67,18 +67,7 @@ def _configure_stdio_utf8() -> None:
         pass
 
 
-# Tailscale IP of the fleet node. The name `fleet` does not resolve on adeck.
-FLEET_SSH_HOST = "zk@100.105.160.85"
-
-
 def _expand_target_path(p: str) -> str:
-    # fleet:/abs/path is a literal path on the fleet PC. Keep in step with sync.py.
-    if p.startswith("fleet:"):
-        rest = p[len("fleet:") :]
-        if rest.startswith("/"):
-            return f"{FLEET_SSH_HOST}:{rest}"
-        return p
-
     # Expand "~/" while preserving trailing separators (directory targets).
     trailing_sep = p.endswith("/")
     if p.startswith("~/"):
@@ -314,7 +303,7 @@ def include_file(file_path: Path) -> Optional[str]:
         return None
 
 
-_AUDIENCE_NAMES = {"local", "remote"}
+_AUDIENCE_NAMES = {"local", "exeglyph"}
 _SLICE_OPEN = "<!-- slice:"
 _SLICE_CLOSE = "<!-- /slice -->"
 
@@ -353,10 +342,10 @@ def _filter_slices_for_audience(text: str, audience: str) -> str:
 
 
 def include_file_for_audience(file_path: Path, audience: str) -> Optional[str]:
-    """Include unsliced body plus slices for `audience` (`local` or `remote`)."""
+    """Include unsliced body plus slices for `audience` (`local` or `exeglyph`)."""
     if audience not in _AUDIENCE_NAMES:
         print(f"☠☠☠ >>> SOURCE·CONFIGURATION·HERESY ☠☠☠")
-        print(f"Audience must be local or remote, flesh-thing: {audience}")
+        print(f"Audience must be local or exeglyph, flesh-thing: {audience}")
         print(f"|001101|—|000000|—|111000|— skipping corrupted entry")
         return None
     text = include_file(file_path)
@@ -412,7 +401,7 @@ def _assemble_source_list(sources: Iterable[Dict[str, Any]], base_path: Path) ->
                 file_content = include_file_for_audience(full_path, audience.strip())
             else:
                 print(f"☠☠☠ >>> SOURCE·CONFIGURATION·HERESY ☠☠☠")
-                print(f"Audience must be local or remote, flesh-thing: {audience}")
+                print(f"Audience must be local or exeglyph, flesh-thing: {audience}")
                 print(f"|001101|—|000000|—|111000|— skipping corrupted entry")
                 continue
             if file_content is not None:
@@ -565,19 +554,6 @@ def _read_source_bytes(source: Dict[str, Any], base_path: Path) -> Optional[byte
     return None
 
 
-def _location_is_fleet(entry: Any) -> bool:
-    """Raw target_locations entry for the fleet PC. Keep in step with sync.py.
-
-    Deploy rewrites these in _expand_target_path. Filename inference still skips them.
-    """
-    if isinstance(entry, dict):
-        path = entry.get("path")
-        return bool(path) and str(path).startswith("fleet:")
-    if isinstance(entry, str):
-        return entry.startswith("fleet:")
-    return False
-
-
 def _agent_output_filename(recipe_name: str, section: RecipeSection, total_sections: int) -> str:
     cfg = section.config
     explicit = cfg.get("output_name")
@@ -585,8 +561,6 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
         return str(explicit)
 
     targets = cfg.get("target_locations") or []
-    if isinstance(targets, list):
-        targets = [t for t in targets if not _location_is_fleet(t)]
     if isinstance(targets, list) and len(targets) == 1:
         t = targets[0]
         if isinstance(t, dict) and t.get("path"):
@@ -606,36 +580,6 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
 
     safe_suffix = re.sub(r"[^A-Za-z0-9._-]+", "-", f"section{section.index + 1}").strip("-") or f"section{section.index + 1}"
     return f"{safe_suffix}.md"
-
-
-def _section_has_fleet_target(section: RecipeSection) -> bool:
-    targets = section.config.get("target_locations") or []
-    entries = targets if isinstance(targets, list) else [targets]
-    return any(_location_is_fleet(t) for t in entries)
-
-
-def _fleet_skill_artifact(
-    section: RecipeSection, staging_dir: Path, skill_name: str, out_root: Path, dry_run: bool
-) -> List[OutputArtifact]:
-    """Copy a skill into staging/skill/fleet for the ping workflow. This copy has no targets.
-
-    The global skill artifact carries the rewritten fleet SSH path and is what sync deploys.
-    """
-    if not _section_has_fleet_target(section):
-        return []
-    fleet_root = staging_dir / "skill" / "fleet" / skill_name
-    if not dry_run and out_root.exists():
-        if fleet_root.exists():
-            shutil.rmtree(fleet_root)
-        shutil.copytree(out_root, fleet_root, ignore=shutil.ignore_patterns(".git"))
-    return [
-        OutputArtifact(
-            relpath=f"skill/fleet/{skill_name}",
-            abspath=fleet_root,
-            targets=[],
-            is_dir=True,
-        )
-    ]
 
 
 def _targets_from_section(section: RecipeSection) -> List[str]:
@@ -751,7 +695,6 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
                 )
             return [
                 OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
-                *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
             ]
 
         # SKILL.md generation
@@ -804,7 +747,6 @@ def build_output_artifacts(section: RecipeSection, base_path: Path, staging_dir:
 
         artifacts: List[OutputArtifact] = [
             OutputArtifact(relpath=(Path(stage_root) / skill_name).as_posix(), abspath=out_root, targets=targets, is_dir=True),
-            *_fleet_skill_artifact(section, staging_dir, skill_name, out_root, dry_run),
         ]
 
         return artifacts

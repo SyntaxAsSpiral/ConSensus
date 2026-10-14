@@ -53,7 +53,7 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 |---|---|
 | `name` | Output name and staging directory. |
 | `output_format` | Selects the artifact type: `agent`, `project`, `skill`, `project-skill`, `command`, `prompt`, or `hook`. If omitted, assembly defaults to `agent`. |
-| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Entries starting with `fleet:` are paths on the fleet PC. Adeck sync skips them; see [Fleet targets](#fleet-targets). |
+| `target_locations` | Deployment destinations as path strings or mappings with a `path` key. Bot agent docs are local paths under `/mnt/echo/exeglyph`; see [Bot workspace](#bot-workspace). |
 | `sources` | Source list for agent/project output; role mapping for skill and command-like output. |
 | `template` | Optional literal `{content}` wrapper for agent/project or command-like output. |
 | `output_name` | Optional explicit filename for agent/project output. |
@@ -61,30 +61,21 @@ The recipe filename is conventionally `recipe-<name>.md`. The configuration's `n
 
 Recipes may contain multiple YAML documents separated by `---` inside the fenced block. Each document becomes a section. Only `name` and `output_format` are inherited from the first document; other keys must be repeated where needed.
 
-### Fleet targets
+### Bot workspace
 
-A `target_locations` entry whose raw path starts with `fleet:` (plain string or `path:` value) is a literal absolute path on the fleet PC. Assemble rewrites `fleet:<path>` to `zk@100.105.160.85:<path>` in the manifest. Sync does not rsync or purge that host. The fleet PC assembles those paths from its clone. The hostname `fleet` does not resolve on adeck (`FLEET_SSH_HOST` in both scripts).
-
-These are the fleet targets:
+Bots live in their VM and execute through the desktop app's runner on adeck. They are not CLI agents. Their workspace repo is the exeglyph checkout at `/mnt/echo/exeglyph`. Sync writes their agent docs there as ordinary local paths:
 
 | What | Path | Recipe |
 |---|---|---|
-| Fleet steering | `/workspace/AGENTS.md` | `recipe-project-fleet` |
-| Fleet memory | `/workspace/memory-seed.md` | `recipe-project-fleet` |
-| Bot instructions | `/workspace/ROLES.md` | `recipe-agent-fleet` |
-| One skill | `/home/box/agent-data/workflows/<skill-name>/` | that skill's recipe |
+| Fleet steering | `/mnt/echo/exeglyph/AGENTS.md` | `recipe-project-fleet`: `agents/steering-global-principles.md` with audience `exeglyph`, then `agents/steering-project-exeglyph.md` |
+| Fleet memory | `/mnt/echo/exeglyph/memory-seed.md` | `recipe-project-fleet` |
+| Bot instructions | `/mnt/echo/exeglyph/ROLES.md` | `recipe-agent-fleet` |
 
-`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. `memory-seed.md` is the second section of `recipe-project-fleet`. It stages beside `AGENTS.md` at `workshop/staging/project/Fleet/memory-seed.md`. Its source is `agents/steering-fleet.md`. A skill target is one folder, and that folder has a `SKILL.md`.
+`ROLES.md` is one file. Big W applies each slice to its bot. Do not add a deploy path per bot. `memory-seed.md` is the second section of `recipe-project-fleet`. It stages beside `AGENTS.md` at `workshop/staging/project/Fleet/memory-seed.md`. Its source is `agents/steering-fleet.md`. Set `output_name` on that section. A later section inherits `name` and `output_format` only.
 
-```yaml
-target_locations:
-  - path: ~/.agents/skills/example-skill/
-  - path: fleet:/home/box/agent-data/workflows/example-skill/
-```
+Skill workflows have no bot target. Do not add a skill path on the old bot VM. The skill location for bots is unset. `zk@100.105.160.85` is a retired node. Sync does not write those paths and does not purge them.
 
-A skill recipe that has a fleet target also gets a copy at `workshop/staging/skill/fleet/<name>/` with no deploy targets of its own. The wake workflow watches `agents/`, `workshop/`, and `skills/` on push. Sync deploys the global skill's other targets and drops the fleet path. Fleet entries are ignored when an agent/project filename is inferred from a single target; set `output_name` to be explicit. The two scripts keep separate copies of `_location_is_fleet` and `FLEET_SSH_HOST`, so change both together.
-
-A recipe with `target_locations: []` is assembled into staging and not deployed. A recipe whose only targets are `fleet:` paths is staged and left for the box.
+A recipe with `target_locations: []` is assembled into staging and not deployed.
 
 ## Source forms and slices
 
@@ -99,7 +90,7 @@ sources:
     slice-file: agents/agent-roles.md
 ```
 
-Use one source form per entry. A `file` entry may set `audience` to `local` or `remote`. Unsliced text is kept for either audience. Each `<!-- slice:local -->`, `<!-- slice:remote -->`, or `<!-- slice:both -->` block is kept for that audience, and a `both` block is kept for local and remote. Matching blocks stay in file order, so one audience's slices can sit together. Markers are left out. Any other audience value skips that source. A `file` entry without `audience` includes the whole body, markers included. Whole-file Markdown inclusion strips leading YAML frontmatter. Slice markers are exact HTML comments:
+Use one source form per entry. A `file` entry may set `audience` to `local` or `exeglyph`. Unsliced text is kept for either audience. Each `<!-- slice:local -->`, `<!-- slice:exeglyph -->`, or `<!-- slice:both -->` block is kept for that audience, and a `both` block is kept for both. Matching blocks stay in file order, so one audience's slices can sit together. Markers are left out. Any other audience value skips that source. A `file` entry without `audience` includes the whole body, markers included. Whole-file Markdown inclusion strips leading YAML frontmatter. Slice markers are exact HTML comments:
 
 ```markdown
 <!-- slice:agent=example -->
@@ -196,7 +187,7 @@ python workshop/src/sync.py --host
 python workshop/src/sync.py --no-git
 ```
 
-`--host` syncs copies to one machine. With no name it means adeck. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync continues with the other hosts and does not commit or push if any host failed. Sync deploys staged artifacts to local or SSH targets and skips `fleet:` paths, including the rewritten `zk@100.105.160.85` form. It does not purge them either. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
+`--host` syncs copies to one machine. With no name it means adeck. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync continues with the other hosts and does not commit or push if any host failed. Sync deploys staged artifacts to local or SSH targets. It does not write or purge paths on the retired fleet node `zk@100.105.160.85`, and skipping those paths still lets the purge snapshot clear. Skill directories are mirrored, so extra files already present at a skill target can be removed. Sync removes targets listed in `workshop/staging/.previous-manifest.md` that the current recipes no longer use. Assemble keeps that file across later assembles until a purge finishes with every retired path removed or already gone. A failed purge leaves the file in place. Do not delete it to retry a cleanup.
 
 `--dry-run` does not copy file contents, update the manifest, or commit. For local file targets, the current sync code may still create missing parent directories during a dry run. `--no-git` performs deployment and updates the manifest but skips Git automation. Without either option, sync deploys, updates the manifest, then runs `git add -A`, commits, and pushes the current branch. Check `git status` first; use `--no-git` when deployment is intended but those repository-wide Git effects are not.
 

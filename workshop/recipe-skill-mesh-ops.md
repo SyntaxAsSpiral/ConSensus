@@ -20,7 +20,6 @@ target_locations:
   - path: zk@100.82.51.63:~/.agents/skills/mesh-ops/
   - path: zk@100.77.90.79:~/.claude/skills/mesh-ops/
   - path: zk@100.77.90.79:~/.agents/skills/mesh-ops/
-  - path: fleet:/home/box/agent-data/workflows/mesh-ops/
 
 sources:
   tree: skills/mesh-ops

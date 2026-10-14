@@ -72,11 +72,11 @@ class TestWorkshopAssemble(unittest.TestCase):
                         "<!-- slice:both -->",
                         "BOTH",
                         "<!-- /slice -->",
-                        "<!-- slice:remote -->",
-                        "REMOTE-1",
+                        "<!-- slice:exeglyph -->",
+                        "EXEGLYPH-1",
                         "<!-- /slice -->",
-                        "<!-- slice:remote -->",
-                        "REMOTE-2",
+                        "<!-- slice:exeglyph -->",
+                        "EXEGLYPH-2",
                         "<!-- /slice -->",
                     ]
                 )
@@ -102,13 +102,13 @@ class TestWorkshopAssemble(unittest.TestCase):
             footer = "\n\nDo not edit this document.\n\nSource:\n\n- `/mnt/echo/consensus/principles.md`\n"
             local = rendered("local")
             self.assertEqual(local, "shared\n\nLOCAL-1\n\nLOCAL-2\n\nBOTH" + footer)
-            self.assertNotIn("REMOTE", local)
+            self.assertNotIn("EXEGLYPH", local)
             self.assertNotIn("slice:", local)
 
-            remote = rendered("remote")
-            self.assertEqual(remote, "shared\n\nBOTH\n\nREMOTE-1\n\nREMOTE-2" + footer)
-            self.assertNotIn("LOCAL", remote)
-            self.assertNotIn("slice:", remote)
+            exeglyph = rendered("exeglyph")
+            self.assertEqual(exeglyph, "shared\n\nBOTH\n\nEXEGLYPH-1\n\nEXEGLYPH-2" + footer)
+            self.assertNotIn("LOCAL", exeglyph)
+            self.assertNotIn("slice:", exeglyph)
 
             bad = assemble.RecipeSection(
                 recipe_file=Path(td) / "recipe.md",
@@ -324,7 +324,7 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
 
 
-    def test_fleet_target_also_stages_skill_fleet_copy(self) -> None:
+    def test_skill_does_not_stage_a_fleet_copy(self) -> None:
         import workshop.src.assemble as assemble
 
         with TemporaryDirectory() as td:
@@ -342,31 +342,23 @@ class TestWorkshopAssemble(unittest.TestCase):
                     "output_format": "skill",
                     "target_locations": [
                         {"path": "~/.agents/skills/git/"},
-                        {"path": "fleet:/home/box/agent-data/workflows/git/"},
                     ],
                     "sources": {"tree": "skills/git"},
                 },
             )
 
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=False)
-            self.assertEqual([a.relpath for a in artifacts], ["skill/global/git", "skill/fleet/git"])
-            source = (tree / "SKILL.md").read_text(encoding="utf-8")
+            self.assertEqual([a.relpath for a in artifacts], ["skill/global/git"])
+            self.assertFalse((out / "skill" / "fleet").exists())
             staged = (out / "skill" / "global" / "git" / "SKILL.md").read_text(encoding="utf-8")
-            fleet = (out / "skill" / "fleet" / "git" / "SKILL.md").read_text(encoding="utf-8")
-            self.assertEqual(source, "---\nname: git\n---\n\n# Git\n")
-            self.assertEqual(staged, fleet)
             self.assertEqual(
                 staged,
                 "---\nname: git\n---\n\n# Git\n\nDo not edit this document.\n\nSource:\n\n- `/mnt/echo/consensus/skills/git`\n",
             )
             self.assertEqual(
                 artifacts[0].targets,
-                [
-                    assemble._expand_target_path("~/.agents/skills/git/"),
-                    f"{assemble.FLEET_SSH_HOST}:/home/box/agent-data/workflows/git/",
-                ],
+                [assemble._expand_target_path("~/.agents/skills/git/")],
             )
-            self.assertEqual(artifacts[1].targets, [])
 
     def test_host_sync_selects_one_machine(self) -> None:
         import workshop.src.sync as sync
@@ -374,17 +366,19 @@ class TestWorkshopAssemble(unittest.TestCase):
         targets = [
             "~/.agents/skills/git/",
             "zk@100.115.135.104:~/.agents/skills/git/",
-            "fleet:/home/box/agent-data/workflows/git/",
+            "/mnt/echo/exeglyph/AGENTS.md",
             "/mnt/echo/consensus/AGENTS.md",
         ]
         self.assertEqual(
             sync._select_host_targets(targets, "adeck"),
-            ["~/.agents/skills/git/", "/mnt/echo/consensus/AGENTS.md"],
+            [
+                "~/.agents/skills/git/",
+                "/mnt/echo/exeglyph/AGENTS.md",
+                "/mnt/echo/consensus/AGENTS.md",
+            ],
         )
-        self.assertEqual(
-            sync._select_host_targets(targets, "fleet"),
-            ["fleet:/home/box/agent-data/workflows/git/"],
-        )
+        self.assertEqual(sync._select_host_targets(targets, "fleet"), [])
+        self.assertNotIn("fleet", sync.SYNC_HOSTS)
         self.assertEqual(
             sync._select_host_targets(targets, "nxiz"),
             ["zk@100.115.135.104:~/.agents/skills/git/"],
@@ -396,7 +390,7 @@ class TestWorkshopAssemble(unittest.TestCase):
             ]
         }
         cleaned, purge_clear = sync.cleanup_orphaned_deployments(
-            retired, {}, dry_run=True, host="fleet",
+            retired, {}, dry_run=True, host="100.105.160.85",
         )
         self.assertEqual(cleaned, 0)
         self.assertTrue(purge_clear)
@@ -409,18 +403,12 @@ class TestWorkshopAssemble(unittest.TestCase):
         self.assertEqual(cleaned, 1)
         self.assertTrue(purge_clear)
 
-    def test_sync_drops_fleet_targets(self) -> None:
+    def test_sync_skips_retired_fleet_node(self) -> None:
         import workshop.src.sync as sync
 
-        self.assertEqual(
-            sync._drop_fleet_targets([
-                "~/.agents/skills/git/",
-                "fleet:/home/box/agent-data/workflows/git/",
-                "zk@100.105.160.85:/workspace/AGENTS.md",
-                "zk@100.115.135.104:~/.agents/skills/git/",
-            ]),
-            ["~/.agents/skills/git/", "zk@100.115.135.104:~/.agents/skills/git/"],
-        )
+        self.assertTrue(sync._is_retired_deploy_target("zk@100.105.160.85:/workspace/AGENTS.md"))
+        self.assertFalse(sync._is_retired_deploy_target("/mnt/echo/exeglyph/AGENTS.md"))
+        self.assertFalse(sync._is_retired_deploy_target("zk@100.115.135.104:~/.agents/skills/git/"))
 
     def test_repeated_assemble_keeps_unconsumed_snapshot(self) -> None:
         import workshop.src.assemble as assemble
@@ -490,7 +478,7 @@ class TestWorkshopAssemble(unittest.TestCase):
             self.assertTrue(blocked.is_dir())
             self.assertEqual(snapshot.read_text(encoding="utf-8"), "keep\n")
 
-    def test_mixed_targets_translate_fleet_prefix(self) -> None:
+    def test_exeglyph_targets_stay_local(self) -> None:
         import workshop.src.assemble as assemble
         import workshop.src.sync as sync
 
@@ -502,10 +490,11 @@ class TestWorkshopAssemble(unittest.TestCase):
             config = {
                 "name": "Demo",
                 "output_format": "agent",
+                "output_name": "AGENTS.md",
                 "target_locations": [
-                    {"path": "fleet:/workspace/AGENTS.md"},
+                    {"path": "/mnt/echo/exeglyph/AGENTS.md"},
                     {"path": "~/Demo/AGENTS.md"},
-                    "fleet:/workspace/ROLES.md",
+                    "/mnt/echo/exeglyph/ROLES.md",
                 ],
                 "sources": [{"file": "a.md"}],
             }
@@ -516,11 +505,10 @@ class TestWorkshopAssemble(unittest.TestCase):
             )
             artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
             expected = [
-                f"{assemble.FLEET_SSH_HOST}:/workspace/AGENTS.md",
+                "/mnt/echo/exeglyph/AGENTS.md",
                 str(Path.home() / "Demo" / "AGENTS.md"),
-                f"{assemble.FLEET_SSH_HOST}:/workspace/ROLES.md",
+                "/mnt/echo/exeglyph/ROLES.md",
             ]
-            self.assertEqual(assemble.FLEET_SSH_HOST, sync.FLEET_SSH_HOST)
             self.assertEqual(len(artifacts), 1)
             self.assertEqual(artifacts[0].relpath, "agent/Demo/AGENTS.md")
             self.assertEqual(artifacts[0].targets, expected)
@@ -532,7 +520,7 @@ class TestWorkshopAssemble(unittest.TestCase):
             self.assertEqual(items[0].source_relpath, "agent/Demo/AGENTS.md")
             self.assertEqual(items[0].targets, expected)
 
-    def test_fleet_only_targets_resolve_ssh(self) -> None:
+    def test_single_file_target_names_the_output(self) -> None:
         import workshop.src.assemble as assemble
         import workshop.src.sync as sync
 
@@ -542,8 +530,8 @@ class TestWorkshopAssemble(unittest.TestCase):
             base.mkdir()
             (base / "a.md").write_text("A\n", encoding="utf-8")
             for locations in (
-                [{"path": "fleet:/workspace/AGENTS.md"}],
-                ["fleet:/workspace/AGENTS.md"],
+                [{"path": "/mnt/echo/exeglyph/AGENTS.md"}],
+                ["/mnt/echo/exeglyph/AGENTS.md"],
             ):
                 config = {
                     "name": "Demo",
@@ -557,17 +545,16 @@ class TestWorkshopAssemble(unittest.TestCase):
                     config=config,
                 )
                 artifacts = assemble.build_output_artifacts(section, base, out, dry_run=True)
-                expected = [f"{assemble.FLEET_SSH_HOST}:/workspace/AGENTS.md"]
                 self.assertEqual(len(artifacts), 1)
-                self.assertEqual(artifacts[0].relpath, "agent/Demo/Demo.md")
-                self.assertEqual(artifacts[0].targets, expected)
+                self.assertEqual(artifacts[0].relpath, "agent/Demo/AGENTS.md")
+                self.assertEqual(artifacts[0].targets, ["/mnt/echo/exeglyph/AGENTS.md"])
 
                 items = sync.build_sync_items_from_sections(
                     [sync.RecipeSection(recipe_file=Path("recipe.md"), index=0, config=config)]
                 )
                 self.assertEqual(len(items), 1)
-                self.assertEqual(items[0].source_relpath, "agent/Demo/Demo.md")
-                self.assertEqual(items[0].targets, expected)
+                self.assertEqual(items[0].source_relpath, "agent/Demo/AGENTS.md")
+                self.assertEqual(items[0].targets, ["/mnt/echo/exeglyph/AGENTS.md"])
 
 
     def test_stalled_upstream_pull_does_not_stop_the_run(self) -> None:

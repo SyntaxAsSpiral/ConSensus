@@ -1,6 +1,6 @@
 # Workshop
 
-Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root. `output_format: skill` deploys a vault skill to the house agent directories and to `fleet:/home/box/agent-data/workflows/<name>/`. A project-local skill keeps only the targets in its recipe. OpenRGB is the zrrh checkout. Knap is the esocortex project. `agents-best-practices` is this vault's `.agents/`. The other deployed upstream skills use the house paths and `fleet:/home/box/agent-data/workflows/<name>/`.
+Recipes in `workshop/recipe-*.md` assemble agent files and skills from sources in this vault. The scripts use `/mnt/echo/consensus` as their source root. `output_format: skill` deploys a vault skill to the house agent directories. Bot agent docs deploy to `/mnt/echo/exeglyph` on adeck. Skill workflows have no bot target yet. A project-local skill keeps only the targets in its recipe. OpenRGB is the zrrh checkout. Knap is the esocortex project. `agents-best-practices` is this vault's `.agents/`. The other deployed upstream skills use the house paths.
 
 ```bash
 python workshop/src/assemble.py --dry-run
@@ -15,13 +15,12 @@ python workshop/src/sync.py --host
 python workshop/src/sync.py
 ```
 
-`--host` syncs copies to one machine. With no name it means adeck, the paths on this computer. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use the full sync only when those effects are intended. A full sync that hits a failed host does not commit or push. `fleet:` paths are assembled on the fleet PC. Sync does not rsync or purge them.
+`--host` syncs copies to one machine. With no name it means adeck, the paths on this computer. `--host nxiz`, `zrrh`, `quita`, or an address retries that host. A single-host run deletes retired paths on that host only, and it skips manifest updates and git. The snapshot stays, so a later full sync still purges every retired path, including ones the one-host run already deleted. An unreachable host fails in about ten seconds, and later targets for that host are skipped. A full sync deploys staged files, removes targets orphaned by recipe changes, then runs `git add -A`, commits, and pushes. Use the full sync only when those effects are intended. A full sync that hits a failed host does not commit or push. Sync does not write or purge paths on the retired fleet node `zk@100.105.160.85`.
 
 ## Under construction
 
 These vault skills have no recipe yet. Symlinked nix-os skills (`nixos-fleet`, `nixos-secrets`, `zcli`) and `skills/upstream` are not on this list.
 
-- [cli-coding](../skills/cli-coding/)
 - [praxis-archeoform](../skills/praxis-archeoform/)
 - [praxis-harmonion](../skills/praxis-harmonion/)
 - [praxis-morphognome](../skills/praxis-morphognome/)

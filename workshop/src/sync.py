@@ -120,7 +120,7 @@ def _is_ssh_target(p: str) -> bool:
 
 
 def _select_local_targets(targets: List[str]) -> List[str]:
-    """Keep paths on this machine. SSH and fleet: targets are remote."""
+    """Keep paths on this machine. SSH targets are remote."""
     kept = []
     for target in targets:
         if _is_ssh_target(_expand_target_path(target)):
@@ -135,8 +135,10 @@ SYNC_HOSTS = {
     "nxiz": "100.115.135.104",
     "zrrh": "100.77.90.79",
     "quita": "100.82.51.63",
-    "fleet": "100.105.160.85",
 }
+
+# Previous fleet node. Recipes no longer deploy there. Do not write or purge it.
+RETIRED_SSH_HOSTS = frozenset({"zk@100.105.160.85"})
 
 
 def _select_host_targets(targets: List[str], host: str) -> List[str]:
@@ -171,18 +173,7 @@ def _rsync_rsh() -> str:
     return " ".join(_ssh_argv())
 
 
-# Tailscale IP of the fleet node. The name `fleet` does not resolve on adeck.
-FLEET_SSH_HOST = "zk@100.105.160.85"
-
-
 def _expand_target_path(p: str) -> str:
-    # fleet:/abs/path is a literal path on the fleet PC. Keep in step with assemble.py.
-    if p.startswith("fleet:"):
-        rest = p[len("fleet:") :]
-        if rest.startswith("/"):
-            return f"{FLEET_SSH_HOST}:{rest}"
-        return p
-
     # SSH targets are returned as-is (handled separately by rsync)
     if _is_ssh_target(p):
         return p
@@ -272,32 +263,12 @@ def resolve_project_skill_target(raw: str, skill_name: str) -> Optional[str]:
     return f"{project}/.agents/skills/{skill_name}/"
 
 
-def _is_fleet_deploy_target(p: str) -> bool:
-    """fleet: and the SSH form assemble writes. Adeck does not write or purge these.
-
-    Big W assembles them on the box. Keep the host in step with assemble.FLEET_SSH_HOST.
-    """
-    raw = p.strip()
-    if raw.startswith("fleet:"):
-        return True
-    return _expand_target_path(raw).startswith(f"{FLEET_SSH_HOST}:")
-
-
-def _drop_fleet_targets(targets: List[str]) -> List[str]:
-    return [target for target in targets if not _is_fleet_deploy_target(target)]
-
-
-def _location_is_fleet(entry: Any) -> bool:
-    """Raw target_locations entry for the fleet PC. Keep in step with assemble.py.
-
-    Deploy rewrites these in _expand_target_path. Filename inference still skips them.
-    """
-    if isinstance(entry, dict):
-        path = entry.get("path")
-        return bool(path) and str(path).startswith("fleet:")
-    if isinstance(entry, str):
-        return entry.startswith("fleet:")
-    return False
+def _is_retired_deploy_target(p: str) -> bool:
+    """True for the previous fleet node. Sync leaves those paths alone."""
+    expanded = _expand_target_path(p.strip())
+    if not _is_ssh_target(expanded):
+        return False
+    return expanded.split(":", 1)[0] in RETIRED_SSH_HOSTS
 
 
 def _targets_from_config(cfg: Dict[str, Any]) -> List[str]:
@@ -334,8 +305,6 @@ def _agent_output_filename(recipe_name: str, section: RecipeSection, total_secti
         return str(explicit)
 
     targets = cfg.get("target_locations") or []
-    if isinstance(targets, list):
-        targets = [t for t in targets if not _location_is_fleet(t)]
     if isinstance(targets, list) and len(targets) == 1:
         t = targets[0]
         if isinstance(t, dict) and t.get("path"):
@@ -671,6 +640,7 @@ def cleanup_orphaned_deployments(
     """
     cleaned = 0
     purge_clear = True
+    retired_note = [False]
     current_targets = {_canonical_target(t) for targets in current_deployments.values() for t in targets}
     seen = set()
     down: set = set()
@@ -680,7 +650,10 @@ def cleanup_orphaned_deployments(
             canon = _canonical_target(t)
             if canon in current_targets or canon in seen:
                 continue
-            if _is_fleet_deploy_target(t):
+            if _is_retired_deploy_target(t):
+                if not retired_note[0]:
+                    print(f"Retired fleet node is not contacted. Old paths there are left in place.")
+                    retired_note[0] = True
                 continue
             if host is not None and not _select_host_targets([t], host):
                 continue
@@ -970,15 +943,10 @@ def main():
         )
         consume_snapshot_after_purge(previous_manifest, purge_clear, args.dry_run)
 
-    if any(_is_fleet_deploy_target(t) for item in current_items.values() for t in item.targets):
-        print(f"☠☠☠ >>> FLEET·LEFT·TO·THE·BOX ☠☠☠")
-        print(f"Fleet targets are assembled on the fleet PC. This sync does not write or purge them.")
-        print(f"|001101|—|001101|—|111000|— one writer")
-
     down_hosts: set = set()
     for deployment_id, item in current_items.items():
         targets = _select_host_targets(item.targets, args.host) if host_limited else item.targets
-        targets = _drop_fleet_targets(targets)
+        targets = [t for t in targets if not _is_retired_deploy_target(t)]
         if not targets:
             continue
         source = staging_dir / Path(item.source_relpath)
