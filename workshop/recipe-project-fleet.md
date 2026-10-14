@@ -1,7 +1,7 @@
 ---
 id: recipe-project-fleet
 created: 2026-10-07
-modified: 2026-10-11
+modified: 2026-10-13
 status: active
 type:
   - agent
@@ -13,19 +13,18 @@ output_format: project
 output_name: AGENTS.md
 
 target_locations:
-  - path: fleet:/workspace/AGENTS.md
+  - path: /mnt/echo/exeglyph/AGENTS.md
 
 sources:
-  - file: agents/steering-global-operator.md
   - file: agents/steering-global-principles.md
-    audience: remote
+    audience: exeglyph
+  - file: agents/steering-project-exeglyph.md
 ---
 output_name: memory-seed.md
 
 target_locations:
-  - path: fleet:/workspace/memory-seed.md
+  - path: /mnt/echo/exeglyph/memory-seed.md
 
 sources:
   - file: agents/steering-fleet.md
 ```
-!!!!! THIS RECIPE IS A PLACEHOLDER !!!!!!!

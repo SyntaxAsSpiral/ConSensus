@@ -36,6 +36,6 @@ lens: covenant-principles
 - **Nix-First:** Prefer Nix for all package management. No `pip`, `npm`, `cargo` for global installs.
 <!-- /slice -->
 
-<!-- slice:remote -->
+<!-- slice:exeglyph -->
 - **Nix package manager:** The Nix package manager can be installed to use project flakes, shells, and transient tooling.
 <!-- /slice -->

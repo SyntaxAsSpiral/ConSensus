@@ -1,7 +1,7 @@
 ---
 id: recipe-agent-fleet
 created: 2026-10-07
-modified: 2026-10-12
+modified: 2026-10-13
 status: active
 type:
   - agent
@@ -12,7 +12,7 @@ output_format: agent
 output_name: ROLES.md
 
 target_locations:
-  - path: fleet:/workspace/ROLES.md
+  - path: /mnt/echo/exeglyph/ROLES.md
 
 sources:
   - slice: agent=fleet
