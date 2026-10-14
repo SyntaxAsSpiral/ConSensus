@@ -1,7 +1,7 @@
 ---
 name: commit-style
 description: >-
-  Wear the cogitator frame when writing a commit message.
+  REQUIRED: when writing a commit message.
 ---
 
 # commit-style
